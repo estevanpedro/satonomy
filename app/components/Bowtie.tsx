@@ -92,22 +92,16 @@ export const Bowtie = () => {
     }));
   };
 
+  const inputTotalBtc = butterfly.inputs.reduce(
+    (acc, cur) => acc + cur.value / 100000000,
+    0
+  );
+
   return (
     <>
       <div className="flex mb-2 text-[12px] font-bolds justify-end ">
         <div className="h-60 min-w-52 rounded-xl flex flex-col gap-3 items-center justify-center opacity-50 font-medium border bg-zinc-950">
-          Input Total:{" "}
-          {formatNumber(
-            butterfly.inputs.reduce(
-              (acc, cur) => acc + cur.value / 100000000,
-              0
-            ),
-            0,
-            8,
-            false,
-            false
-          )}{" "}
-          BTC
+          Input Total: {formatNumber(inputTotalBtc)} BTC
         </div>
 
         <div className="h-60 w-full flex mb-2 text-[12px]  justify-end opacity-50">
@@ -126,7 +120,7 @@ export const Bowtie = () => {
                 type="number"
                 value={configs.feeCost}
                 onChange={(e) => {
-                  setConfigs((prev: any) => ({
+                  setConfigs((prev) => ({
                     ...prev,
                     feeCost: Number(e.target.value),
                   }));
@@ -141,7 +135,6 @@ export const Bowtie = () => {
         </div>
       </div>
 
-      {/*  */}
       <div className="flex">
         <div className="w-full">
           <div

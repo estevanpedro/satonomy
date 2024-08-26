@@ -12,11 +12,12 @@ import { configAtom } from "@/app/recoil/confgsAtom";
 
 export const UtxoDeck = () => {
   const utxos = useRecoilValue(utxoAtom);
-  return Boolean(utxos?.length) ? <CardCarousel /> : null;
+  return utxos && Boolean(utxos?.length) ? (
+    <CardCarousel utxos={utxos} />
+  ) : null;
 };
 
-export const CardCarousel = () => {
-  const utxos = useRecoilValue(utxoAtom);
+export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,11 +51,11 @@ export const CardCarousel = () => {
   }, [api, x]);
 
   const handleMouseEnter = (api: any) => {
-    api.start({ scale: 1.05 }); // Scale up on hover
+    api.start({ scale: 1.05 });
   };
 
   const handleMouseLeave = (api: any) => {
-    api.start({ scale: 1 }); // Scale back to normal
+    api.start({ scale: 1 });
   };
 
   const onClick = (utxo: MempoolUTXO) => {

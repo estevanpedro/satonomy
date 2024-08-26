@@ -5,7 +5,7 @@ import Image from "next/image";
 import { MempoolUTXO } from "@/app/recoil/utxoAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 
-export const Ordinal = ({ utxo }: { utxo: MempoolUTXO }) => {
+export const OrdinalRendering = ({ utxo }: { utxo: MempoolUTXO }) => {
   const ordinals = useRecoilValue(ordinalsAtom);
 
   const ordinal = ordinals?.inscription.find(

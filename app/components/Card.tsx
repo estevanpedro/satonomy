@@ -10,7 +10,7 @@ import { useAccounts } from "@particle-network/btc-connectkit";
 import Image from "next/image";
 import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { Ordinal } from "@/app/components/Ordinals";
+import { OrdinalRendering } from "@/app/components/Ordinals";
 import { runesAtom } from "@/app/recoil/runesAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
@@ -203,7 +203,7 @@ export const CardOption = ({
       )}
       {ordinal && (
         <>
-          <Ordinal utxo={utxo} />
+          <OrdinalRendering utxo={utxo} />
           <span className="text-[10px]">{ordinal.contentType}</span>
         </>
       )}
