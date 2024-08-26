@@ -1,14 +1,14 @@
 "use client";
 
-import { Bowtie } from "@/app/components/Bowtie";
-import CardCarousel from "@/app/components/CardsDeck";
-
-import { ConfigDeck } from "@/app/components/ConfigDeck";
-import { ConnectButton } from "@/app/components/Connect";
-import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
-import { utxoState } from "@/app/recoil/utxo";
 import Image from "next/image";
 import { useRecoilValue } from "recoil";
+
+import { utxoState } from "@/app/recoil/utxo";
+import { Bowtie } from "@/app/components/Bowtie";
+import { ConfigDeck } from "@/app/components/ConfigDeck";
+import { ConnectButton } from "@/app/components/Connect";
+import { CardCarousel } from "@/app/components/CardsDeck";
+import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 
 export default function Butterfly() {
   const utxos = useRecoilValue(utxoState);
@@ -37,7 +37,8 @@ export default function Butterfly() {
         </h1>
 
         <p className="text-center  text-gray-400 mb-24">
-          Revolutionizing the understanding of Bitcoin transactions
+          Effortlessly Visualize and Program Your Bitcoin L1 Transactions
+          (UTXOs)
         </p>
 
         <Bowtie />

@@ -14,10 +14,8 @@ import {
 import { formatAddress, formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import Image from "next/image";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { Card as CardStyled } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
 import { Ordinal } from "@/app/components/Ordinals";
 
 export function generateBowtiePath(
@@ -45,12 +43,12 @@ export const EmptyCard = ({
   className?: string;
 }) => {
   return (
-    <CardStyled
+    <div
       onClick={onClick}
-      className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer`}
+      className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950`}
     >
       +
-    </CardStyled>
+    </div>
   );
 };
 
@@ -65,7 +63,7 @@ export const Card = ({
   const { accounts } = useAccounts();
   const account = accounts[0];
   return (
-    <CardStyled className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
+    <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-4 left-[-120px] opacity-30">
         <div>INPUT #{utxo?.vout}</div>
       </div>
@@ -95,7 +93,7 @@ export const Card = ({
         {formatNumber(utxo?.value, 0, 0, false, false)} sats
       </div>
       <div>${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}</div>
-    </CardStyled>
+    </div>
   );
 };
 
@@ -145,7 +143,7 @@ export const CardOption = ({
     : CARD_TYPES_COLOR_SECONDARY.BTC;
 
   return (
-    <CardStyled
+    <div
       style={{
         touchAction: "none",
         position: "relative",
@@ -212,17 +210,16 @@ export const CardOption = ({
         </>
       )}
 
-      <Button
+      <button
         disabled={isDisabled}
         onClick={() => onClick?.(utxo)}
         className={`${
           isDisabled ? "opacity-50" : ""
-        } text-bold absolute bottom-4 text-[16px] rounded px-8 py-2 from-[#ffa750] to-[#e8c03f] bg-gradient-to-r hover:from-[#ffa750] hover:to-[#e8c03f] text-white`}
+        } text-bold absolute bottom-4 text-[16px] rounded px-8 py-1 from-[#ffa750] to-[#e8c03f] bg-gradient-to-r hover:from-[#ffa750] hover:to-[#e8c03f] text-white`}
       >
         SELECT
-      </Button>
+      </button>
 
-      {/* Gradient Border */}
       <div
         className="absolute inset-0 rounded-xl z-[-1]"
         style={{
@@ -239,7 +236,7 @@ export const CardOption = ({
           }}
         ></div>
       </div>
-    </CardStyled>
+    </div>
   );
 };
 
@@ -253,13 +250,6 @@ export const CardOutput = ({
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyState);
 
-  const totalInputBtcValue = butterfly?.inputs.reduce(
-    (acc, input) => acc + input.value,
-    0
-  );
-
-  const openSettingModal = (index: number) => {};
-
   const [addressInputFocused, setAddressInputFocused] = useState(false);
   const onInputFocus = () => {
     setAddressInputFocused(true);
@@ -267,7 +257,7 @@ export const CardOutput = ({
   };
 
   return (
-    <CardStyled className="min-w-52 bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
+    <div className="min-w-52 bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-0 right-0 pointer-events-none ">
         <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
       </div>
@@ -345,6 +335,6 @@ export const CardOutput = ({
           ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice
         )}
       </div>
-    </CardStyled>
+    </div>
   );
 };

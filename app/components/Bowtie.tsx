@@ -10,7 +10,7 @@ import { formatNumber } from "@/app/utils/format";
 import { useOutputs } from "@/app/hooks/useOutputs";
 import { butterflyState, Input } from "@/app/recoil/utxo";
 import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
-import { Card as CardStyled } from "@/app/components/ui/card";
+
 import { useOrdinals } from "@/app/hooks/useOrdinals";
 
 export const Bowtie = () => {
@@ -90,7 +90,7 @@ export const Bowtie = () => {
   return (
     <>
       <div className="flex mb-2 text-[12px] font-bolds justify-end ">
-        <CardStyled className="h-60 min-w-52 rounded-xl flex flex-col gap-3 items-center justify-center opacity-50 font-medium">
+        <div className="h-60 min-w-52 rounded-xl flex flex-col gap-3 items-center justify-center opacity-50 font-medium border bg-zinc-950">
           Input Total:{" "}
           {formatNumber(
             butterfly.inputs.reduce(
@@ -103,12 +103,12 @@ export const Bowtie = () => {
             false
           )}{" "}
           BTC
-        </CardStyled>
+        </div>
 
         <div className="h-60 w-full flex mb-2 text-[12px]  justify-end opacity-50">
-          <CardStyled className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center">
+          <div className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950">
             {Boolean(configs.feeRate) && <div>{configs.feeRate} sat/vb</div>}
-            Bitcoin
+
             <Image
               className="w-14 h-14"
               src="/bitcoin.png"
@@ -132,7 +132,7 @@ export const Bowtie = () => {
               <div className="mt-[-15px] text-[12px]">sats</div>
             </div>
             <div>Network Fee</div>
-          </CardStyled>
+          </div>
         </div>
       </div>
 

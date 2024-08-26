@@ -1,13 +1,15 @@
 "use client";
+
 import React, { useRef, useEffect } from "react";
 import { useSpring, animated } from "react-spring";
 import { useDrag } from "@use-gesture/react";
+
 import { CardOption } from "@/app/components/Card";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { configState } from "@/app/recoil/confgs";
 import { butterflyState, MempoolUTXO, utxoState } from "@/app/recoil/utxo";
 
-const CardCarousel = () => {
+export const CardCarousel = () => {
   const utxos = useRecoilValue(utxoState);
   const [configs, setConfigs] = useRecoilState(configState);
   const [butterfly, setButterfly] = useRecoilState(butterflyState);
@@ -132,5 +134,3 @@ const CardCarousel = () => {
     </div>
   );
 };
-
-export default CardCarousel;

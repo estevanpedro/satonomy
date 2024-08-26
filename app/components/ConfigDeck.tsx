@@ -7,7 +7,6 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { toastOptions } from "@/app/components/Toast";
 import { Tooltip } from "react-tooltip";
 import { formatNumber } from "@/app/utils/format";
-import { psbtService } from "@/app/services/psbtService";
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
 

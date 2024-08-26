@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { formatAddress } from "@/app/utils/format";
 import { useAccounts, useConnectModal } from "@particle-network/btc-connectkit";
-import { Button } from "@/app/components/ui/button";
 
 export const ConnectButton = () => {
   const { openConnectModal, disconnect } = useConnectModal();
@@ -48,8 +47,8 @@ export const ConnectButton = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Button
-        variant="secondary"
+      <button
+        className="text-white bg-zinc-900 px-4 py-2 rounded-md"
         onClick={() => {
           if (!account) {
             openConnectModal?.();
@@ -57,23 +56,23 @@ export const ConnectButton = () => {
         }}
       >
         {account ? formatAddress(account) : "Connect Wallet"}
-      </Button>
+      </button>
 
       {account && dropdownVisible && (
         <div
-          className="absolute left-0 mt-2 "
+          className="absolute left-0 "
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <Button
-            className="w-[148px]"
+          <button
+            className="w-[148px] text-white bg-zinc-600 px-4 py-2 rounded-md"
             onClick={() => {
               disconnect?.();
               setDropdownVisible(false);
             }}
           >
             Disconnect
-          </Button>
+          </button>
         </div>
       )}
     </div>

@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
-import { cn } from "@/lib/utils";
-
 import { Inter } from "next/font/google";
+
 import "./globals.css";
 import "react-tooltip/dist/react-tooltip.css";
-import { ThemeProvider } from "@/app/providers/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -23,15 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Analytics />
-      <body className={cn(`font-sans antialiased`, inter.className)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={inter.className}>
+        <main className="flex min-h-screen flex-col items-center justify-start">
           {children}
-        </ThemeProvider>
+        </main>
       </body>
     </html>
   );
