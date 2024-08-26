@@ -27,7 +27,7 @@ export const SubNavBar = () => {
         Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
       </h1>
       <p className="text-center  text-gray-400 mb-24">
-        Effortlessly Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
+        Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
       </p>
     </>
   );
