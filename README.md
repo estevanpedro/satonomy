@@ -32,7 +32,24 @@ Built with Next.js App Router and TypeScript, utilizing server-side functions fo
 - **Bitcoin Scripts**: Custom pre-built `redeemScripts`, multi-sig, time locks, and more
 - **UTXO Optimizer**: Earn by removing unnecessary Satoshis locked in Runes and Ordinals (e.g., optimize a 10k Satoshi NFT to 546 Satoshis, earning 9.5k Satoshis)
 
-## Getting Started
+### Tutorial of how to use
+
+1. Connect your Wallet
+   ![Wallet connection](public/wallets.png)
+
+2. Add a new PSBT input
+   ![Select PSBT Input](public/select.png)
+
+3. Select the Best UTXO
+   ![Choose UTXO](public/choose.png)
+
+4. Add Outputs and Split (or Multi-Transfer)
+   ![Split Bitcoin](public/split.png)
+
+5. Confirm PSBT signature in your wallet
+   ![Confirm Wallet](public/confirm.png)
+
+### Getting Started
 
 To start the project, add your `.env` variables and run the development server:
 
@@ -55,23 +72,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### Tutorial
+#### Notes
 
-1. Connect your Wallet
-   ![Wallet connection](public/wallets.png)
-
-2. Add a new input
-   ![Select Inputs](public/select.png)
-
-3. Select the Best UTXO
-   ![Wallet connection](public/choose.png)
-
-4. Add Outputs and Split (or Multi-Transfer)
-   ![Wallet connection](public/split.png)
+**⚠️ Note:** Atomics are not supported. Please double-check your wallet before approving any transactions. During the alpha stage, ensure you only use BTC (Satoshis) for splitting or transferring.
 
 - Test live on bitcoin: [satonomy.io](satonomy.io)
 - Follow us: [@satonomy](https://x.com/satonomy)
-
-#### Notes
 
 This project was created by [@estevanpwr](https://x.com/estevanpwr), [@CryptoShira](https://x.com/CryptoShira) and [@0xtoony](https://x.com/0xtoony) for the Bitcoin Hackathon Olympics. Our team is committed to continuing development beyond the competition.

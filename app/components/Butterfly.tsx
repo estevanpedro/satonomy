@@ -33,11 +33,11 @@ export default function Butterfly() {
 
       <div className=" items-center justify-center w-full max-w-[1200px] self-center ">
         <h1 className="text-4xl font-bold text-center text-gray-100">
-          Create PSBT
+          Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
         </h1>
 
         <p className="text-center  text-gray-400 mb-24">
-          Visually create UTXOs, verify PSBTs, and sign transactions.
+          Revolutionizing the understanding of Bitcoin transactions
         </p>
 
         <Bowtie />
