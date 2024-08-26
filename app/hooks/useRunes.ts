@@ -1,4 +1,4 @@
-import { runesAtom } from "@/app/recoil/utxo";
+import { runesAtom } from "@/app/recoil/runesAtom";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";

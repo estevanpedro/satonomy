@@ -1,7 +1,7 @@
 import { bech32m } from "bech32";
 import { initEccLib, networks, Psbt } from "bitcoinjs-lib";
 import { toOutputScript } from "bitcoinjs-lib/src/address";
-import { Butterfly } from "@/app/recoil/utxo";
+import { Butterfly } from "@/app/recoil/butterflyAtom";
 import * as ecc from "@bitcoinerlab/secp256k1";
 
 export const psbtService = {

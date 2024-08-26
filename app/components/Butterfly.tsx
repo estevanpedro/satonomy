@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRecoilValue } from "recoil";
 
-import { utxoState } from "@/app/recoil/utxo";
+import { utxoAtom } from "@/app/recoil/utxoAtom";
 import { Bowtie } from "@/app/components/Bowtie";
 import { ConfigDeck } from "@/app/components/ConfigDeck";
 import { ConnectButton } from "@/app/components/Connect";
@@ -11,7 +11,7 @@ import { CardCarousel } from "@/app/components/CardsDeck";
 import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 
 export default function Butterfly() {
-  const utxos = useRecoilValue(utxoState);
+  const utxos = useRecoilValue(utxoAtom);
   useBitcoinPrice();
 
   return (

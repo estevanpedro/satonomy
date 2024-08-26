@@ -4,19 +4,17 @@ import {
   CARD_TYPES_COLOR_SECONDARY,
   Category,
 } from "@/app/components/CardType";
-import { btcPriceAtom } from "@/app/recoil/btc";
-import {
-  butterflyState,
-  MempoolUTXO,
-  ordinalsAtom,
-  runesAtom,
-} from "@/app/recoil/utxo";
+import { MempoolUTXO } from "@/app/recoil/utxoAtom";
 import { formatAddress, formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import Image from "next/image";
 import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Ordinal } from "@/app/components/Ordinals";
+import { runesAtom } from "@/app/recoil/runesAtom";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
+import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
 
 export function generateBowtiePath(
   inputX: number,
@@ -106,7 +104,7 @@ export const CardOption = ({
 }) => {
   const ordinals = useRecoilValue(ordinalsAtom);
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const { inputs } = useRecoilValue(butterflyState);
+  const { inputs } = useRecoilValue(butterflyAtom);
   const runesStates = useRecoilValue(runesAtom);
 
   const rune = runesStates?.find((rune) =>
@@ -248,7 +246,7 @@ export const CardOutput = ({
   index: number;
 }) => {
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const [butterfly, setButterfly] = useRecoilState(butterflyState);
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
 
   const [addressInputFocused, setAddressInputFocused] = useState(false);
   const onInputFocus = () => {

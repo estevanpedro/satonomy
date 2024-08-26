@@ -1,7 +1,6 @@
 import { toast, ToastContainer } from "react-toastify";
 import { useMempool } from "@/app/hooks/useMempool";
-import { configState } from "@/app/recoil/confgs";
-import { butterflyState, utxoState } from "@/app/recoil/utxo";
+import { utxoAtom } from "@/app/recoil/utxoAtom";
 import Image from "next/image";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { toastOptions } from "@/app/components/Toast";
@@ -9,12 +8,14 @@ import { Tooltip } from "react-tooltip";
 import { formatNumber } from "@/app/utils/format";
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { configAtom } from "@/app/recoil/confgsAtom";
 
 export const ConfigDeck = () => {
-  const utxos = useRecoilValue(utxoState);
+  const utxos = useRecoilValue(utxoAtom);
   useMempool();
-  const [configs, setConfigs] = useRecoilState(configState);
-  const butterfly = useRecoilValue(butterflyState);
+  const [configs, setConfigs] = useRecoilState(configAtom);
+  const butterfly = useRecoilValue(butterflyAtom);
   const { accounts } = useAccounts();
   const account = accounts[0];
 

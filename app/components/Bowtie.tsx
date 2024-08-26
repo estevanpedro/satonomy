@@ -5,19 +5,21 @@ import { useAccounts } from "@particle-network/btc-connectkit";
 
 import { useRunes } from "@/app/hooks/useRunes";
 import { useInputs } from "@/app/hooks/useInputs";
-import { configState } from "@/app/recoil/confgs";
+
 import { formatNumber } from "@/app/utils/format";
 import { useOutputs } from "@/app/hooks/useOutputs";
-import { butterflyState, Input } from "@/app/recoil/utxo";
+import { MempoolUTXO } from "@/app/recoil/utxoAtom";
 import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
 
 import { useOrdinals } from "@/app/hooks/useOrdinals";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { configAtom } from "@/app/recoil/confgsAtom";
 
 export const Bowtie = () => {
   useRunes();
   useOrdinals();
-  const [configs, setConfigs] = useRecoilState(configState);
-  const [butterfly, setButterfly] = useRecoilState(butterflyState);
+  const [configs, setConfigs] = useRecoilState(configAtom);
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const { accounts } = useAccounts();
 
   const account = accounts[0];
@@ -80,7 +82,7 @@ export const Bowtie = () => {
     }));
   };
 
-  const onRemoveInput = (utxo: Input) => {
+  const onRemoveInput = (utxo: MempoolUTXO) => {
     setButterfly((prev) => ({
       ...prev,
       inputs: prev.inputs.filter((input) => input !== utxo),

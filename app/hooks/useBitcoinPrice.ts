@@ -1,4 +1,4 @@
-import { btcPriceAtom } from "@/app/recoil/btc";
+import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 

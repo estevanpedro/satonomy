@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-
-import { MempoolUTXO, ordinalsAtom } from "@/app/recoil/utxo";
 import { useRecoilValue } from "recoil";
 import Image from "next/image";
+
+import { MempoolUTXO } from "@/app/recoil/utxoAtom";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 
 export const Ordinal = ({ utxo }: { utxo: MempoolUTXO }) => {
   const ordinals = useRecoilValue(ordinalsAtom);

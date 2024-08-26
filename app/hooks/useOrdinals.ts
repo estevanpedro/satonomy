@@ -1,4 +1,4 @@
-import { ordinalsAtom } from "@/app/recoil/utxo";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";

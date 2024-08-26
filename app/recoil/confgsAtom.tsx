@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 
-export const configState = atom({
-  key: "configState",
+export const configAtom = atom({
+  key: "configAtom",
   default: {
     isInputDeckOpen: false,
     feeRate: 0,

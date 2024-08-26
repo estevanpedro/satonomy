@@ -1,11 +1,10 @@
-import { CustomEdict } from "@/app/recoil/utxo";
 import { getRunesData } from "@/app/services/ordinalService";
 import { utxoServices } from "@/app/services/utxoServices";
 import { Transaction } from "bitcoinjs-lib";
 import { Runestone } from "runelib";
 
 export const runesServices = {
-  getEdicts: async (txId: string, wallet: string) => {
+  getEdicts: async (txId: string) => {
     try {
       const txHex = await utxoServices.fetchTransactionHex(txId);
       const btcTx = Transaction.fromHex(txHex);
@@ -27,7 +26,7 @@ export const runesServices = {
         }
       }
 
-      return { edicts: edicts as CustomEdict[] };
+      return { edicts: edicts };
     } catch (error) {
       console.error(error);
       return undefined;

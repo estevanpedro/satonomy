@@ -1,4 +1,4 @@
-import { utxoState } from "@/app/recoil/utxo";
+import { utxoAtom } from "@/app/recoil/utxoAtom";
 import { utxoServices } from "@/app/services/utxoServices";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
 export const useMempool = () => {
-  const [utxo, setUtxo] = useRecoilState(utxoState);
+  const [utxo, setUtxo] = useRecoilState(utxoAtom);
   const { accounts } = useAccounts();
   const wallet = accounts?.[0];
 

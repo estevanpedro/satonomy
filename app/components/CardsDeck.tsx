@@ -6,13 +6,14 @@ import { useDrag } from "@use-gesture/react";
 
 import { CardOption } from "@/app/components/Card";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { configState } from "@/app/recoil/confgs";
-import { butterflyState, MempoolUTXO, utxoState } from "@/app/recoil/utxo";
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { configAtom } from "@/app/recoil/confgsAtom";
 
 export const CardCarousel = () => {
-  const utxos = useRecoilValue(utxoState);
-  const [configs, setConfigs] = useRecoilState(configState);
-  const [butterfly, setButterfly] = useRecoilState(butterflyState);
+  const utxos = useRecoilValue(utxoAtom);
+  const [configs, setConfigs] = useRecoilState(configAtom);
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const containerRef = useRef<HTMLDivElement>(null);
   const [{ x }, api] = useSpring(() => ({ x: 0 }));
   const bind = useDrag(
