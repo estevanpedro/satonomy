@@ -15,6 +15,7 @@ import { runesAtom } from "@/app/recoil/runesAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
+import { Tooltip } from "react-tooltip";
 
 export function generateBowtiePath(
   inputX: number,
@@ -143,11 +144,11 @@ export const CardOption = ({
   return (
     <div
       style={{
-        touchAction: "none",
+        touchAction: "auto",
         position: "relative",
         zIndex: 1,
       }}
-      className={`min-h-[320px] relative w-52 min-w-52 rounded-xl bg-zinc-900 flex flex-col gap-3 items-center justify-center`}
+      className={`select-none	 min-h-[320px] relative w-52 min-w-52 rounded-xl bg-zinc-900 flex flex-col gap-3 items-center justify-center`}
     >
       <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
         <Category color={colorType} type={contentType} />
@@ -208,7 +209,24 @@ export const CardOption = ({
         </>
       )}
 
+      <Tooltip
+        id={"select"}
+        className="max-w-[260px] bg-gray-600"
+        style={{ backgroundColor: "#292929", color: "white" }}
+      />
+
       <button
+        data-tooltip-id={"select"}
+        data-tooltip-content={
+          isDisabled
+            ? !Boolean(utxoFound) && !Boolean(ordinal)
+              ? "UTXO already selected"
+              : `${
+                  Boolean(ordinal) ? "Inscriptions" : "Runes"
+                } are not available yet.`
+            : ""
+        }
+        data-tooltip-place="top"
         disabled={isDisabled}
         onClick={() => onClick?.(utxo)}
         className={`${

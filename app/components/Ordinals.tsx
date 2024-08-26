@@ -68,7 +68,7 @@ const TextContent = ({ url }: TextContentProps) => {
   }, [url]);
 
   return (
-    <span className="text-[12px] max-w-[180px] text-center">
+    <span className="text-[12px] max-w-[180px] text-center overflow-hidden">
       {text.replaceAll(`","`, `", "`)}
     </span>
   );
