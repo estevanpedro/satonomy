@@ -170,7 +170,7 @@ export const CardOption = ({
             </span>
           </div>
           {rune?.amount && (
-            <div className="mt-[-14px] w-32 h-12 text-center text-xl text-bold font-medium flex justify-center items-center pointer-events-none gap-2">
+            <div className="mt-[-14px] w-32 h-12 text-center text-xl text-bold font-medium flex justify-center items-center pointer-events-none gap-2 whitespace-nowrap overflow-hidden">
               {formatNumber(
                 Number(utxoFound?.formattedBalance),
                 0,
