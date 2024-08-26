@@ -1,4 +1,5 @@
 import { ConnectButton } from "@/app/components/Connect";
+import { Tutorial } from "@/app/components/Tutorial";
 import Image from "next/image";
 
 export const NavBar = () => {
@@ -8,8 +9,11 @@ export const NavBar = () => {
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
         SATONOMY
       </p>
-      <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t  from-black via-black lg:static lg:size-auto lg:bg-none">
-        <ConnectButton />
+      <div className="flex items-center justify-center gap-3">
+        <Tutorial />
+        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t  from-black via-black lg:static lg:size-auto lg:bg-none">
+          <ConnectButton />
+        </div>
       </div>
     </div>
   );
