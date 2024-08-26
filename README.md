@@ -1,8 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Satonomy - Effortless Bitcoin Asset Management
 
-## Getting Started
+Visually create UTXOs and PSBTs. Add custom scripts and automate transactions for Bitcoin, Runes and Ordinals. Use non-custodial wallets like XVerse, Unisat, Magic Eden, OKX and more.
 
-First, run the development server:
+- Demo: [satonomy.io](satonomy.io)
+- Docs: [gitbook.com](satonomy.io)
+- Twitter: [@satonomy](https://x.com/satonomy)
+
+![Satonomy Dashboard - PSBT Creation](public/satonomy.png)
+
+## Main Tech
+
+Using NextJS App Route with Typescript, server-side functions to hide envs, client-server requests wallet management, connection with L2 using particle-network and btc-connectkit
+
+- `bitcoinjs-lib` [(check psbt code)](https://github.com/satonomy/utxo-builder/blob/main/app/services/psbtService.ts)
+- `@particle-network/btc-connectkit` [(bitcoin wallet provider)](https://github.com/satonomy/utxo-builder/blob/main/app/providers/ConnectProvider.tsx)
+- `runelib` [(runestone)](https://github.com/satonomy/utxo-builder/blob/main/app/services/runesService.ts#L8)
+- `mempool` [(utxo fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L47)
+- `unisat` [(runes balance fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
+- `magiceden` [(runes utxo fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
+
+### Current features
+
+- `transfer` (btc)
+- `split` (btc)
+- `merge` (btc)
+- `utxo visualizer` (ordinals, runes and bitcoin)
+
+### Income features
+
+- `transfer`, `split` and `merge` (runes, ordinals, atomical and others utxo assets)
+- `bitcoin scripts` (custom pre-built redeemScripts, multi-sig, time locks, etc)
+- `utxo optimizer` (earn free money by removing unnecessary satoshis locked in runes and ordinals. ex: NFT with 10k satoshis -> NFT with 546 satoshis. Earn 9.5k just by optimizing UTXOs)
+
+## How to start the project
+
+First, add .envs and run the development server:
+
+```bash
+npm i
+# or
+yarn install
+```
 
 ```bash
 npm run dev
@@ -18,19 +56,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Tutorial
 
-## Learn More
+1. Connect your Wallet
+   ![Wallet connection](public/wallets.png)
 
-To learn more about Next.js, take a look at the following resources:
+2. Add a new input
+   ![Select Inputs](public/select.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Select the best UTXO
+   ![Wallet connection](public/choose.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+4. Add outputs and split (or multi-transfer)
+   ![Wallet connection](public/split.png)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Test live on bitcoin: [satonomy.io](satonomy.io)
+- Follow us: [@satonomy](https://x.com/satonomy)
