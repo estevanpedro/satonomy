@@ -16,7 +16,7 @@ export const Tutorial = () => {
         <h2 className="text-[20px] font-bold mb-8">How to use </h2>
         <p className="mt-4">1. Connect your wallet</p>
         <p className="mt-4">2. Add inputs [+]</p>
-        <p className="mt-4">3. Select the best UTXO for you case</p>
+        <p className="mt-4">3. Select the best UTXO for your case</p>
         <p className="mt-4">4. Add outputs [+] </p>
         <p className="mt-4">5. Adjust fee</p>
         <p className="mt-4">6. Confirm the transaction</p>

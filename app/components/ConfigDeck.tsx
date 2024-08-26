@@ -13,8 +13,9 @@ import { configAtom } from "@/app/recoil/confgsAtom";
 import { useState } from "react";
 
 export const ConfigDeck = () => {
-  const utxos = useRecoilValue(utxoAtom);
   useMempool();
+
+  const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
   const butterfly = useRecoilValue(butterflyAtom);
   const { accounts } = useAccounts();

@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useAccounts } from "@particle-network/btc-connectkit";
 
 import { useRunes } from "@/app/hooks/useRunes";
@@ -8,7 +8,7 @@ import { useInputs } from "@/app/hooks/useInputs";
 
 import { formatNumber } from "@/app/utils/format";
 import { useOutputs } from "@/app/hooks/useOutputs";
-import { MempoolUTXO } from "@/app/recoil/utxoAtom";
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
 
 import { useOrdinals } from "@/app/hooks/useOrdinals";
@@ -21,6 +21,7 @@ export const Bowtie = () => {
   useOrdinals();
   useBitcoinPrice();
 
+  const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const { accounts } = useAccounts();
@@ -97,11 +98,161 @@ export const Bowtie = () => {
     0
   );
 
+  const bestUtxo = JSON.parse(JSON.stringify(utxos))?.sort(
+    (a: MempoolUTXO, b: MempoolUTXO) => b.value - a.value
+  )[0];
+
+  const selectNewUtxoInput = (utxo: MempoolUTXO) => {
+    setConfigs((prev: any) => ({
+      ...prev,
+      isInputDeckOpen: false,
+      feeCost: prev.feeCost ? prev.feeCost : 1000,
+    }));
+
+    const outputSum = butterfly.outputs.reduce(
+      (acc, cur) => acc + cur.value,
+      0
+    );
+
+    const inputSum =
+      butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0) + utxo.value;
+
+    setButterfly((prev: any) => ({
+      ...prev,
+      inputs: [...prev.inputs, utxo],
+    }));
+
+    if (inputSum - outputSum > 0) {
+      let outputsUpdated = [...butterfly.outputs];
+
+      outputsUpdated[butterfly.outputs.length - 1] = {
+        ...outputsUpdated[butterfly.outputs.length - 1],
+        value:
+          inputSum -
+          configs.feeCost -
+          outputSum -
+          configs.feeCost +
+          (inputSum - utxo.value),
+      };
+
+      setButterfly((prev) => ({
+        ...prev,
+        outputs: [...outputsUpdated],
+      }));
+    }
+  };
+
+  const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0);
+  const outputValues =
+    butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) +
+    configs.feeCost;
+
+  const difference = inputValues - outputValues;
+  const isConfirmDisabled =
+    difference !== 0 || outputValues - configs.feeCost < 0;
+
+  const usersOutputs = butterfly.outputs.filter((o) => o.address === account);
+  const isTransfer = usersOutputs.length < butterfly.outputs.length;
+  const isSplit = usersOutputs.length === butterfly.outputs.length;
+
+  const confirmTooltip = utxos?.length
+    ? isConfirmDisabled
+      ? difference > 0 || outputValues < 0
+        ? `Adjust the fee or outputs. UTXO balance is ${formatNumber(
+            inputValues - outputValues,
+            0,
+            0,
+            false,
+            false
+          )} sats, but should be 0.`
+        : `Add more inputs ${
+            outputValues ? "or change output" : ""
+          }. UTXO balance is ${formatNumber(
+            inputValues - outputValues,
+            0,
+            0,
+            false,
+            false
+          )} sats, but should be 0.`
+      : "Create PSBT ans sign"
+    : "No UTXOs";
+
   return (
     <>
-      <div className="flex mb-2 text-[12px] font-bolds justify-end ">
-        <div className="h-60 min-w-52 rounded-xl flex flex-col gap-3 items-center justify-center opacity-50 font-medium border bg-zinc-950">
-          Input Total: {formatNumber(inputTotalBtc)} BTC
+      <div className="flex mb-2 text-[12px] font-bolds justify-end relative">
+        <div className="h-60 min-w-52 max-w-52 p-3 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300">
+          <p className="font-bold text-[16px]">Tutorial</p>
+          <div>
+            {!account && (
+              <span>
+                1. Connect your bitcoin wallet to start building a transaction.{" "}
+              </span>
+            )}
+
+            {inputsCount === 0 && !configs.isInputDeckOpen && account && (
+              <span>
+                2. Add inputs to start building your transaction{" "}
+                <span onClick={onAddInput} className="cursor-pointer">
+                  [+]
+                </span>
+              </span>
+            )}
+
+            {inputsCount === 0 && configs.isInputDeckOpen && account && (
+              <span>
+                3. Choose the UTXO you wish to split or transfer. The most
+                valuable one is{" "}
+                <span
+                  onClick={() => selectNewUtxoInput(bestUtxo)}
+                  className="cursor-pointer mb-[-4px] font-bold text-white opacity-100"
+                >
+                  {formatNumber(bestUtxo?.value)} sats [+]
+                </span>
+              </span>
+            )}
+
+            {inputsCount > 0 && outputsCount === 0 && (
+              <span>
+                4. Add a new output to your transaction{" "}
+                <span
+                  onClick={onAddOutput}
+                  className="cursor-pointer font-bold"
+                >
+                  [+]
+                </span>
+              </span>
+            )}
+
+            {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
+              <div className="gap-1 flex flex-col items-start text-start">
+                <p className="mb-2">
+                  5. PSBT is <strong>ready</strong> to be signed.{" "}
+                </p>
+                <p className="font-bold">Summary</p>
+                <p>Inputs: {inputsCount}</p>
+                <p>Outputs: {outputsCount}</p>
+                <p>
+                  Type:{" "}
+                  {!isSplit &&
+                    (outputsCount > 1 && isTransfer
+                      ? "Multi Transfer"
+                      : "Transfer")}
+                  {!isTransfer &&
+                    (outputsCount > 1 && isSplit
+                      ? "Split UTXOs"
+                      : "Self Transfer")}
+                </p>
+                <p>Cost: {inputTotalBtc} BTC</p>
+              </div>
+            )}
+
+            {inputsCount !== 0 && isConfirmDisabled && outputsCount !== 0 && (
+              <span>{confirmTooltip}</span>
+            )}
+            <br />
+            <br />
+            <br />
+          </div>
         </div>
 
         <div className="h-60 w-full flex mb-2 text-[12px]  justify-end opacity-50">
