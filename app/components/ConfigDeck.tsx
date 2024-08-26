@@ -10,6 +10,7 @@ import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { useState } from "react";
 
 export const ConfigDeck = () => {
   const utxos = useRecoilValue(utxoAtom);
@@ -35,6 +36,7 @@ export const ConfigDeck = () => {
     difference !== 0 || outputValues - configs.feeCost < 0;
 
   const { provider } = useBTCProvider();
+  const [confirmed, setConfirmed] = useState(false);
 
   const onConfirm = async () => {
     try {
@@ -50,6 +52,7 @@ export const ConfigDeck = () => {
         const txId = await provider.broadcastPsbt(signed);
         toast.success(`Tx Broadcasted: ${txId}`, toastOptions);
         track("psbt-sign", { wallet: account });
+        setConfirmed(true);
       }
     } catch (error) {}
   };
@@ -78,7 +81,9 @@ export const ConfigDeck = () => {
 
   return (
     <div className={`fixed flex gap-2 ${position}`}>
-      <ToastContainer />
+      <div className="absolute">
+        <ToastContainer />
+      </div>
 
       {Boolean(utxos?.length) && configs.isInputDeckOpen && (
         <div
@@ -128,7 +133,9 @@ export const ConfigDeck = () => {
             Psbt Balance
           </div>
           {!isConfirmDisabled && (
-            <div className="flex gap-2 justify-center items-center">✅</div>
+            <div className="flex gap-2 justify-center items-center">
+              ✅ {confirmed ? " Broadcasted" : ""}
+            </div>
           )}
           {isConfirmDisabled && (
             <div className="flex gap-2 justify-center items-center">
@@ -156,7 +163,7 @@ export const ConfigDeck = () => {
             data-tooltip-content={confirmTooltip}
             data-tooltip-place="top"
             onClick={onConfirm}
-            disabled={isConfirmDisabled}
+            disabled={isConfirmDisabled || confirmed}
             className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center ${
               isConfirmDisabled
                 ? "opacity-50 cursor-not-allowed"
