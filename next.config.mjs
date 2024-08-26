@@ -6,12 +6,14 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["ordinals.com", "api.runes.land"],
-  },
-  build: {
-    env: {
-      NEXT_PUBLIC_TINY_SECP256K1_WASM_PATH: "/secp256k1.wasm",
-    },
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ordinals.com",
+        port: "",
+        pathname: "/content/**",
+      },
+    ],
   },
   webpack(config) {
     // Grab the existing rule that handles SVG imports
