@@ -10,6 +10,11 @@ import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 
+export const UtxoDeck = () => {
+  const utxos = useRecoilValue(utxoAtom);
+  return Boolean(utxos?.length) ? <CardCarousel /> : null;
+};
+
 export const CardCarousel = () => {
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
@@ -91,8 +96,6 @@ export const CardCarousel = () => {
       }));
     }
   };
-
-  if (!utxos!.length) return null;
 
   return (
     <div

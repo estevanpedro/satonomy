@@ -14,10 +14,13 @@ import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
 import { useOrdinals } from "@/app/hooks/useOrdinals";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 
 export const Bowtie = () => {
   useRunes();
   useOrdinals();
+  useBitcoinPrice();
+
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const { accounts } = useAccounts();
