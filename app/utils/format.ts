@@ -5,7 +5,7 @@ export function formatAddress(address: string): string {
 export function formatNumber(
   num: number = 0,
   minimumFractionDigits: number = 0,
-  maximumFractionDigits: number = 8,
+  maximumFractionDigits: number = 2,
   enforceTwoDecimals: boolean = false,
   handleZeros: boolean = false
 ): string {
