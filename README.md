@@ -1,46 +1,45 @@
 # Satonomy - Effortless Bitcoin Asset Management
 
-Visually create UTXOs and PSBTs. Add custom scripts and automate transactions for Bitcoin, Runes and Ordinals. Use non-custodial wallets like XVerse, Unisat, Magic Eden, OKX and more.
+Visually create UTXOs and PSBTs with ease. Customize scripts and automate transactions for Bitcoin, Runes, and Ordinals. Seamlessly integrate with non-custodial wallets like XVerse, Unisat, Magic Eden, OKX, and more.
 
-- Demo: [satonomy.io](satonomy.io)
-- Docs: [gitbook.com](satonomy.io)
-- Twitter: [@satonomy](https://x.com/satonomy)
+- **Demo**: [satonomy.io](https://satonomy.io)
+- **Docs**: [satonomy.gitbook.com](https://satonomy.io)
+- **Twitter**: [@satonomy](https://x.com/satonomy)
 
 ![Satonomy Dashboard - PSBT Creation](public/satonomy.png)
 
-## Main Tech
+## Main Technologies
 
-Using NextJS App Route with Typescript, server-side functions to hide envs, client-server requests wallet management, connection with L2 using particle-network and btc-connectkit
+Built with Next.js App Router and TypeScript, utilizing server-side functions for environment security, integration with seven Bitcoin wallets, and Layer 2 connectivity via Particle Network and BTC ConnectKit.
 
-- `bitcoinjs-lib` [(check psbt code)](https://github.com/satonomy/utxo-builder/blob/main/app/services/psbtService.ts)
-- `@particle-network/btc-connectkit` [(bitcoin wallet provider)](https://github.com/satonomy/utxo-builder/blob/main/app/providers/ConnectProvider.tsx)
-- `runelib` [(runestone)](https://github.com/satonomy/utxo-builder/blob/main/app/services/runesService.ts#L8)
-- `mempool` [(utxo fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L47)
-- `unisat` [(runes balance fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
-- `magiceden` [(runes utxo fetch)](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
+- **BitcoinJS Library**: [`bitcoinjs-lib`](https://github.com/satonomy/utxo-builder/blob/main/app/services/psbtService.ts)
+- **Bitcoin Wallet Provider**: [`@particle-network/btc-connectkit`](https://github.com/satonomy/utxo-builder/blob/main/app/providers/ConnectProvider.tsx)
+- **Runestone**: [`runelib`](https://github.com/satonomy/utxo-builder/blob/main/app/services/runesService.ts#L8)
+- **UTXO Fetcher**: [`mempool`](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L47)
+- **Runes Balance Fetcher**: [`unisat`](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
+- **Runes UTXO Fetcher**: [`magiceden`](https://github.com/satonomy/utxo-builder/blob/main/app/services/utxoServices.ts#L64)
 
-### Current features
+### Current Features
 
-- `transfer` (btc)
-- `split` (btc)
-- `merge` (btc)
-- `utxo visualizer` (ordinals, runes and bitcoin)
+- **Transfer** (BTC)
+- **Split** (BTC)
+- **Merge** (BTC)
+- **UTXO Visualizer** (Ordinals, Runes, and Bitcoin)
 
-### Income features
+### Upcoming Features
 
-- `transfer`, `split` and `merge` (runes, ordinals, atomical and others utxo assets)
-- `bitcoin scripts` (custom pre-built redeemScripts, multi-sig, time locks, etc)
-- `utxo optimizer` (earn free money by removing unnecessary satoshis locked in runes and ordinals. ex: NFT with 10k satoshis -> NFT with 546 satoshis. Earn 9.5k just by optimizing UTXOs)
+- **Transfer, Split, and Merge** for Runes, Ordinals, Atomicals, and other UTXO assets
+- **Bitcoin Scripts**: Custom pre-built `redeemScripts`, multi-sig, time locks, and more
+- **UTXO Optimizer**: Earn by removing unnecessary Satoshis locked in Runes and Ordinals (e.g., optimize a 10k Satoshi NFT to 546 Satoshis, earning 9.5k Satoshis)
 
-## How to start the project
+## Getting Started
 
-First, add .envs and run the development server:
+To start the project, add your `.env` variables and run the development server:
 
-```bash
+````bash
 npm i
 # or
 yarn install
-```
 
 ```bash
 npm run dev
@@ -50,7 +49,7 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
+````
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -64,11 +63,15 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 2. Add a new input
    ![Select Inputs](public/select.png)
 
-3. Select the best UTXO
+3. Select the Best UTXO
    ![Wallet connection](public/choose.png)
 
-4. Add outputs and split (or multi-transfer)
+4. Add Outputs and Split (or Multi-Transfer)
    ![Wallet connection](public/split.png)
 
 - Test live on bitcoin: [satonomy.io](satonomy.io)
 - Follow us: [@satonomy](https://x.com/satonomy)
+
+#### Notes
+
+This project was created by [@estevanpwr](https://x.com/estevanpwr), [@CryptoShira](https://x.com/CryptoShira) and [@0xtoony](https://x.com/0xtoony) for the Bitcoin Hackathon Olympics. Our team is committed to continuing development beyond the competition.
