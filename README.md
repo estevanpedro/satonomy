@@ -10,7 +10,7 @@ Visually create UTXOs and PSBTs with ease. Customize scripts and automate transa
 
 ## Main Technologies
 
-Built with Next.js App Router and TypeScript, utilizing server-side functions for environment security, integration with seven Bitcoin wallets, and Layer 2 connectivity via Particle Network and BTC ConnectKit.
+Built with Next.js App Router and TypeScript, utilizing server-side functions for environment security, integration with seven Bitcoin Layer 1 wallets, and connectivity via Particle Network and BTC ConnectKit.
 
 - **BitcoinJS Library**: [`bitcoinjs-lib`](https://github.com/satonomy/utxo-builder/blob/main/app/services/psbtService.ts)
 - **Bitcoin Wallet Provider**: [`@particle-network/btc-connectkit`](https://github.com/satonomy/utxo-builder/blob/main/app/providers/ConnectProvider.tsx)
