@@ -166,14 +166,14 @@ export const Bowtie = () => {
             false
           )} sats, but should be 0.`
         : `Add more inputs ${
-            outputValues ? "or change output" : ""
+            outputValues ? "or adjust the output" : ""
           }. UTXO balance is ${formatNumber(
             inputValues - outputValues,
             0,
             0,
             false,
             false
-          )} sats, but should be 0.`
+          )} sats; it should be 0.`
       : "Create PSBT and sign"
     : "No UTXOs";
 
