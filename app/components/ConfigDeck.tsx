@@ -67,7 +67,7 @@ export const ConfigDeck = () => {
             0,
             false,
             false
-          )} sats, but should be 0.`
+          )} sats; it should be 0.`
         : `Add more inputs ${
             outputValues ? "or adjust the output" : ""
           }. UTXO balance is ${formatNumber(
