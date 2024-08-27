@@ -174,7 +174,7 @@ export const Bowtie = () => {
             false,
             false
           )} sats, but should be 0.`
-      : "Create PSBT ans sign"
+      : "Create PSBT and sign"
     : "No UTXOs";
 
   return (
