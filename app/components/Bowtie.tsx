@@ -224,7 +224,7 @@ export const Bowtie = () => {
             )}
 
             {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
-              <div className="gap-1 flex flex-col items-start text-start">
+              <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
                 <p className="mb-2">
                   5. PSBT is <strong>ready</strong> to be signed.{" "}
                 </p>
@@ -242,7 +242,9 @@ export const Bowtie = () => {
                       ? "Split UTXOs"
                       : "Self Transfer")}
                 </p>
-                <p>Cost: {inputTotalBtc} BTC</p>
+                <p>
+                  Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)} BTC
+                </p>
               </div>
             )}
 
