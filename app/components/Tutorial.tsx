@@ -23,7 +23,7 @@ export const Tutorial = () => {
 
         <br />
         <Link
-          href={"https://x.com/satonomy"}
+          href={"https://satonomy.gitbook.io/satonomy"}
           className="text-[12px] font-normal text-zinc-500 hover:text-zinc-300 flex gap-2"
         >
           <Image src="/gitbook.svg" alt="Help" width={16} height={16} />

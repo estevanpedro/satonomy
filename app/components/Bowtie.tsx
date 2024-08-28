@@ -226,7 +226,7 @@ export const Bowtie = () => {
             {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
               <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
                 <p className="mb-2">
-                  5. PSBT is <strong>ready</strong> to be signed.{" "}
+                  6. PSBT is <strong>ready</strong> to be signed. ✅
                 </p>
                 <p className="font-bold">Summary</p>
                 <p>Inputs: {inputsCount}</p>

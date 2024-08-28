@@ -3,7 +3,7 @@
 Visually create UTXOs and PSBTs with ease. Customize scripts and automate transactions for Bitcoin, Runes, and Ordinals. Seamlessly integrate with non-custodial wallets like XVerse, Unisat, Magic Eden, OKX, and more.
 
 - **Demo**: [satonomy.io](https://satonomy.io)
-- **Docs**: [satonomy.gitbook.com](https://satonomy.io)
+- **Docs**: [satonomy.gitbook.io](https://satonomy.gitbook.io/satonomy)
 - **Twitter**: [@satonomy](https://x.com/satonomy)
 
 ![Satonomy Dashboard - PSBT Creation](public/satonomy.png)
