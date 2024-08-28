@@ -15,8 +15,7 @@ import { useOrdinals } from "@/app/hooks/useOrdinals";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
-import { ConfigDeck } from "@/app/components/ConfigDeck";
-import { UtxoDeck } from "@/app/components/CardsDeck";
+import { Tooltip } from "react-tooltip";
 
 export const Bowtie = () => {
   useRunes();
@@ -260,9 +259,14 @@ export const Bowtie = () => {
           </div>
         </div>
 
-        <div className="h-60 w-full flex mb-2 text-[12px]  justify-end relative">
+        <div className="h-60 w-full flex mb-2 text-[12px] justify-end relative">
           <div className="absolute -top-6 right-0 opacity-50">Outputs</div>
-          <div className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950">
+          <div
+            className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 "
+            data-tooltip-id={"fee-tool"}
+            data-tooltip-content={"Type the total fee cost in sats"}
+            data-tooltip-place="right"
+          >
             {Boolean(configs.feeRate) && <div>{configs.feeRate} sat/vb</div>}
 
             <Image
@@ -287,6 +291,11 @@ export const Bowtie = () => {
               />{" "}
               <div className="mt-[-15px] text-[12px]">sats</div>
             </div>
+            <Tooltip
+              id={"fee-tool"}
+              className="max-w-[150px] bg-gray-600"
+              style={{ backgroundColor: "#292929", color: "white" }}
+            />
             <div>Network Fee</div>
           </div>
         </div>

@@ -415,12 +415,18 @@ export const CardOutput = ({
         />{" "}
         <div className="mt-[-15px] text-[12px]">sats</div>
       </div>
-      <div>
-        $
-        {formatNumber(
-          ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice
-        )}
-      </div>
+      {Boolean(butterfly.outputs[index].value) && (
+        <div>
+          $
+          {formatNumber(
+            ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice,
+            0,
+            8,
+            false,
+            true
+          )}
+        </div>
+      )}
     </div>
   );
 };
