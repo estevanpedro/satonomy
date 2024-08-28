@@ -33,7 +33,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           },
         },
         walletOptions: {
-          visible: true,
+          visible: false,
         },
       }}
       connectors={[

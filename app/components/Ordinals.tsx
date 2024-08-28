@@ -42,12 +42,12 @@ export const OrdinalRendering = ({ utxo }: { utxo: MempoolUTXO }) => {
   if (contentType?.includes("image")) {
     return (
       <Image
-        style={{ imageRendering: "pixelated" }}
         src={`https://ordinals.com/content/${ordinal?.inscriptionId}`}
         width={140}
         height={140}
         alt="Ordinal Image"
         unoptimized
+        quality={100}
       />
     );
   }

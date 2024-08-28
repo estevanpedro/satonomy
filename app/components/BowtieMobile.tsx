@@ -1,28 +1,24 @@
 import React from "react";
-import Image from "next/image";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useAccounts } from "@particle-network/btc-connectkit";
-
-import { useRunes } from "@/app/hooks/useRunes";
-import { useInputs } from "@/app/hooks/useInputs";
 
 import { formatNumber } from "@/app/utils/format";
 import { useOutputs } from "@/app/hooks/useOutputs";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
-import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
+import {
+  CardMobile,
+  CardOutput,
+  CardOutputMobile,
+  EmptyCardMobile,
+} from "@/app/components/Card";
 
-import { useOrdinals } from "@/app/hooks/useOrdinals";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
-import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
-import { ConfigDeck } from "@/app/components/ConfigDeck";
-import { UtxoDeck } from "@/app/components/CardsDeck";
+import { useInputsMobile } from "@/app/hooks/useInputsMobile";
+import { useOutputsMobile } from "@/app/hooks/useOutputsMobile";
+import Image from "next/image";
 
-export const Bowtie = () => {
-  // useRunes();
-  // useOrdinals();
-  // useBitcoinPrice();
-
+export const BowtieMobile = () => {
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
@@ -32,19 +28,19 @@ export const Bowtie = () => {
   const inputsCount = butterfly.inputs.length;
   const outputsCount = butterfly.outputs.length;
 
-  const height = 320;
-  const inputHeight = 320 * inputsCount;
-  const outputHeight = 320 * outputsCount;
+  const height = 116;
+  const inputHeight = 116 * inputsCount;
+  const outputHeight = 116 * outputsCount;
   const totalHeight = Math.max(inputHeight, outputHeight);
 
-  const inputPaths = useInputs({
+  const inputPaths = useInputsMobile({
     butterfly,
     totalHeight: inputHeight,
     inputsCount,
     height,
   });
 
-  const outputPaths = useOutputs({
+  const outputPaths = useOutputsMobile({
     butterfly,
     totalHeight: outputHeight,
     outputsCount,
@@ -181,96 +177,11 @@ export const Bowtie = () => {
 
   return (
     <>
-      <div className="mt-24 mb-2 text-[12px] font-bolds justify-end relative hidden sm:flex">
-        <div className="h-60 min-w-52 max-w-52 p-3 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300">
-          <p className="font-bold text-[16px]">Tutorial</p>
-          <div>
-            {!account && (
-              <span>
-                1. Connect your bitcoin wallet to start building a transaction.{" "}
-              </span>
-            )}
-
-            {inputsCount === 0 && !configs.isInputDeckOpen && account && (
-              <span>
-                2. Add inputs to start building your transaction{" "}
-                <span onClick={onAddInput} className="cursor-pointer">
-                  [+]
-                </span>
-              </span>
-            )}
-
-            {inputsCount === 0 && configs.isInputDeckOpen && account && (
-              <span>
-                3. Choose the UTXO you wish to split or transfer. The most
-                valuable one is{" "}
-                <span
-                  onClick={() => selectNewUtxoInput(bestUtxo)}
-                  className="cursor-pointer mb-[-4px] font-bold text-white opacity-100"
-                >
-                  {formatNumber(bestUtxo?.value)} sats [+]
-                </span>
-              </span>
-            )}
-
-            {inputsCount > 0 && outputsCount === 0 && (
-              <span>
-                4. Add a new output to your transaction{" "}
-                <span
-                  onClick={onAddOutput}
-                  className="cursor-pointer font-bold"
-                >
-                  [+]
-                </span>
-              </span>
-            )}
-
-            {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
-              <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
-                <p className="mb-2">
-                  6. PSBT is <strong>ready</strong> to be signed.
-                </p>
-                <p className="font-bold">Summary</p>
-                <p>Inputs: {inputsCount}</p>
-                <p>Outputs: {outputsCount}</p>
-                <p>
-                  Type:{" "}
-                  {!isSplit &&
-                    (outputsCount > 1 && isTransfer
-                      ? "Multi Transfer"
-                      : "Transfer")}
-                  {!isTransfer &&
-                    (outputsCount > 1 && isSplit
-                      ? "Split UTXOs"
-                      : "Self Transfer")}
-                </p>
-                <p>
-                  Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)} BTC
-                </p>
-              </div>
-            )}
-
-            {inputsCount !== 0 && isConfirmDisabled && outputsCount !== 0 && (
-              <span>{confirmTooltip}</span>
-            )}
-            <br />
-            <br />
-            <br />
-          </div>
-        </div>
-
-        <div className="h-60 w-full flex mb-2 text-[12px]  justify-end opacity-50">
-          <div className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950">
-            {Boolean(configs.feeRate) && <div>{configs.feeRate} sat/vb</div>}
-
-            <Image
-              className="w-14 h-14"
-              src="/bitcoin.png"
-              alt="Bitcoin"
-              width={54}
-              height={54}
-            />
-            <div className="text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center ">
+      <div className=" flex sm:hidden px-8 mb-20 w-[360px] mt-36 relative">
+        <div className="flex mb-2 text-[12px]  justify-end opacity-50 absolute right-8 -top-[76px]  flex-col">
+          <div className="text-[10px] pl-2">Network Fee</div>
+          <div className="  rounded-xl flex flex-col  items-center justify-center border bg-zinc-950 h-[40px] min-w-[100px] w-[100px]">
+            <div className="mt-1 text-[12px] text-center text-white font-medium whitespace-nowrap flex justify-center items-center ">
               <input
                 type="number"
                 value={configs.feeCost}
@@ -281,16 +192,13 @@ export const Bowtie = () => {
                   }));
                 }}
                 placeholder="0"
-                className="bg-transparent text-[20px] border text-center outline-none border-transparent w-20 h-12 ml-[16px]"
+                className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mt-[-8px]" //
               />{" "}
-              <div className="mt-[-15px] text-[12px]">sats</div>
+              <div className=" text-[10px] pl-1 mt-[-8px]">sats</div>
             </div>
-            <div>Network Fee</div>
           </div>
         </div>
-      </div>
 
-      <div className=" hidden sm:flex">
         <div className="w-full">
           <div
             className={`relative ${
@@ -299,16 +207,16 @@ export const Bowtie = () => {
           >
             {butterfly.inputs.map((utxo, i) => (
               <div
-                className="mb-8 h-80 min-h-[320px] flex w-full relative z-2"
-                key={`input-${i}`}
+                className="mb-8 flex w-full relative z-2"
+                key={`input-${i}-mobile`}
               >
-                <Card utxo={utxo} onRemove={onRemoveInput} />
+                <CardMobile utxo={utxo} onRemove={onRemoveInput} />
               </div>
             ))}
             {inputPaths}
           </div>
 
-          <EmptyCard onClick={onAddInput} />
+          <EmptyCardMobile onClick={onAddInput} />
         </div>
 
         <div className={`w-full flex flex-col`}>
@@ -321,14 +229,14 @@ export const Bowtie = () => {
 
             {butterfly.outputs.map((_, i) => (
               <div
-                key={`output-${i}`}
-                className="mb-8 h-80 flex w-full relative z-2 justify-end"
+                key={`output-${i}--mobile`}
+                className="mb-8 flex w-full relative z-2 justify-end"
               >
-                <CardOutput index={i} onRemove={onRemoveOutput} />
+                <CardOutputMobile index={i} onRemove={onRemoveOutput} />
               </div>
             ))}
           </div>
-          <EmptyCard onClick={onAddOutput} className="self-end" />
+          <EmptyCardMobile onClick={onAddOutput} className="self-end" />
         </div>
       </div>
     </>

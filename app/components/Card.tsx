@@ -8,7 +8,7 @@ import { MempoolUTXO } from "@/app/recoil/utxoAtom";
 import { formatAddress, formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { OrdinalRendering } from "@/app/components/Ordinals";
 import { runesAtom } from "@/app/recoil/runesAtom";
@@ -45,6 +45,23 @@ export const EmptyCard = ({
     <div
       onClick={onClick}
       className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950`}
+    >
+      +
+    </div>
+  );
+};
+
+export const EmptyCardMobile = ({
+  onClick,
+  className,
+}: {
+  onClick?: () => void;
+  className?: string;
+}) => {
+  return (
+    <div
+      onClick={onClick}
+      className={`${className} w-[100px] h-[100px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950`}
     >
       +
     </div>
@@ -92,6 +109,41 @@ export const Card = ({
         {formatNumber(utxo?.value, 0, 0, false, false)} sats
       </div>
       <div>${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}</div>
+    </div>
+  );
+};
+
+export const CardMobile = ({
+  onRemove,
+  utxo,
+}: {
+  onRemove?: (output: MempoolUTXO) => void;
+  utxo: MempoolUTXO;
+}) => {
+  const btcUsdPrice = useRecoilValue(btcPriceAtom);
+  const { accounts } = useAccounts();
+  const account = accounts[0];
+  return (
+    <div className="relative w-[100px] h-[100px] max-h-[100px]  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col items-center justify-center pt-2">
+      <button
+        className="absolute top-0 left-[-32px] opacity-30 hover:opacity-100"
+        onClick={() => {
+          onRemove?.(utxo);
+        }}
+      >
+        🗑️
+      </button>
+      <div className="absolute top-[-3px] right-[-3px]">
+        <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
+      </div>
+      <Image src="/bitcoin.png" alt="Bitcoin" width={16} height={16} />
+
+      <div className="text-center text-white text-[12px] font-medium">
+        {formatNumber(utxo?.value, 0, 0, false, false)} sats
+      </div>
+      <div className="text-[12px]">
+        ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
+      </div>
     </div>
   );
 };
@@ -346,6 +398,117 @@ export const CardOutput = ({
         <div className="mt-[-15px] text-[12px]">sats</div>
       </div>
       <div>
+        $
+        {formatNumber(
+          ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const CardOutputMobile = ({
+  onRemove,
+  index,
+}: {
+  onRemove: (index: number) => void;
+  index: number;
+}) => {
+  const btcUsdPrice = useRecoilValue(btcPriceAtom);
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
+
+  const [addressInputFocused, setAddressInputFocused] = useState(false);
+  const onInputFocus = () => {
+    setAddressInputFocused(true);
+    document.getElementById("address")?.focus();
+  };
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!addressInputFocused) {
+        document.removeEventListener("click", handleClick);
+      }
+      if (e.target instanceof HTMLElement && !e.target.closest("#address")) {
+        setAddressInputFocused(false);
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [addressInputFocused]);
+
+  return (
+    <div className="w-[100px] h-[100px] bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col items-center justify-center">
+      <div className="absolute top-0 right-0 pointer-events-none ">
+        <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
+      </div>
+      <div className="absolute  right-[-28px] flex flex-col gap-4 justify-center items-end">
+        <button
+          className=" opacity-30 hover:opacity-100"
+          onClick={() => {
+            onRemove?.(index);
+          }}
+        >
+          🗑️
+        </button>
+
+        {!addressInputFocused && (
+          <div
+            onClick={onInputFocus}
+            className="my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 cursor-pointer opacity-50 hover:opacity-100"
+          >
+            📝
+          </div>
+        )}
+
+        <div className="opacity-30 hover:opacity-100 relative">
+          <input
+            id="address"
+            placeholder="Address"
+            value={butterfly.outputs[index].address}
+            onChange={(e) => {
+              setButterfly((prev) => {
+                const outputs = JSON.parse(JSON.stringify(prev.outputs));
+                outputs[index].address = e.target.value;
+                return { ...prev, outputs };
+              });
+            }}
+            onFocus={() => setAddressInputFocused(true)}
+            onBlur={() => setAddressInputFocused(false)}
+            className={`my-[-4px] py-1 bg-transparent w-[110px] text-[14px] text-end p-0 max-w-[300px] min-w-[300px]  transition-all duration-300 focus:ring-0 border-[#82828280]  border-2 rounded-[4px] outline-none bg-gradient-to-b from-[#29292950] to-[#292929] focus:px-2 ${
+              addressInputFocused ? "flex" : "hidden"
+            }`}
+          />
+        </div>
+      </div>
+      <Image
+        src="/bitcoin.png"
+        alt="Bitcoin"
+        width={16}
+        height={16}
+        className="mb-[-14px] pointer-events-none"
+      />
+
+      <div className="mt-1 text-[12px] text-center text-white font-medium whitespace-nowrap flex justify-center items-center ">
+        <input
+          value={butterfly.outputs[index].value}
+          onChange={(e) => {
+            setButterfly((prev) => {
+              const outputs = JSON.parse(JSON.stringify(prev.outputs));
+              outputs[index].value = Number(e.target.value);
+              return { ...prev, outputs };
+            });
+          }}
+          placeholder="0"
+          className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mb-[-10px] ml-[-16px]" //
+        />{" "}
+        <div className=" text-[10px] pl-1 mb-[-10px]">sats</div>
+      </div>
+
+      <div className="text-[12px]">
         $
         {formatNumber(
           ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice
