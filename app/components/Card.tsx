@@ -48,14 +48,13 @@ export const EmptyCard = ({
       >
         {className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
-            <select className="outline-none" value="Transfer">
+            <select className="outline-none w-[110px]" value="Transfer">
               <option value="Transfer">Transfer</option>
-              <option disabled>Swap</option>
-              <option disabled>Stake</option>
-              <option disabled>Time Lock</option>
-              <option disabled>Recursive</option>
-              <option disabled>Bridge</option>
-              <option disabled>redeemScript</option>
+              <option disabled>Bridge L2</option>
+              <option disabled>Recursive Mint</option>
+              <option disabled>Add redeemScript</option>
+              <option disabled>Swap with Saturn</option>
+              <option disabled>Stake with Arch</option>
             </select>
           </div>
         )}
