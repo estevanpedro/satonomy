@@ -42,12 +42,27 @@ export const EmptyCard = ({
   className?: string;
 }) => {
   return (
-    <div
-      onClick={onClick}
-      className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950`}
-    >
-      +
-    </div>
+    <>
+      <div
+        className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative`}
+      >
+        {className && (
+          <div className="absolute top-0 -right-[110px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100">
+            <select className="outline-none">
+              <option>Transfer</option>
+              <option disabled>Swap</option>
+              <option disabled>Stake</option>
+            </select>
+          </div>
+        )}
+        <div
+          onClick={onClick}
+          className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative`}
+        >
+          +
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -441,11 +456,11 @@ export const CardOutputMobile = ({
   }, [addressInputFocused]);
 
   return (
-    <div className="w-[100px] h-[100px] bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col items-center justify-center">
+    <div className="w-[100px] h-[100px] bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col items-center justify-center pt-2">
       <div className="absolute top-0 right-0 pointer-events-none ">
         <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
       </div>
-      <div className="absolute  right-[-28px] flex flex-col gap-4 justify-center items-end">
+      <div className="absolute top-0  right-[-28px] flex flex-col gap-4 justify-center items-end">
         <button
           className=" opacity-30 hover:opacity-100"
           onClick={() => {
@@ -494,7 +509,7 @@ export const CardOutputMobile = ({
 
       <div className="mt-1 text-[12px] text-center text-white font-medium whitespace-nowrap flex justify-center items-center ">
         <input
-          value={butterfly.outputs[index].value}
+          value={butterfly.outputs[index].value || ""}
           onChange={(e) => {
             setButterfly((prev) => {
               const outputs = JSON.parse(JSON.stringify(prev.outputs));
@@ -503,17 +518,23 @@ export const CardOutputMobile = ({
             });
           }}
           placeholder="0"
-          className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mb-[-10px] ml-[-16px]" //
+          className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mb-[-10px] ml-[-19px]" //
         />{" "}
         <div className=" text-[10px] pl-1 mb-[-10px]">sats</div>
       </div>
 
-      <div className="text-[12px]">
-        $
-        {formatNumber(
-          ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice
-        )}
-      </div>
+      {Boolean(btcUsdPrice) && Boolean(butterfly.outputs[index].value) ? (
+        <div className="text-[12px]">
+          $
+          {formatNumber(
+            ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice,
+            0,
+            8,
+            false,
+            true
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };

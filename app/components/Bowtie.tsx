@@ -182,7 +182,8 @@ export const Bowtie = () => {
   return (
     <>
       <div className="mt-24 mb-2 text-[12px] font-bolds justify-end relative hidden sm:flex">
-        <div className="h-60 min-w-52 max-w-52 p-3 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300">
+        <div className="h-60 min-w-52 max-w-52 p-3 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
+          <div className="absolute -top-6 left-0 opacity-50">Inputs</div>
           <p className="font-bold text-[16px]">Tutorial</p>
           <div>
             {!account && (
@@ -259,7 +260,8 @@ export const Bowtie = () => {
           </div>
         </div>
 
-        <div className="h-60 w-full flex mb-2 text-[12px]  justify-end opacity-50">
+        <div className="h-60 w-full flex mb-2 text-[12px]  justify-end relative">
+          <div className="absolute -top-6 right-0 opacity-50">Outputs</div>
           <div className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950">
             {Boolean(configs.feeRate) && <div>{configs.feeRate} sat/vb</div>}
 

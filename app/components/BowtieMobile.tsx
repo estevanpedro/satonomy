@@ -17,6 +17,7 @@ import { configAtom } from "@/app/recoil/confgsAtom";
 import { useInputsMobile } from "@/app/hooks/useInputsMobile";
 import { useOutputsMobile } from "@/app/hooks/useOutputsMobile";
 import Image from "next/image";
+import { AddOutput } from "@/app/components/AddOutput";
 
 export const BowtieMobile = () => {
   const utxos = useRecoilValue(utxoAtom);
@@ -178,6 +179,12 @@ export const BowtieMobile = () => {
   return (
     <>
       <div className=" flex sm:hidden px-8 mb-20 w-[360px] mt-36 relative">
+        <div className="absolute -top-24 left-0 opacity-50 text-[12px]">
+          Inputs
+        </div>
+        <div className="absolute -top-24 right-0 opacity-50 text-[12px]">
+          Outputs
+        </div>
         <div className="flex mb-2 text-[12px]  justify-end opacity-50 absolute right-8 -top-[76px]  flex-col">
           <div className="text-[10px] pl-2">Network Fee</div>
           <div className="  rounded-xl flex flex-col  items-center justify-center border bg-zinc-950 h-[40px] min-w-[100px] w-[100px]">
@@ -225,7 +232,7 @@ export const BowtieMobile = () => {
               totalHeight ? `h-[${totalHeight + 1}px]` : ""
             } flex flex-col w-full`}
           >
-            {outputPaths}
+            {configs.feeCost > 0 ? outputPaths : null}
 
             {butterfly.outputs.map((_, i) => (
               <div
@@ -236,7 +243,7 @@ export const BowtieMobile = () => {
               </div>
             ))}
           </div>
-          <EmptyCardMobile onClick={onAddOutput} className="self-end" />
+          <AddOutput onClick={onAddOutput} />
         </div>
       </div>
     </>
