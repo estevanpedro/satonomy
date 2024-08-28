@@ -186,7 +186,7 @@ export const BowtieMobile = () => {
           Outputs
         </div>
         <div className="flex mb-2 text-[12px]  justify-end opacity-50 absolute right-8 -top-[76px]  flex-col">
-          <div className="text-[10px] pl-2">Network Fee</div>
+          <div className="text-[10px] pl-[22px] mb-[2px]">Network Fee</div>
           <div className="  rounded-xl flex flex-col  items-center justify-center border bg-zinc-950 h-[40px] min-w-[100px] w-[100px]">
             <div className="mt-1 text-[12px] text-center text-white font-medium whitespace-nowrap flex justify-center items-center ">
               <input
