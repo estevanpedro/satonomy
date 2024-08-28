@@ -19,9 +19,9 @@ import { ConfigDeck } from "@/app/components/ConfigDeck";
 import { UtxoDeck } from "@/app/components/CardsDeck";
 
 export const Bowtie = () => {
-  // useRunes();
-  // useOrdinals();
-  // useBitcoinPrice();
+  useRunes();
+  useOrdinals();
+  useBitcoinPrice();
 
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
