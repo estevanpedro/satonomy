@@ -21,6 +21,11 @@ export const Tutorial = () => {
         <p className="mt-4">5. Adjust fee</p>
         <p className="mt-4">6. Confirm the transaction</p>
 
+        <p className="mt-4 text-zinc-500 text-[12px]">
+          Notes: some UTXO assets may not be supported yet. Always double-check
+          before signing the transfer in your wallet.
+        </p>
+
         <br />
         <Link
           href={"https://satonomy.gitbook.io/satonomy"}
