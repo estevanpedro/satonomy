@@ -67,3 +67,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  background: radial-gradient(
+      circle at center calc(100% + 200px),
+      rgba(43, 43, 43, 1) 0%,
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(19, 19, 19, 0.5) 0%,
+      rgba(0, 0, 0, 1) 5%,
+      rgba(0, 0, 0, 1) 100%
+    );
+}
