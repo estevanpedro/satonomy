@@ -120,7 +120,7 @@ export const JsonContent: React.FC<TextContentProps> = ({ url }) => {
 
   return (
     <pre className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden whitespace-pre-wrap">
-      {text.length > 80 ? `${text.slice(0, 80)}...` : text}
+      {text.length > 120 ? `${text.slice(0, 120)}...` : text}
     </pre>
   );
 };
