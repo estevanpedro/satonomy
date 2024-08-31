@@ -51,7 +51,7 @@ export const EmptyCard = ({
             <select className="outline-none w-[110px]" value="Transfer">
               <option value="Transfer">Transfer</option>
               <option disabled>Bridge L2</option>
-              <option disabled>Recursive Mint</option>
+              <option disabled>Recursive</option>
               <option disabled>Add redeemScript</option>
               <option disabled>Swap with Saturn</option>
               <option disabled>Stake with Arch</option>
