@@ -1,5 +1,6 @@
 import { RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom";
 import { MempoolUTXO } from "@/app/recoil/utxoAtom";
+import { networks, Psbt, Transaction } from "bitcoinjs-lib";
 
 const mempoolURL = "https://mempool.space/api";
 const unisatURL = "https://open-api.unisat.io/v1/indexer/address";
@@ -8,6 +9,32 @@ const meURL = "https://api-mainnet.magiceden.dev/v2/ord/btc/runes/utxos/wallet";
 const nextRevalidate = { next: { revalidate: 3600 } };
 
 export const utxoServices = {
+  broadcast: async (psbtHexSigned: string) => {
+    try {
+      const userPSBT = Psbt.fromHex(psbtHexSigned, {
+        network: networks.bitcoin,
+      });
+
+      const tx = userPSBT.extractTransaction();
+      const txHex = tx.toHex();
+      const btcTx = Transaction.fromHex(txHex);
+
+      const btcTxHex = btcTx.toHex();
+      const res = await fetch(`${mempoolURL}/tx`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: btcTxHex,
+      });
+      const txid = await res.text();
+
+      return txid as string;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
   fetchTransactionHex: async (txId: string): Promise<string> => {
     try {
       const res = await fetch(`${mempoolURL}/tx/${txId}/hex`, nextRevalidate);
@@ -21,7 +48,7 @@ export const utxoServices = {
   getUtxos: async (address: string) => {
     const mempool = await fetch(`${mempoolURL}/address/${address}/utxo`);
     const utxos: MempoolUTXO[] = await mempool.json();
-    return utxos;
+    return utxos.filter((utxo) => utxo.status.confirmed);
   },
   getRunesBalances: async (wallet: string): Promise<RunesUtxo[]> => {
     const response = await fetch(`${unisatURL}/${wallet}/runes/balance-list`, {

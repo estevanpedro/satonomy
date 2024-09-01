@@ -1,16 +1,17 @@
-import { toast, ToastContainer } from "react-toastify";
 import { useMempool } from "@/app/hooks/useMempool";
 import { utxoAtom } from "@/app/recoil/utxoAtom";
 import Image from "next/image";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { toastOptions } from "@/app/components/Toast";
 import { Tooltip } from "react-tooltip";
-import { formatNumber } from "@/app/utils/format";
+import { formatAddress, formatNumber } from "@/app/utils/format";
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { useState } from "react";
+import { Modal } from "@/app/components/Modal";
+import Link from "next/link";
+import { psbtService } from "@/app/services/psbtService";
 
 export const ConfigDeck = () => {
   useMempool();
@@ -39,6 +40,9 @@ export const ConfigDeck = () => {
   const { provider } = useBTCProvider();
   const [confirmed, setConfirmed] = useState(false);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [txId, setTxId] = useState("");
+
   const onConfirm = async () => {
     try {
       const res = await fetch("/api/psbt", {
@@ -48,14 +52,20 @@ export const ConfigDeck = () => {
       const result = await res.json();
 
       if (result?.psbtHex) {
-        const signed = await provider.signPsbt(result.psbtHex);
-        toast.success(`Tx signed`, toastOptions);
-        const txId = await provider.broadcastPsbt(signed);
-        toast.success(`Tx Broadcasted: ${txId}`, toastOptions);
-        track("psbt-sign", { wallet: account });
-        setConfirmed(true);
+        const psbtHexSigned = await provider.signPsbt(result.psbtHex);
+        const txId = await psbtService.broadcastUserPSBT(psbtHexSigned);
+        if (txId) {
+          track("psbt-sign", { wallet: account });
+          setTxId(txId);
+          setIsOpen(true);
+          setConfirmed(true);
+        } else {
+          track("error-psbt-sign", { wallet: account });
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const confirmTooltip = utxos?.length
@@ -80,11 +90,26 @@ export const ConfigDeck = () => {
       : "Create PSBT and sign"
     : "No UTXOs";
 
+  const onClose = () => setIsOpen(false);
+
   return (
     <div className={`fixed flex gap-2 ${position}`}>
-      <div className="absolute">
-        <ToastContainer />
-      </div>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <h2 className="text-[20px] font-bold mb-8">🎉 Success</h2>
+        <p className="mt-4">Transaction signed and broadcasted</p>
+
+        <div className="mt-4 flex  w-full overflow-hidden gap-2">
+          <p>Txid: </p>
+          <Link
+            href={`https://mempool.space/tx/${txId}`}
+            className="] font-normal text-orange-400 hover:text-orange-300 flex  text-start"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {formatAddress(txId)}
+          </Link>
+        </div>
+      </Modal>
 
       {Boolean(utxos?.length) && configs.isInputDeckOpen && (
         <div

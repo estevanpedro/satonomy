@@ -30,6 +30,8 @@ export const Tutorial = () => {
         <Link
           href={"https://satonomy.gitbook.io/satonomy"}
           className="text-[12px] font-normal text-zinc-500 hover:text-zinc-300 flex gap-2"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <Image src="/gitbook.svg" alt="Help" width={16} height={16} />
           Check our docs

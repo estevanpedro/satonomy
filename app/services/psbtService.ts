@@ -5,6 +5,25 @@ import { Butterfly } from "@/app/recoil/butterflyAtom";
 import * as ecc from "@bitcoinerlab/secp256k1";
 
 export const psbtService = {
+  broadcastUserPSBT: async (
+    psbtHexSigned: string
+  ): Promise<string | undefined> => {
+    try {
+      const res = await fetch("/api/broadcast", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ psbtHexSigned }),
+      });
+      const result = res.json();
+      if (result) {
+        return result;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
   createPsbt: async (butterfly: Butterfly, address: string) => {
     initEccLib(ecc);
 

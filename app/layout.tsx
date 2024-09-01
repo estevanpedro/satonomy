@@ -1,8 +1,9 @@
+import "react-tooltip/dist/react-tooltip.css";
+
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
 
-import "react-tooltip/dist/react-tooltip.css";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
