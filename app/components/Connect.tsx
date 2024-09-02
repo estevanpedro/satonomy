@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { formatAddress } from "@/app/utils/format";
 import { useAccounts, useConnectModal } from "@particle-network/btc-connectkit";
+import { useSetRecoilState } from "recoil";
+import { utxoAtom } from "@/app/recoil/utxoAtom";
+import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom";
+import { runesAtom } from "@/app/recoil/runesAtom";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 
 export const ConnectButton = () => {
   const { openConnectModal, disconnect } = useConnectModal();
@@ -8,6 +13,10 @@ export const ConnectButton = () => {
 
   const account = accounts[0];
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const setUtxo = useSetRecoilState(utxoAtom);
+  const setOrdByWallet = useSetRecoilState(ordByWalletAtom);
+  const setRunesUtxos = useSetRecoilState(runesAtom);
+  const setOrdinals = useSetRecoilState(ordinalsAtom);
 
   const handleMouseEnter = () => {
     setDropdownVisible(true);
@@ -41,6 +50,16 @@ export const ConnectButton = () => {
     };
   }, [dropdownVisible]);
 
+  const onDisconnect = () => {
+    // sleep 1s
+    setTimeout(() => {
+      setUtxo(null);
+      setOrdByWallet(undefined);
+      setRunesUtxos(null);
+      setOrdinals(null);
+    }, 500);
+  };
+
   return (
     <div
       className="relative dropdown-container gap-3 flex justify-center items-center"
@@ -69,6 +88,8 @@ export const ConnectButton = () => {
             onClick={() => {
               disconnect?.();
               setDropdownVisible(false);
+
+              onDisconnect();
             }}
           >
             Disconnect
