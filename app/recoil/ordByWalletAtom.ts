@@ -41,7 +41,7 @@ export interface DataInscriptions {
   meta: MetaExtended;
 }
 
-export const ordByWalletAtom = atom<DataInscriptions | null>({
+export const ordByWalletAtom = atom<DataInscriptions | null | undefined>({
   key: "ordByWalletAtom",
   default: undefined,
 });

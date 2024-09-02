@@ -2,17 +2,18 @@ import { utxoAtom } from "@/app/recoil/utxoAtom";
 import { utxoServices } from "@/app/services/utxoServices";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
-import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useEffect, useRef } from "react";
+import { useSetRecoilState } from "recoil";
 
 export const useMempool = () => {
-  const [utxo, setUtxo] = useRecoilState(utxoAtom);
+  const setUtxo = useSetRecoilState(utxoAtom);
   const { accounts } = useAccounts();
   const wallet = accounts?.[0];
+  const previousWallet = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchUtxos = async () => {
-      track("utxo-fetch", { wallet: wallet });
+      track("utxo-fetch", { wallet });
       const res = await utxoServices.getUtxos(wallet);
       if (res?.length) {
         setUtxo(res as []);
@@ -20,8 +21,15 @@ export const useMempool = () => {
         setUtxo(null);
       }
     };
-    if (wallet && !utxo?.length) {
+
+    if (wallet && previousWallet.current !== wallet) {
       fetchUtxos();
+      previousWallet.current = wallet; // Update previous wallet to the current one
     }
-  }, [wallet, utxo, setUtxo]);
+
+    if (!wallet) {
+      previousWallet.current = undefined; // Reset previousWallet if wallet disconnects
+      setUtxo(null); // Clear utxo on wallet disconnect
+    }
+  }, [wallet, setUtxo]);
 };
