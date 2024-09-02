@@ -238,7 +238,7 @@ export const CardOption = ({
       <div className="absolute top-1 left-2 text-[8px] capitalize">
         <p>
           {ordUtxoAsset?.satributes.map((t, i) =>
-            i + 1 > ordUtxoAsset?.satributes.length ? `${t}` : `${t}, `
+            i + 1 >= ordUtxoAsset?.satributes.length ? `${t}` : `${t}, `
           )}
         </p>
       </div>
