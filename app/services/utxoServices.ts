@@ -5,10 +5,75 @@ import { networks, Psbt, Transaction } from "bitcoinjs-lib";
 const mempoolURL = "https://mempool.space/api";
 const unisatURL = "https://open-api.unisat.io/v1/indexer/address";
 const meURL = "https://api-mainnet.magiceden.dev/v2/ord/btc/runes/utxos/wallet";
+const ordURL = "https://www.ord.io/api/trpc";
 
 const nextRevalidate = { next: { revalidate: 3600 } };
 
 export const utxoServices = {
+  getOrdInfoByWallet: async (wallet: string) => {
+    try {
+      const input = {
+        "0": {
+          json: {
+            limit: 48,
+            orderBy: [{ totalScore: "desc" }, { id: "desc" }],
+            filter: {
+              address: wallet,
+              number: { gte: 0 },
+            },
+            cursor: null,
+          },
+          meta: { values: { cursor: ["undefined"] } },
+        },
+      };
+      const inputStr = JSON.stringify(input);
+      const res = await fetch(
+        `${ordURL}/inscription.getFeed?batch=1&input=${inputStr}`,
+        {
+          ...nextRevalidate,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await res.json();
+
+      return result?.[0]?.result?.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+  getOrdInfo: async (inscriptionId: string) => {
+    try {
+      const input = {
+        "0": {
+          json: {
+            inscriptionId: inscriptionId,
+          },
+        },
+      };
+      const inputStr = JSON.stringify(input);
+
+      const res = await fetch(
+        `${ordURL}/inscription.getSmallCardInfo?batch=1&input=${inputStr}`,
+        {
+          ...nextRevalidate,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await res.json();
+
+      return result?.[0]?.result?.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
   broadcast: async (psbtHexSigned: string) => {
     try {
       const userPSBT = Psbt.fromHex(psbtHexSigned, {

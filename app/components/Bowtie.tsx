@@ -16,11 +16,13 @@ import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 import { Tooltip } from "react-tooltip";
+import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
 
 export const Bowtie = () => {
   useRunes();
   useOrdinals();
   useBitcoinPrice();
+  useOrdByWallet();
 
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);

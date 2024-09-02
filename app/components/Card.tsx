@@ -16,6 +16,7 @@ import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
 import { Tooltip } from "react-tooltip";
+import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom";
 
 export function generateBowtiePath(
   inputX: number,
@@ -177,6 +178,11 @@ export const CardOption = ({
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const { inputs } = useRecoilValue(butterflyAtom);
   const runesStates = useRecoilValue(runesAtom);
+  const ord = useRecoilValue(ordByWalletAtom);
+
+  const ordUtxoAsset = ord?.json?.inscriptions.find(
+    (o) => o?.id?.replace("i0", "") === utxo?.txid
+  );
 
   const rune = runesStates?.find((rune) =>
     rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
@@ -192,8 +198,13 @@ export const CardOption = ({
       )
     : undefined;
 
+  const hasSatributes = Boolean(ordUtxoAsset?.satributes.length);
+
   const isDisabled =
-    inputs?.includes(utxo) || Boolean(rune) || Boolean(ordinal);
+    inputs?.includes(utxo) ||
+    Boolean(rune) ||
+    Boolean(ordinal) ||
+    hasSatributes;
 
   const contentType = utxoFound
     ? CARD_TYPES.RUNES
@@ -222,6 +233,14 @@ export const CardOption = ({
     >
       <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
         <Category color={colorType} type={contentType} />
+      </div>
+
+      <div className="absolute top-1 left-2 text-[8px] capitalize">
+        <p>
+          {ordUtxoAsset?.satributes.map((t, i) =>
+            i + 1 > ordUtxoAsset?.satributes.length ? `${t}` : `${t}, `
+          )}
+        </p>
       </div>
 
       {rune && (
