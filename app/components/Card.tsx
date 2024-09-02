@@ -51,8 +51,10 @@ export const EmptyCard = ({
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
             <select className="outline-none w-[110px]" value="Transfer">
               <option value="Transfer">Transfer</option>
+
               <option disabled>Bridge L2</option>
               <option disabled>Recursive</option>
+              <option disabled>OP Return</option>
               <option disabled>Add redeemScript</option>
               <option disabled>Swap with Saturn</option>
               <option disabled>Stake with Arch</option>
@@ -361,6 +363,15 @@ export const CardOutput = ({
     document.getElementById("address")?.focus();
   };
 
+  const onClone = () => {
+    setButterfly((prev) => {
+      const outputs = JSON.parse(JSON.stringify(prev.outputs));
+      const output = outputs[index];
+      outputs.push({ ...output, vout: outputs.length + 1 });
+      return { ...prev, outputs };
+    });
+  };
+
   return (
     <div className="min-w-52 bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-0 right-0 pointer-events-none ">
@@ -402,6 +413,9 @@ export const CardOutput = ({
           />
         </div>
 
+        <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
+          CLONE 📋
+        </button>
         <button
           className=" opacity-30 hover:opacity-100"
           onClick={() => {
