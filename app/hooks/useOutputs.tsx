@@ -1,4 +1,6 @@
 import { generateBowtiePath } from "@/app/components/Card";
+import { runesAtom } from "@/app/recoil/runesAtom";
+import { useRecoilValue } from "recoil";
 
 export const useOutputs = ({
   butterfly,
@@ -15,6 +17,8 @@ export const useOutputs = ({
   inputHeight: number;
   inputsCount: number;
 }) => {
+  const runes = useRecoilValue(runesAtom);
+
   const paths = [];
 
   const inputX = 184;
@@ -22,6 +26,10 @@ export const useOutputs = ({
   const outputY = inputHeight / 2;
 
   for (let i = 0; i < outputsCount; i++) {
+    const isOpReturn = butterfly.outputs[i].type === "OP RETURN";
+    if (isOpReturn) {
+      continue;
+    }
     let inputY = height / 2 + height * i;
 
     const pathData = generateBowtiePath(inputX, inputY, outputX, outputY);
@@ -32,7 +40,11 @@ export const useOutputs = ({
 
     const isEven = inputsCount % 2 !== 0;
     const mode = Math.floor(inputsCount / 2);
-    const stroke = isEven && mode === i ? "#feb47b" : `url(#gradient-2-${i})`;
+
+    const isRune = butterfly.outputs[i]?.type === "runes";
+    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f";
+    const stop2Color = isRune ? "#FAF22E" : "#feb47b";
+    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-2-${i})`;
 
     paths.push(
       <svg
@@ -52,11 +64,11 @@ export const useOutputs = ({
           >
             <stop
               offset="0%"
-              style={{ stopColor: "#feb47b", stopOpacity: 1 }}
+              style={{ stopColor: stop2Color, stopOpacity: 1 }}
             />
             <stop
               offset="100%"
-              style={{ stopColor: "#ff7e5f", stopOpacity: 1 }}
+              style={{ stopColor: stop1Color, stopOpacity: 1 }}
             />
           </linearGradient>
         </defs>

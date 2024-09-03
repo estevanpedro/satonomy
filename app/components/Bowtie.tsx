@@ -9,7 +9,7 @@ import { useInputs } from "@/app/hooks/useInputs";
 import { formatNumber } from "@/app/utils/format";
 import { useOutputs } from "@/app/hooks/useOutputs";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
-import { Card, CardOutput, EmptyCard } from "@/app/components/Card";
+import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card";
 
 import { useOrdinals } from "@/app/hooks/useOrdinals";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
@@ -17,6 +17,7 @@ import { configAtom } from "@/app/recoil/confgsAtom";
 import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 import { Tooltip } from "react-tooltip";
 import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
+import { runesAtom } from "@/app/recoil/runesAtom";
 
 export const Bowtie = () => {
   useRunes();
@@ -61,7 +62,24 @@ export const Bowtie = () => {
     }));
   };
 
+  const runes = useRecoilValue(runesAtom);
   const onAddOutput = () => {
+    const runeIndex = runes?.findIndex((r) =>
+      butterfly.inputs.find((i) =>
+        r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+      )
+    );
+
+    const rune = runes?.[runeIndex!];
+
+    if (rune) {
+      setConfigs((prev) => ({
+        ...prev,
+        isOutputDeckOpen: !prev.isOutputDeckOpen,
+      }));
+      return;
+    }
+
     setButterfly((prev) => ({
       ...prev,
       outputs: [
@@ -90,9 +108,25 @@ export const Bowtie = () => {
   };
 
   const onRemoveInput = (utxo: MempoolUTXO) => {
+    const hasOpReturn = butterfly.outputs.find((o) => o.type === "OP RETURN");
+    const isThisRune = runes?.find((r) =>
+      r.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+    );
+    const runesInputLength = butterfly.inputs.filter((i) =>
+      runes?.find((r) =>
+        r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+      )
+    ).length;
+
     setButterfly((prev) => ({
       ...prev,
       inputs: prev.inputs.filter((input) => input !== utxo),
+      outputs:
+        isThisRune && runesInputLength <= 1
+          ? prev.outputs.filter(
+              (o) => !(o.type === "runes" || o.type === "OP RETURN")
+            )
+          : prev.outputs,
     }));
   };
 
@@ -151,34 +185,62 @@ export const Bowtie = () => {
     configs.feeCost;
 
   const difference = inputValues - outputValues;
-  const isConfirmDisabled =
-    difference !== 0 || outputValues - configs.feeCost < 0;
 
   const usersOutputs = butterfly.outputs.filter((o) => o.address === account);
   const isTransfer = usersOutputs.length < butterfly.outputs.length;
   const isSplit = usersOutputs.length === butterfly.outputs.length;
 
-  const confirmTooltip = utxos?.length
-    ? isConfirmDisabled
-      ? difference > 0 || outputValues < 0
-        ? `Adjust the fee or outputs. UTXO balance is ${formatNumber(
-            inputValues - outputValues,
-            0,
-            0,
-            false,
-            false
-          )} sats; it should be 0.`
-        : `Add more inputs ${
-            outputValues ? "or adjust the output" : ""
-          }. UTXO balance is ${formatNumber(
-            inputValues - outputValues,
-            0,
-            0,
-            false,
-            false
-          )} sats; it should be 0.`
-      : "Create PSBT and sign"
-    : "No UTXOs";
+  // const confirmTooltip = utxos?.length
+  //   ? isConfirmDisabled
+  //     ? difference > 0 || outputValues < 0
+  //       ? `Adjust the fee or outputs. UTXO balance is ${formatNumber(
+  //           inputValues - outputValues,
+  //           0,
+  //           0,
+  //           false,
+  //           false
+  //         )} sats; it should be 0.`
+  //       : `Add more inputs ${
+  //           outputValues ? "or adjust the output" : ""
+  //         }. UTXO balance is ${formatNumber(
+  //           inputValues - outputValues,
+  //           0,
+  //           0,
+  //           false,
+  //           false
+  //         )} sats; it should be 0.`
+  //     : "Create PSBT and sign"
+  //   : "No UTXOs";
+
+  const rune = runes?.find((r) =>
+    r.utxos.find((u) =>
+      butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
+    )
+  );
+
+  const runesInputSum =
+    rune?.utxos.reduce((acc, cur) => {
+      const utxoIsInInput = butterfly.inputs.find(
+        (i) => i.txid === cur.location.split(":")[0]
+      );
+      if (utxoIsInInput) {
+        const utxoFormattedBalance = cur.formattedBalance;
+        return acc + Number(utxoFormattedBalance);
+      }
+
+      return acc;
+    }, 0) || 0;
+
+  const runesOutputSum = butterfly.outputs.reduce((acc, cur) => {
+    return (cur?.runesValue || 0) + acc;
+  }, 0);
+
+  const runesButterflyBalance = runesInputSum - runesOutputSum;
+
+  const isConfirmDisabled =
+    difference !== 0 ||
+    outputValues - configs.feeCost < 0 ||
+    runesButterflyBalance !== 0;
 
   return (
     <>
@@ -192,7 +254,6 @@ export const Bowtie = () => {
                 1. Connect your bitcoin wallet to start building a transaction.{" "}
               </span>
             )}
-
             {inputsCount === 0 && !configs.isInputDeckOpen && account && (
               <span>
                 2. Add inputs to start building your transaction{" "}
@@ -201,7 +262,6 @@ export const Bowtie = () => {
                 </span>
               </span>
             )}
-
             {inputsCount === 0 && configs.isInputDeckOpen && account && (
               <span>
                 3. Choose the UTXO you wish to split or transfer. The most
@@ -214,7 +274,6 @@ export const Bowtie = () => {
                 </span>
               </span>
             )}
-
             {inputsCount > 0 && outputsCount === 0 && (
               <span>
                 4. Add a new output to your transaction{" "}
@@ -226,7 +285,6 @@ export const Bowtie = () => {
                 </span>
               </span>
             )}
-
             {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
               <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
                 <p className="mb-2">
@@ -249,13 +307,97 @@ export const Bowtie = () => {
                 <p>
                   Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)} BTC
                 </p>
+                {rune?.rune ? (
+                  <p>
+                    Runes: {formatNumber(runesInputSum, 0, 8, false, true)}{" "}
+                    {rune.symbol}
+                  </p>
+                ) : null}
               </div>
             )}
-
-            {inputsCount !== 0 && isConfirmDisabled && outputsCount !== 0 && (
-              <span>{confirmTooltip}</span>
-            )}
+            {inputsCount !== 0 &&
+              isConfirmDisabled &&
+              outputsCount !== 0 &&
+              inputValues - outputValues !== 0 && (
+                <div>
+                  {utxos?.length ? (
+                    isConfirmDisabled ? (
+                      difference > 0 || outputValues < 0 ? (
+                        <p>
+                          Adjust the fee or outputs. UTXO balance is{" "}
+                          <span
+                            className={`${
+                              inputValues - outputValues > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {formatNumber(
+                              inputValues - outputValues,
+                              0,
+                              0,
+                              false,
+                              false
+                            )}{" "}
+                            sats
+                          </span>
+                          ; it should be 0.
+                        </p>
+                      ) : (
+                        <p>
+                          Add more inputs{" "}
+                          {outputValues ? "or adjust the output" : ""}. UTXO
+                          balance is{" "}
+                          <span
+                            className={`${
+                              inputValues - outputValues > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {formatNumber(
+                              inputValues - outputValues,
+                              0,
+                              0,
+                              false,
+                              false
+                            )}{" "}
+                            sats
+                          </span>
+                          ; it should be 0.
+                        </p>
+                      )
+                    ) : (
+                      "Create PSBT and sign"
+                    )
+                  ) : (
+                    "No UTXOs"
+                  )}
+                </div>
+              )}
             <br />
+            {runesButterflyBalance !== 0 && (
+              <>
+                <p className="mt-2">
+                  {runesButterflyBalance > 0 ? (
+                    <span>Add outputs for runes. </span>
+                  ) : (
+                    <span>Add more inputs or update outputs. </span>
+                  )}
+                  Balance of {rune?.spacedRune} is{" "}
+                  <span
+                    className={`${
+                      runesButterflyBalance > 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {formatNumber(runesButterflyBalance)} {rune?.symbol}
+                  </span>{" "}
+                </p>
+              </>
+            )}
+
             <br />
             <br />
           </div>
@@ -312,10 +454,14 @@ export const Bowtie = () => {
           >
             {butterfly.inputs.map((utxo, i) => (
               <div
-                className="mb-8 h-80 min-h-[320px] flex w-full relative z-2"
+                className="mb-8 h-80 min-h-[320px] flex w-full relative z-0"
                 key={`input-${i}`}
               >
-                <Card utxo={utxo} onRemove={onRemoveInput} />
+                <CardOption
+                  utxo={utxo}
+                  onRemove={onRemoveInput}
+                  isSelected={true}
+                />
               </div>
             ))}
             {inputPaths}

@@ -9,6 +9,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { runesAtom } from "@/app/recoil/runesAtom";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 
 export const UtxoDeck = () => {
   const utxos = useRecoilValue(utxoAtom);
@@ -20,6 +22,7 @@ export const UtxoDeck = () => {
 export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
+  const runes = useRecoilValue(runesAtom);
   const containerRef = useRef<HTMLDivElement>(null);
   const [{ x }, api] = useSpring(() => ({ x: 0 }));
   const bind = useDrag(
@@ -81,22 +84,59 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
     if (inputSum - outputSum > 0) {
       let outputsUpdated = [...butterfly.outputs];
 
-      outputsUpdated[butterfly.outputs.length - 1] = {
-        ...outputsUpdated[butterfly.outputs.length - 1],
-        value:
-          inputSum -
-          configs.feeCost -
-          outputSum -
-          configs.feeCost +
-          (inputSum - utxo.value),
-      };
+      const value =
+        inputSum -
+        configs.feeCost -
+        outputSum -
+        configs.feeCost +
+        (inputSum - utxo.value);
 
+      const indexUtxoToUpdateSats = butterfly.outputs.findIndex(
+        (o) => o.type !== "OP RETURN" && o.type !== "runes"
+      );
+
+      if (indexUtxoToUpdateSats !== -1) {
+        outputsUpdated[indexUtxoToUpdateSats] = {
+          ...outputsUpdated[indexUtxoToUpdateSats],
+          value: value > 0 ? value : 0,
+        };
+
+        setButterfly((prev) => ({
+          ...prev,
+          outputs: [...outputsUpdated],
+        }));
+      }
+    }
+
+    const rune = runes?.find((rune) =>
+      rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+    );
+
+    const hasOutputOp = butterfly.outputs.find((o) => o.type === "OP RETURN");
+    if (rune && !hasOutputOp) {
       setButterfly((prev) => ({
         ...prev,
-        outputs: [...outputsUpdated],
+        outputs: [
+          ...prev.outputs,
+          {
+            value: 0,
+            address: "",
+            vout: prev.outputs.length,
+            type: "OP RETURN",
+            rune: rune,
+          },
+        ],
       }));
     }
   };
+
+  const runeSelected = runes?.find((rune) =>
+    butterfly.inputs.find((i) =>
+      rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+    )
+  );
+
+  const ordinals = useRecoilValue(ordinalsAtom);
 
   return (
     <div
@@ -117,6 +157,35 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           {utxos!.map((utxo, index) => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const [props, api] = useSpring(() => ({ scale: 1 }));
+
+            if (runeSelected) {
+              const isSameRune = runeSelected.utxos.find(
+                (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
+              );
+
+              const rune = runes?.find((rune) =>
+                rune.utxos.find(
+                  (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                )
+              );
+
+              const utxoFound = rune
+                ? rune?.utxos.find(
+                    (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                  )
+                : undefined;
+
+              const ordinal = !utxoFound
+                ? ordinals?.inscription.find(
+                    (i) =>
+                      i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+                  )
+                : undefined;
+
+              if ((!isSameRune && utxoFound) || ordinal) {
+                return null;
+              }
+            }
 
             return (
               <animated.div

@@ -12,20 +12,21 @@ import { useState } from "react";
 import { Modal } from "@/app/components/Modal";
 import Link from "next/link";
 import { psbtService } from "@/app/services/psbtService";
+import { runesAtom } from "@/app/recoil/runesAtom";
 
 export const ConfigDeck = () => {
   useMempool();
 
+  const runes = useRecoilValue(runesAtom);
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
   const butterfly = useRecoilValue(butterflyAtom);
   const { accounts } = useAccounts();
   const account = accounts[0];
 
+  const isDeckOpen = configs?.isInputDeckOpen || configs?.isOutputDeckOpen;
   const position =
-    configs?.isInputDeckOpen && utxos?.length
-      ? "bottom-[356px]"
-      : "bottom-[0px]";
+    isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]";
 
   const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0);
   const outputValues =
@@ -33,9 +34,34 @@ export const ConfigDeck = () => {
     configs.feeCost;
 
   const difference = inputValues - outputValues;
+  const rune = runes?.find((r) =>
+    r.utxos.find((u) =>
+      butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
+    )
+  );
+  const runesInputSum =
+    rune?.utxos.reduce((acc, cur) => {
+      const utxoIsInInput = butterfly.inputs.find(
+        (i) => i.txid === cur.location.split(":")[0]
+      );
+      if (utxoIsInInput) {
+        const utxoFormattedBalance = cur.formattedBalance;
+        return acc + Number(utxoFormattedBalance);
+      }
+
+      return acc;
+    }, 0) || 0;
+
+  const runesOutputSum = butterfly.outputs.reduce((acc, cur) => {
+    return (cur?.runesValue || 0) + acc;
+  }, 0);
+
+  const runesButterflyBalance = runesInputSum - runesOutputSum;
 
   const isConfirmDisabled =
-    difference !== 0 || outputValues - configs.feeCost < 0;
+    difference !== 0 ||
+    outputValues - configs.feeCost < 0 ||
+    runesButterflyBalance !== 0;
 
   const { provider } = useBTCProvider();
   const [confirmed, setConfirmed] = useState(false);
@@ -111,10 +137,14 @@ export const ConfigDeck = () => {
         </div>
       </Modal>
 
-      {Boolean(utxos?.length) && configs.isInputDeckOpen && (
+      {Boolean(utxos?.length) && isDeckOpen && (
         <div
           onClick={() =>
-            setConfigs((prev) => ({ ...prev, isInputDeckOpen: false }))
+            setConfigs((prev) => ({
+              ...prev,
+              isInputDeckOpen: false,
+              isOutputDeckOpen: false,
+            }))
           }
           className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
         >
