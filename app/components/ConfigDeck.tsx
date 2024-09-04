@@ -69,7 +69,8 @@ export const ConfigDeck = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [txId, setTxId] = useState("");
 
-  const onConfirm = async () => {
+  const onConfirm = async (e: any) => {
+    e.preventDefault();
     try {
       const res = await fetch("/api/psbt", {
         method: "POST",

@@ -3,6 +3,7 @@ import { initEccLib, networks, Psbt } from "bitcoinjs-lib";
 import { toOutputScript } from "bitcoinjs-lib/src/address";
 import { Butterfly } from "@/app/recoil/butterflyAtom";
 import * as ecc from "@bitcoinerlab/secp256k1";
+import { none, RuneId, Runestone } from "runelib";
 
 export const psbtService = {
   broadcastUserPSBT: async (
@@ -41,6 +42,37 @@ export const psbtService = {
     }
 
     for (const utxo of butterfly.outputs) {
+      if (utxo.type === "OP RETURN") {
+        const runeFound = butterfly.outputs.find(
+          (o) => o.type === "runes" && o.rune?.runeid
+        );
+        const block = Number(runeFound?.rune?.runeid.split(":")[0]);
+        const idx = Number(runeFound?.rune?.runeid.split(":")[1]);
+
+        const runesOutputs = butterfly.outputs.filter(
+          (o) => o.type === "runes"
+        );
+
+        const edicts = runesOutputs.map((o) => {
+          return {
+            id: new RuneId(block, idx),
+            amount: BigInt(
+              (o.runesValue || 0) * 10 ** (utxo.rune?.divisibility || 0)
+            ),
+            output: o.vout - 1,
+          };
+        });
+
+        const runestone = new Runestone(edicts, none(), none(), none());
+
+        psbt.addOutput({
+          script: runestone.encipher(),
+          value: 0,
+        });
+
+        continue;
+      }
+
       psbt.addOutput({
         address: utxo.address,
         value: utxo.value,
