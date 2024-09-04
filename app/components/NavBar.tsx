@@ -1,4 +1,5 @@
 import { ConnectButton } from "@/app/components/Connect";
+import { Optimizations } from "@/app/components/Optimizations";
 import { Tutorial } from "@/app/components/Tutorial";
 import Image from "next/image";
 
@@ -18,15 +19,31 @@ export const NavBar = () => {
 };
 
 export const SubNavBar = () => {
+  const showOptimizations = true;
+
   return (
     <>
-      {" "}
-      <h1 className="text-4xl font-bold text-center text-gray-100">
-        Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
-      </h1>
-      <p className="text-center  text-gray-400 px-4">
-        Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
-      </p>
+      {!showOptimizations && (
+        <>
+          <h1 className="text-4xl font-bold text-center text-gray-100">
+            Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
+          </h1>
+          <p className="text-center  text-gray-400 px-4">
+            Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
+          </p>
+        </>
+      )}
+      {showOptimizations && (
+        <>
+          <h1 className="text-4xl font-bold text-center text-gray-100">
+            Extract Locked Sats{" "}
+          </h1>
+          <p className="text-center  text-gray-400 px-4">
+            Merge all of your Runes UTXOs into one, and extract the locked sats
+          </p>
+          <Optimizations />
+        </>
+      )}
     </>
   );
 };

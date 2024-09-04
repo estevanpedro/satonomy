@@ -10,15 +10,16 @@ export const useBitcoinPrice = () => {
     const fetchBitcoinPrice = async () => {
       try {
         setIsLoading(true);
-        const url = `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd`;
+        const url = `/api/btc`;
         const response = await fetch(url, {
           next: { revalidate: 3600 },
         });
 
         const data = await response.json();
+        console.log("✌️data --->", data);
 
-        if (data?.bitcoin?.usd) {
-          setBtcUsdPrice(data.bitcoin.usd);
+        if (data) {
+          setBtcUsdPrice(data);
           setIsLoading(false);
         }
       } catch (error) {
