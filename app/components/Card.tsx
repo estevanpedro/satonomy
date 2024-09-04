@@ -50,8 +50,8 @@ export const EmptyCard = ({
       >
         {className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
-            <select className="outline-none w-[110px]" value="Transfer">
-              <option value="Transfer">Transfer</option>
+            <select className="outline-none w-[110px]" defaultValue="Transfer">
+              <option>Transfer</option>
 
               <option disabled>Bridge</option>
               <option disabled>Recursive</option>
