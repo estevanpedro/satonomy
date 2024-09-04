@@ -1,19 +1,90 @@
 import { Modal } from "@/app/components/Modal";
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
-import { runesAtom } from "@/app/recoil/runesAtom";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { configAtom } from "@/app/recoil/confgsAtom";
+import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { formatNumber } from "@/app/utils/format";
+import { useAccounts } from "@particle-network/btc-connectkit";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const runes = useRecoilValue(runesAtom);
   const runesOptimizations = runes?.filter((r) => r.utxos.length >= 3);
+  const { accounts } = useAccounts();
+  const address = accounts[0];
 
   const onClose = () => setIsOpen(false);
+  const utxos = useRecoilValue(utxoAtom);
+  const setButterfly = useSetRecoilState(butterflyAtom);
+  const setConfigs = useSetRecoilState(configAtom);
+
+  const onSelect = (rune: RunesUtxo) => {
+    onClose();
+
+    const inputUtxos =
+      utxos?.filter((utxo) =>
+        rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
+      ) || [];
+
+    const utxosSorted = (
+      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
+    )?.sort((a, b) => a.value - b.value);
+
+    const bestBtcInput = (utxosSorted || [])?.find(
+      (utxo) => utxo.value > 10001
+    );
+
+    if (bestBtcInput) {
+      inputUtxos.push(bestBtcInput);
+    }
+    const feeCost = 1500;
+    setConfigs((prev) => ({
+      ...prev,
+      feeCost: feeCost,
+      isInputDeckOpen: false,
+      isOutputDeckOpen: false,
+    }));
+
+    setButterfly((prev) => ({
+      ...prev,
+
+      inputs: [...inputUtxos],
+      outputs: [
+        {
+          type: "OP RETURN",
+          value: 0,
+          address: address,
+          vout: 0,
+        },
+        {
+          type: "runes",
+          value: 546,
+          address: address,
+          rune: rune,
+          runesValue: rune.utxos.reduce(
+            (acc, curr) => acc + Number(curr.formattedBalance),
+            0
+          ),
+          vout: 1,
+        },
+        {
+          value:
+            (bestBtcInput?.value || 0) +
+            (rune.utxos?.length || 0) * 546 -
+            feeCost -
+            546,
+          address: address,
+          vout: 2,
+        },
+      ],
+    }));
+  };
 
   return (
     <>
@@ -43,6 +114,7 @@ export const Optimizations = () => {
             <div
               className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"
               key={index}
+              onClick={() => onSelect(rune)}
             >
               <div className="justify-center items-center flex text-center text-[52px] mr-4">
                 <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
