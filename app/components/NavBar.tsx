@@ -5,13 +5,18 @@ import Image from "next/image";
 
 export const NavBar = () => {
   return (
-    <div className="my-8 z-10 w-full max-w-5xl items-center justify-around font-mono text-sm flex  sm:justify-between">
+    <div className="my-8 z-10 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
       <p className="flex items-center justify-center gap-2 font-bold text-[24px]">
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
-        SATONOMY
+        SATONOMY{" "}
+        <span className="text-[12px] opacity-70">
+          {" "}
+          - Manage Your Bitcoin L1 Transactions (UTXOs)
+        </span>
       </p>
       <div className="flex  items-center justify-center gap-4">
         <Tutorial />
+        <Optimizations />
         <ConnectButton />
       </div>
     </div>
@@ -33,17 +38,17 @@ export const SubNavBar = () => {
           </p>
         </>
       )}
-      {showOptimizations && (
-        <>
+      {/* {showOptimizations && (
+        <div className="flex w-full flex-col items-start justify-start border-b-2 pb-8">
           <h1 className="text-4xl font-bold text-center text-gray-100">
             Extract Locked Sats{" "}
           </h1>
-          <p className="text-center  text-gray-400 px-4">
+          <p className="text-center  text-gray-400">
             Merge all of your Runes UTXOs into one, and extract the locked sats
           </p>
           <Optimizations />
-        </>
-      )}
+        </div>
+      )} */}
     </>
   );
 };

@@ -244,8 +244,8 @@ export const Bowtie = () => {
 
   return (
     <>
-      <div className="mt-24 mb-2 text-[12px] font-bolds justify-end relative hidden sm:flex">
-        <div className="h-60 min-w-52 max-w-52 p-3 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
+      <div className="mt-16 mb-2 text-[12px] font-bolds justify-end relative hidden sm:flex">
+        <div className="h-60 min-w-52 max-w-52 p-3 pt-8 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
           <div className="absolute -top-6 left-0 opacity-50">Inputs</div>
           <p className="font-bold text-[16px]">Tutorial</p>
           <div>
@@ -290,7 +290,6 @@ export const Bowtie = () => {
                 <p className="mb-2">
                   6. PSBT is <strong>ready</strong> to be signed.
                 </p>
-                <p className="font-bold">Summary</p>
                 <p>Inputs: {inputsCount}</p>
                 <p>Outputs: {outputsCount}</p>
                 <p>

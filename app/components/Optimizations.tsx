@@ -89,14 +89,23 @@ export const Optimizations = () => {
 
   return (
     <>
-      <div className="flex w-full justify-center items-center mt-4">
-        <div
-          className="flex gap-2 cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        >
-          <span className="text-[#52525B] hover:text-white">Optimize</span>{" "}
+      {Boolean(runesOptimizations?.length) && (
+        <div className=" items-center mt-4">
+          <div
+            className="flex gap-2 cursor-pointer -mt-4"
+            onClick={() => setIsOpen(true)}
+          >
+            <span className="text-[#52525B] hover:text-white border px-3 py-1 -mr-3  rounded hover:border-white">
+              Optimize
+            </span>{" "}
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+          </div>
         </div>
-      </div>
+      )}
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <h2 className="text-[20px] font-bold mb-2">Optimizations </h2>
 
@@ -106,7 +115,7 @@ export const Optimizations = () => {
         </p>
         {/*  */}
         {runesOptimizations?.map((rune, index) => {
-          const expectedFeeCost = 500;
+          const expectedFeeCost = 700;
           const length = rune?.utxos.length;
           const profit = length * 546 - expectedFeeCost - 546;
 
