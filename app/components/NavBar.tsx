@@ -1,6 +1,5 @@
 import { ConnectButton } from "@/app/components/Connect";
 import { Optimizations } from "@/app/components/Optimizations";
-import { Tutorial } from "@/app/components/Tutorial";
 import Image from "next/image";
 
 export const NavBar = () => {
@@ -15,7 +14,6 @@ export const NavBar = () => {
         </span>
       </p>
       <div className="flex  items-center justify-center gap-4">
-        <Tutorial />
         <Optimizations />
         <ConnectButton />
       </div>

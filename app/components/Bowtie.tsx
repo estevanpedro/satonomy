@@ -18,6 +18,7 @@ import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
 import { Tooltip } from "react-tooltip";
 import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
 import { runesAtom } from "@/app/recoil/runesAtom";
+import { Tutorial } from "@/app/components/Tutorial";
 
 export const Bowtie = () => {
   useRunes();
@@ -244,10 +245,12 @@ export const Bowtie = () => {
 
   return (
     <>
-      <div className="mt-16 mb-2 text-[12px] font-bolds justify-end relative hidden sm:flex">
+      <div className="mt-16 mb-2 text-[12px] justify-end relative hidden sm:flex">
         <div className="h-60 min-w-52 max-w-52 p-3 pt-8 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
           <div className="absolute -top-6 left-0 opacity-50">Inputs</div>
-          <p className="font-bold text-[16px]">Tutorial</p>
+          <p className=" text-[16px] flex gap-2 -mr-4 items-center">
+            <span className="font-bold">Tutorial</span> <Tutorial />
+          </p>
           <div>
             {!account && (
               <span>

@@ -6,13 +6,12 @@ import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSats, setShowSats] = useState<number | null>(null); // Track which card is hovered
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const runes = useRecoilValue(runesAtom);
   const runesOptimizations = runes?.filter((r) => r.utxos.length >= 3);
@@ -107,7 +106,7 @@ export const Optimizations = () => {
       )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <h2 className="text-[20px] font-bold mb-2">Optimizations </h2>
+        <h2 className="text-[20px] font-bold mb-4">Optimizations </h2>
 
         <p className="mb-4 text-zinc-200 text-[12px]">
           Extract locked sats from your runes. Keep the same amount of runes,
@@ -120,11 +119,15 @@ export const Optimizations = () => {
           const profit = length * 546 - expectedFeeCost - 546;
 
           const profitInUsd = (profit / 100000000) * btcUsdPrice;
+          const profitInSats = profit;
+
           return (
             <div
               className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"
               key={index}
               onClick={() => onSelect(rune)}
+              onMouseEnter={() => setShowSats(index)} // Show sats on hover
+              onMouseLeave={() => setShowSats(null)} // Hide sats when not hovered
             >
               <div className="justify-center items-center flex text-center text-[52px] mr-4">
                 <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
@@ -141,7 +144,9 @@ export const Optimizations = () => {
 
               <div className="flex-end flex items-end justify-end w-full flex-col">
                 <span className="text-[16px] font-bold text-green-500">
-                  + ${formatNumber(profitInUsd, 0, 2, false, false)}
+                  {showSats === index
+                    ? `+ ${profitInSats} sats`
+                    : `+ $${formatNumber(profitInUsd, 0, 2, false, false)}`}
                 </span>
                 <span className="text-[10px] font-bold ">{length} merges</span>
               </div>
@@ -149,21 +154,10 @@ export const Optimizations = () => {
           );
         })}
 
-        <p className="mt-2 text-zinc-500 text-[12px]">
+        <p className="mt-4 text-zinc-500 text-[12px]">
           Notes: create a transaction merging all of your UTXOs into one, and
           extract locked sats from your Runes.
         </p>
-
-        <br />
-        <Link
-          href={"https://satonomy.gitbook.io/satonomy"}
-          className="text-[12px] font-normal text-zinc-500 hover:text-zinc-300 flex gap-2"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image src="/gitbook.svg" alt="Help" width={16} height={16} />
-          Check our docs
-        </Link>
       </Modal>
     </>
   );
