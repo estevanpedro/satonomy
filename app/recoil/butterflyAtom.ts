@@ -14,7 +14,6 @@ export interface Output {
 export interface Butterfly {
   inputs: MempoolUTXO[];
   outputs: Output[];
-  configs: any;
 }
 
 export const butterflyAtom = atom<Butterfly>({
@@ -22,6 +21,5 @@ export const butterflyAtom = atom<Butterfly>({
   default: {
     inputs: [],
     outputs: [],
-    configs: {},
   },
 });

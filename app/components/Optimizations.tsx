@@ -1,90 +1,25 @@
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+
 import { Modal } from "@/app/components/Modal";
-import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
-import { butterflyAtom } from "@/app/recoil/butterflyAtom";
-import { configAtom } from "@/app/recoil/confgsAtom";
+import { OptimizationCard } from "@/app/components/OptimizationCard";
 import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
-import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
-import { formatNumber } from "@/app/utils/format";
-import { useAccounts } from "@particle-network/btc-connectkit";
-import { useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showSats, setShowSats] = useState<number | null>(null); // Track which card is hovered
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const runes = useRecoilValue(runesAtom);
-  const runesOptimizations = runes?.filter((r) => r.utxos.length >= 3);
-  const { accounts } = useAccounts();
-  const address = accounts[0];
+  const [runesOptimizations, setRunesOptimizations] = useState<
+    RunesUtxo[] | []
+  >([]);
 
   const onClose = () => setIsOpen(false);
-  const utxos = useRecoilValue(utxoAtom);
-  const setButterfly = useSetRecoilState(butterflyAtom);
-  const setConfigs = useSetRecoilState(configAtom);
 
-  const onSelect = (rune: RunesUtxo) => {
-    onClose();
-
-    const inputUtxos =
-      utxos?.filter((utxo) =>
-        rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
-      ) || [];
-
-    const utxosSorted = (
-      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value);
-
-    const bestBtcInput = (utxosSorted || [])?.find(
-      (utxo) => utxo.value > 10001
-    );
-
-    if (bestBtcInput) {
-      inputUtxos.push(bestBtcInput);
+  useEffect(() => {
+    const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5);
+    if (runesOptimizations) {
+      setRunesOptimizations(runesOptimizations);
     }
-    const feeCost = 1500;
-    setConfigs((prev) => ({
-      ...prev,
-      feeCost: feeCost,
-      isInputDeckOpen: false,
-      isOutputDeckOpen: false,
-    }));
-
-    setButterfly((prev) => ({
-      ...prev,
-
-      inputs: [...inputUtxos],
-      outputs: [
-        {
-          type: "OP RETURN",
-          value: 0,
-          address: address,
-          vout: 1,
-          rune: rune,
-        },
-        {
-          type: "runes",
-          value: 546,
-          address: address,
-          rune: rune,
-          runesValue: rune.utxos.reduce(
-            (acc, curr) => acc + Number(curr.formattedBalance),
-            0
-          ),
-          vout: 2,
-        },
-        {
-          value:
-            (bestBtcInput?.value || 0) +
-            (rune.utxos?.length || 0) * 546 -
-            feeCost -
-            546,
-          address: address,
-          vout: 3,
-        },
-      ],
-    }));
-  };
+  }, [runes]);
 
   return (
     <>
@@ -109,54 +44,22 @@ export const Optimizations = () => {
         <h2 className="text-[20px] font-bold mb-4">Optimizations </h2>
 
         <p className="mb-4 text-zinc-200 text-[12px]">
-          Extract locked sats from your runes. Keep the same amount of runes,
-          but merge them into a single UTXO.
+          Extract locked sats. Keep the same amount of runes merging into a
+          single UTXO.
         </p>
-        {/*  */}
+
         {runesOptimizations?.map((rune, index) => {
-          const expectedFeeCost = 700;
-          const length = rune?.utxos.length;
-          const profit = length * 546 - expectedFeeCost - 546;
-
-          const profitInUsd = (profit / 100000000) * btcUsdPrice;
-          const profitInSats = profit;
-
           return (
-            <div
-              className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"
-              key={index}
-              onClick={() => onSelect(rune)}
-              onMouseEnter={() => setShowSats(index)} // Show sats on hover
-              onMouseLeave={() => setShowSats(null)} // Hide sats when not hovered
-            >
-              <div className="justify-center items-center flex text-center text-[52px] mr-4">
-                <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
-                  {rune?.symbol}
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-[4px] justify-center items-start">
-                <span className="text-[12px] font-bold">
-                  {rune?.spacedRune}
-                </span>
-                <span className="text-[10px]">{rune?.runeid}</span>
-              </div>
-
-              <div className="flex-end flex items-end justify-end w-full flex-col">
-                <span className="text-[16px] font-bold text-green-500">
-                  {showSats === index
-                    ? `+ ${profitInSats} sats`
-                    : `+ $${formatNumber(profitInUsd, 0, 2, false, false)}`}
-                </span>
-                <span className="text-[10px] font-bold ">{length} merges</span>
-              </div>
+            <div key={index}>
+              <OptimizationCard rune={rune} onClose={onClose} index={index} />
             </div>
           );
         })}
 
-        <p className="mt-4 text-zinc-500 text-[12px]">
-          Notes: create a transaction merging all of your UTXOs into one, and
-          extract locked sats from your Runes.
+        <p className="mt-4 text-zinc-500 text-[11px]">
+          Create a transaction that consolidates all of your UTXOs into one and
+          extracts the locked sats. It is recommended to perform at least 5
+          merges.
         </p>
       </Modal>
     </>

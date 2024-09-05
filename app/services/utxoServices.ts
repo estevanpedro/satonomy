@@ -152,4 +152,12 @@ export const utxoServices = {
     const items = result?.utxos || [];
     return items as RuneTransaction[];
   },
+  getEstimatedFeeRate: async () => {
+    const feeRate = await fetch(
+      `${mempoolURL}/v1/fees/recommended`,
+      nextRevalidate
+    );
+    const feeRateJson = await feeRate.json();
+    return feeRateJson.hourFee as number;
+  },
 };

@@ -19,12 +19,14 @@ import { Tooltip } from "react-tooltip";
 import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
 import { runesAtom } from "@/app/recoil/runesAtom";
 import { Tutorial } from "@/app/components/Tutorial";
+import { useRecommendedFees } from "@/app/hooks/useRecommendedFees";
 
 export const Bowtie = () => {
   useRunes();
   useOrdinals();
   useBitcoinPrice();
   useOrdByWallet();
+  useRecommendedFees();
 
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
@@ -248,9 +250,9 @@ export const Bowtie = () => {
       <div className="mt-16 mb-2 text-[12px] justify-end relative hidden sm:flex">
         <div className="h-60 min-w-52 max-w-52 p-3 pt-8 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
           <div className="absolute -top-6 left-0 opacity-50">Inputs</div>
-          <p className=" text-[16px] flex gap-2 -mr-4 items-center">
+          <div className=" text-[16px] flex gap-2 -mr-4 items-center">
             <span className="font-bold">Tutorial</span> <Tutorial />
-          </p>
+          </div>
           <div>
             {!account && (
               <span>
