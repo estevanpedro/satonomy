@@ -163,7 +163,7 @@ export const OptimizationCard = ({
           type: "OP RETURN",
           value: 0,
           address: address,
-          vout: 0,
+          vout: 1,
           rune: rune,
         },
         {
@@ -175,7 +175,7 @@ export const OptimizationCard = ({
             (acc, curr) => acc + Number(curr.formattedBalance),
             0
           ),
-          vout: 1,
+          vout: 2,
         },
         {
           value:
@@ -184,7 +184,7 @@ export const OptimizationCard = ({
             feeCost -
             546,
           address: address,
-          vout: 2,
+          vout: 3,
         },
       ],
     };
