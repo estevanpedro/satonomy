@@ -473,6 +473,104 @@ export const CardOutput = ({
     );
   }
 
+  if (butterfly.outputs[index]?.type === "platformFee") {
+    return (
+      <div
+        className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center opacity-60"
+        data-tooltip-id={"confirm"}
+        data-tooltip-content={"Platform fee"}
+        data-tooltip-place="right"
+      >
+        <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
+          <Category color={colorType} type={contentType} />
+        </div>
+        <div className="absolute top-4 right-[-120px] flex flex-col gap-4 justify-center items-end">
+          <div className="opacity-30 text-[]">
+            <div>OUTPUT #{index}</div>
+          </div>
+
+          <div className="opacity-30 hover:opacity-100 relative">
+            <div className="my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280] border-transparent focus:border-2 rounded-[4px] outline-none focus:bg-gradient-to-b focus:from-[#29292950] focus:to-[#292929] focus:px-2">
+              {butterfly.outputs?.[index]?.address
+                ? formatAddress(butterfly.outputs[index]?.address)
+                : "ADDRESS 📝"}
+            </div>
+
+            <input
+              disabled
+              id="address"
+              placeholder="Address"
+              value={butterfly.outputs[index]?.address}
+              onChange={(e) => {
+                setButterfly((prev) => {
+                  const outputs = JSON.parse(JSON.stringify(prev.outputs));
+                  outputs[index].address = e.target.value;
+                  return { ...prev, outputs };
+                });
+              }}
+              onFocus={() => setAddressInputFocused(true)}
+              onBlur={() => setAddressInputFocused(false)}
+              className={`my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280]  border-transparent focus:border-2 rounded-[4px] outline-none focus:px-2 ${
+                addressInputFocused ? "flex" : "hidden"
+              }`}
+            />
+          </div>
+        </div>
+        <Image
+          className="w-14 h-14 pointer-events-none"
+          src="/bitcoin.png"
+          alt="Bitcoin"
+          width={54}
+          height={54}
+        />
+        Bitcoin
+        <div className="text-center text-white font-medium whitespace-nowrap flex flex-col justify-center items-center ">
+          <input
+            disabled
+            type="number"
+            value={
+              rune
+                ? butterfly.outputs[index].runesValue
+                : butterfly.outputs[index].value || ""
+            }
+            onChange={(e) => {
+              setButterfly((prev) => {
+                const outputs = JSON.parse(JSON.stringify(prev.outputs));
+                if (rune) {
+                  outputs[index].runesValue = Number(e.target.value);
+                } else {
+                  outputs[index].value = Number(e.target.value);
+                }
+                return { ...prev, outputs };
+              });
+            }}
+            placeholder="0"
+            className="ml-2 bg-transparent text-[20px] border text-center outline-none border-transparent w-20 h-12"
+          />{" "}
+          <div className="mt-[-12px] text-[12px]">
+            {rune?.symbol || "sats"}{" "}
+          </div>
+        </div>
+        <div
+          className="absolute inset-0 rounded-xl z-[-1]"
+          style={{
+            margin: "-3px", // Adjust to match the border thickness
+            padding: "4px", // Adjust to match the border thickness
+            background: `linear-gradient(180deg, ${colorType} 0%, ${colorType} 50%, ${secondaryColorType} 95%, ${secondaryColorType} 115%)`,
+            borderRadius: "inherit", // Ensure the radius matches the card's radius
+          }}
+        >
+          <div
+            className="w-full h-full rounded-xl bg-zinc-900"
+            style={{
+              borderRadius: "inherit",
+            }}
+          ></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
@@ -580,7 +678,7 @@ export const CardOutput = ({
         <div className="mt-[-12px] text-[12px]">{rune?.symbol || "sats"} </div>
       </div>
       {Boolean(butterfly.outputs[index].value) && !rune && (
-        <div>
+        <div className="opacity-80 text-12">
           $
           {formatNumber(
             ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice,

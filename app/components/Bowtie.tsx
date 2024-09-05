@@ -297,7 +297,7 @@ export const Bowtie = () => {
                 </p>
                 <p>Inputs: {inputsCount}</p>
                 <p>Outputs: {outputsCount}</p>
-                <p>
+                {/* <p>
                   Type:{" "}
                   {!isSplit &&
                     (outputsCount > 1 && isTransfer
@@ -307,7 +307,7 @@ export const Bowtie = () => {
                     (outputsCount > 1 && isSplit
                       ? "Split UTXOs"
                       : "Self Transfer")}
-                </p>
+                </p> */}
                 <p>
                   Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)} BTC
                 </p>

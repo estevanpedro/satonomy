@@ -32,8 +32,10 @@ export const OptimizationCard = ({
   const length = rune?.utxos.length;
   const [feeCost, setFeeCost] = useState<number>(500);
 
-  const profit = length * 546 - feeCost - 546;
+  const profitMocked = length * 546 - feeCost - 546;
 
+  const [profit, setProfit] = useState<number>(profitMocked);
+  console.log("✌️profit --->", profit);
   const profitInSats = profit;
   const profitInUsd = (profit / 100000000) * btcUsdPrice;
 
@@ -74,6 +76,13 @@ export const OptimizationCard = ({
       allBtcInputsValue += bestBtcInput.value;
     }
 
+    const charge = allBtcInputsValue - 546 - feeCost;
+
+    const usersProfit = Math.floor(charge * 0.8);
+    const platformFee = Math.floor(charge - usersProfit);
+
+    setProfit(usersProfit);
+
     const fetchFees = async () => {
       try {
         if (!inputUtxos) {
@@ -81,13 +90,18 @@ export const OptimizationCard = ({
           return;
         }
 
-        const charge = allBtcInputsValue - 546 - feeCost;
-
         const chargeOutput = [
           {
-            value: charge,
+            value: usersProfit,
             address: address,
             vout: 3,
+          },
+          {
+            value: platformFee,
+            address:
+              "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+            vout: 4,
+            type: "platformFee",
           },
         ];
 
@@ -188,11 +202,21 @@ export const OptimizationCard = ({
 
     const charge = allBtcInputsValue - 546 - feeCost;
 
+    const usersProfit = Math.floor(charge * 0.8);
+    const platformFee = Math.floor(charge - usersProfit);
+
     const chargeOutput = [
       {
-        value: charge,
+        value: usersProfit,
         address: address,
         vout: 3,
+      },
+      {
+        value: platformFee,
+        address:
+          "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+        vout: 4,
+        type: "platformFee",
       },
     ];
 
