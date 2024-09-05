@@ -44,30 +44,52 @@ export const OptimizationCard = ({
       JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
     )?.sort((a, b) => a.value - b.value);
 
-    const bestBtcInput = (utxosSorted || [])?.find(
-      (utxo) => utxo.value > 10001
+    let allBtcInputsValue = rune.utxos.reduce(
+      (acc, curr) =>
+        acc +
+        Number(
+          utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
+        ),
+      0
     );
-
-    if (!bestBtcInput?.value) {
-      console.log("No BTC input found to pay fees");
-      return;
-    }
 
     const inputUtxos =
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || [];
 
-    const utxoRunesLength = rune.utxos.length;
+    if (allBtcInputsValue < feeCost) {
+      const bestBtcInput = (utxosSorted || [])?.find(
+        (utxo) => utxo.value > feeCost && utxo.value > 546
+      );
 
-    if (bestBtcInput) {
-      inputUtxos.push(bestBtcInput);
+      if (!bestBtcInput?.value) {
+        console.log("No BTC input found to pay fees");
+        return;
+      }
+      if (bestBtcInput) {
+        inputUtxos.push(bestBtcInput);
+      }
+
+      allBtcInputsValue += bestBtcInput.value;
     }
 
     const fetchFees = async () => {
       try {
-        const charge =
-          bestBtcInput.value + utxoRunesLength * 546 - 546 - feeCost;
+        if (!inputUtxos) {
+          console.log("No inputUtxos found");
+          return;
+        }
+
+        const charge = allBtcInputsValue - 546 - feeCost;
+
+        const chargeOutput = [
+          {
+            value: charge,
+            address: address,
+            vout: 3,
+          },
+        ];
 
         const newButterfly = {
           inputs: [...inputUtxos],
@@ -90,11 +112,7 @@ export const OptimizationCard = ({
               ),
               vout: 2,
             },
-            {
-              value: charge,
-              address: address,
-              vout: 3,
-            },
+            ...chargeOutput,
           ],
         };
 
@@ -127,21 +145,38 @@ export const OptimizationCard = ({
   const onSelect = (rune: RunesUtxo) => {
     onClose();
 
+    const utxosSorted = (
+      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
+    )?.sort((a, b) => a.value - b.value);
+
+    let allBtcInputsValue = rune.utxos.reduce(
+      (acc, curr) =>
+        acc +
+        Number(
+          utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
+        ),
+      0
+    );
+
     const inputUtxos =
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || [];
 
-    const utxosSorted = (
-      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value);
+    if (allBtcInputsValue < feeCost) {
+      const bestBtcInput = (utxosSorted || [])?.find(
+        (utxo) => utxo.value > feeCost && utxo.value > 546
+      );
 
-    const bestBtcInput = (utxosSorted || [])?.find(
-      (utxo) => utxo.value > 10001
-    );
+      if (!bestBtcInput?.value) {
+        console.log("No BTC input found to pay fees");
+        return;
+      }
+      if (bestBtcInput) {
+        inputUtxos.push(bestBtcInput);
+      }
 
-    if (bestBtcInput) {
-      inputUtxos.push(bestBtcInput);
+      allBtcInputsValue += bestBtcInput.value;
     }
 
     setConfigs((prev) => ({
@@ -151,10 +186,15 @@ export const OptimizationCard = ({
       isOutputDeckOpen: false,
     }));
 
-    if (!bestBtcInput?.value) {
-      console.log("No BTC input found to pay fees");
-      return;
-    }
+    const charge = allBtcInputsValue - 546 - feeCost;
+
+    const chargeOutput = [
+      {
+        value: charge,
+        address: address,
+        vout: 3,
+      },
+    ];
 
     const newButterfly = {
       inputs: [...inputUtxos],
@@ -177,15 +217,7 @@ export const OptimizationCard = ({
           ),
           vout: 2,
         },
-        {
-          value:
-            bestBtcInput.value +
-            (rune.utxos?.length || 0) * 546 -
-            feeCost -
-            546,
-          address: address,
-          vout: 3,
-        },
+        ...chargeOutput,
       ],
     };
 

@@ -46,7 +46,7 @@ export const EmptyCard = ({
   return (
     <>
       <div
-        className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative`}
+        className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative`}
       >
         {className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
@@ -62,9 +62,23 @@ export const EmptyCard = ({
             </select>
           </div>
         )}
+
+        <Tooltip
+          id={"emptyCard"}
+          className="max-w-[210px] bg-gray-600 text-[12px] pr-0"
+          style={{ backgroundColor: "#292929", color: "white" }}
+        />
+
         <div
+          data-tooltip-id={"emptyCard"}
+          data-tooltip-content={`${
+            className
+              ? "Add a new output"
+              : "Open the deck of UTXOs and select an Input"
+          }`}
+          data-tooltip-place={className ? "left" : "right"}
           onClick={onClick}
-          className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative`}
+          className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative hover:border-zinc-500`}
         >
           +
         </div>

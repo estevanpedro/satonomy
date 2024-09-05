@@ -36,7 +36,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="bg-zinc-950 rounded-lg p-6 w-96 shadow-lg border border-zinc-700"
+        className="bg-zinc-950 rounded-lg p-6 w-[420px] shadow-lg border border-zinc-700"
       >
         {children}
       </div>
