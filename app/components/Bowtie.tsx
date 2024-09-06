@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useAccounts } from "@particle-network/btc-connectkit";
+import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 
 import { useRunes } from "@/app/hooks/useRunes";
 import { useInputs } from "@/app/hooks/useInputs";
@@ -21,6 +21,8 @@ import { runesAtom } from "@/app/recoil/runesAtom";
 import { Tutorial } from "@/app/components/Tutorial";
 import { useRecommendedFees } from "@/app/hooks/useRecommendedFees";
 import { usePlatformFee } from "@/app/hooks/usePlatformFee";
+import { psbtService } from "@/app/services/psbtService";
+import { track } from "@vercel/analytics";
 
 export const Bowtie = () => {
   useRunes();
@@ -247,6 +249,37 @@ export const Bowtie = () => {
     outputValues - configs.feeCost < 0 ||
     runesButterflyBalance !== 0;
 
+  const { provider } = useBTCProvider();
+
+  const onSignWithWallet = async (e: any) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/psbt", {
+        method: "POST",
+        body: JSON.stringify({ butterfly, account }),
+      });
+      const result = await res.json();
+
+      if (result?.psbtHex) {
+        const psbtHexSigned = await provider.signPsbt(result.psbtHex);
+        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned);
+        if (txidRes) {
+          track("psbt-sign", { wallet: account });
+          setConfigs((prev) => ({
+            ...prev,
+            txid: txidRes,
+            isOpenModalTxId: true,
+            isConfirmedModalTxId: true,
+          }));
+        } else {
+          track("error-psbt-sign", { wallet: account });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="mt-16 mb-2 text-[12px] justify-end relative hidden sm:flex">
@@ -319,6 +352,14 @@ export const Bowtie = () => {
                     {rune.symbol}
                   </p>
                 ) : null}
+                {
+                  <button
+                    className="font-bold mt-2 w-full items-center justify-center text-center"
+                    onClick={onSignWithWallet}
+                  >
+                    Sign with wallet
+                  </button>
+                }
               </div>
             )}
             {inputsCount !== 0 &&

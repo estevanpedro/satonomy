@@ -57,8 +57,8 @@ export const usePlatformFee = () => {
       const profit = totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos;
 
       // If the profit is negative or zero, no platform fee should be applied
-      if (runeUtxoCount > 5 && profit > 0) {
-        const platformFee = Math.floor(profit * 0.2); // 20% of the profit for the platform
+      if (runeUtxoCount >= 5 && profit > 0) {
+        const platformFee = Math.ceil(profit - profit * 0.8); // 20% of the profit for the platform
 
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {

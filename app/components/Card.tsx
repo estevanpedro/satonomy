@@ -46,7 +46,7 @@ export const EmptyCard = ({
   return (
     <>
       <div
-        className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative`}
+        className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative mb-8`}
       >
         {className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
@@ -545,7 +545,7 @@ export const CardOutput = ({
               });
             }}
             placeholder="0"
-            className="ml-2 bg-transparent text-[20px] border text-center outline-none border-transparent w-20 h-12"
+            className="ml-2 bg-transparent text-[20px] border text-center outline-none border-transparent w-24 h-12"
           />{" "}
           <div className="mt-[-12px] text-[12px]">
             {rune?.symbol || "sats"}{" "}

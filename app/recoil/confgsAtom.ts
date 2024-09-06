@@ -7,5 +7,8 @@ export const configAtom = atom({
     isOutputDeckOpen: false,
     feeRate: 0,
     feeCost: 0,
+    isOpenModalTxId: false,
+    isConfirmedModalTxId: false,
+    txid: "",
   },
 });

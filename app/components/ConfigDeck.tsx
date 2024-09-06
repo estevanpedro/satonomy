@@ -64,10 +64,9 @@ export const ConfigDeck = () => {
     runesButterflyBalance !== 0;
 
   const { provider } = useBTCProvider();
-  const [confirmed, setConfirmed] = useState(false);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [txId, setTxId] = useState("");
+  const confirmed = configs.isConfirmedModalTxId;
+  const isOpen = configs.isOpenModalTxId;
+  const txid = configs.txid;
 
   const onConfirm = async (e: any) => {
     e.preventDefault();
@@ -80,12 +79,16 @@ export const ConfigDeck = () => {
 
       if (result?.psbtHex) {
         const psbtHexSigned = await provider.signPsbt(result.psbtHex);
-        const txId = await psbtService.broadcastUserPSBT(psbtHexSigned);
-        if (txId) {
+        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned);
+        if (txidRes) {
           track("psbt-sign", { wallet: account });
-          setTxId(txId);
-          setIsOpen(true);
-          setConfirmed(true);
+
+          setConfigs((prev) => ({
+            ...prev,
+            txid: txidRes,
+            isOpenModalTxId: true,
+            isConfirmedModalTxId: true,
+          }));
         } else {
           track("error-psbt-sign", { wallet: account });
         }
@@ -117,7 +120,13 @@ export const ConfigDeck = () => {
       : "Create PSBT and sign"
     : "No UTXOs";
 
-  const onClose = () => setIsOpen(false);
+  const onClose = () => {
+    setConfigs((prev) => ({
+      ...prev,
+      isOpenModalTxId: false,
+      isConfirmedModalTxId: false,
+    }));
+  };
 
   return (
     <div className={`fixed flex gap-2 ${position}`}>
@@ -128,12 +137,12 @@ export const ConfigDeck = () => {
         <div className="mt-4 flex  w-full overflow-hidden gap-2">
           <p>Txid: </p>
           <Link
-            href={`https://mempool.space/tx/${txId}`}
+            href={`https://mempool.space/tx/${txid}`}
             className="] font-normal text-orange-400 hover:text-orange-300 flex  text-start"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {formatAddress(txId)}
+            {formatAddress(txid)}
           </Link>
         </div>
       </Modal>
