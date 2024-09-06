@@ -20,6 +20,7 @@ import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
 import { runesAtom } from "@/app/recoil/runesAtom";
 import { Tutorial } from "@/app/components/Tutorial";
 import { useRecommendedFees } from "@/app/hooks/useRecommendedFees";
+import { usePlatformFee } from "@/app/hooks/usePlatformFee";
 
 export const Bowtie = () => {
   useRunes();
@@ -27,6 +28,7 @@ export const Bowtie = () => {
   useBitcoinPrice();
   useOrdByWallet();
   useRecommendedFees();
+  usePlatformFee();
 
   const utxos = useRecoilValue(utxoAtom);
   const [configs, setConfigs] = useRecoilState(configAtom);
