@@ -299,7 +299,7 @@ export const CardOption = ({
             </span>
           </div>
           {rune?.amount && (
-            <div className="mt-[-14px] w-32 h-12 text-center text-xl text-bold font-medium flex justify-center items-center pointer-events-none gap-2 whitespace-nowrap overflow-hidden">
+            <div className="mt-[-14px] w-[150px] h-12 text-center text-xl text-bold font-medium flex justify-center items-center pointer-events-none gap-2 whitespace-nowrap overflow-hidden">
               {formatNumber(
                 Number(utxoFound?.formattedBalance),
                 0,
@@ -673,7 +673,7 @@ export const CardOutput = ({
             });
           }}
           placeholder="0"
-          className="ml-2 bg-transparent text-[20px] border text-center outline-none border-transparent w-20 h-12"
+          className="ml-[10px] bg-transparent text-[20px] border text-center outline-none border-transparent w-[140px] h-12"
         />{" "}
         <div className="mt-[-12px] text-[12px]">{rune?.symbol || "sats"} </div>
       </div>
