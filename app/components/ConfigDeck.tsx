@@ -165,7 +165,7 @@ export const ConfigDeck = () => {
         </div>
       )}
 
-      {Boolean(utxos?.length) && (
+      {Boolean(utxos?.length) && !Boolean(configs.feeCost) ? (
         <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-6 border-2 border-zinc-600">
           <div className="text-[12px] flex items-center justify-center opacity-50">
             Total Balance
@@ -180,7 +180,7 @@ export const ConfigDeck = () => {
             </span>
           </div>
         </div>
-      )}
+      ) : null}
 
       {Boolean(configs.feeRate) && (
         <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col">
@@ -193,7 +193,7 @@ export const ConfigDeck = () => {
         </div>
       )}
 
-      {Boolean(configs.feeCost) && (
+      {Boolean(configs.feeCost) && isConfirmDisabled && (
         <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 hidden sm:flex flex-col">
           <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
             Psbt Balance

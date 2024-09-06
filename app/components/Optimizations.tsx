@@ -17,6 +17,11 @@ export const Optimizations = () => {
   useEffect(() => {
     const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5);
     if (runesOptimizations) {
+      const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations");
+      if (!hasSavedOnLocalStorage) {
+        localStorage.setItem("runesOptimizations", "saved");
+        setIsOpen(true);
+      }
       setRunesOptimizations(runesOptimizations);
     }
   }, [runes]);

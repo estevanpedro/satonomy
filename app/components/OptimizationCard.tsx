@@ -248,7 +248,7 @@ export const OptimizationCard = ({
   };
 
   if (profitInSats < 0) return null;
-
+  // debugger;
   return (
     <div
       className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"
@@ -266,13 +266,23 @@ export const OptimizationCard = ({
         <span className="text-[12px] font-bold">{rune?.spacedRune}</span>
         <span className="text-[10px]">{rune?.runeid}</span>
       </div>
+      {/* check if profitInUsd is NaN */}
 
       <div className="flex-end flex items-end justify-end w-full flex-col">
-        <span className="text-[16px] font-bold text-green-500">
-          {showSats === index
-            ? `+ ${profitInSats} sats`
-            : `+ $${formatNumber(profitInUsd, 0, 2, false, false)}`}
-        </span>
+        {Boolean(profitInSats) && Boolean(profitInUsd) && (
+          <span className="text-[16px] font-bold text-green-500">
+            {showSats === index
+              ? `+ ${profitInSats} sats`
+              : `+ $${formatNumber(profitInUsd, 0, 2, false, false)}`}
+          </span>
+        )}
+        {(!Boolean(profitInSats) || !Boolean(profitInUsd)) && (
+          <div>
+            <span className="text-[16px] font-bold text-green-500">
+              + <span className="animate-pulse">...</span>
+            </span>
+          </div>
+        )}
         <span className="text-[10px] font-bold ">{length} merges</span>
       </div>
     </div>

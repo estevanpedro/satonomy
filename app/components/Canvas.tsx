@@ -1,8 +1,10 @@
+import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import React, { useState, useRef } from "react";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
 
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const setConfigs = useSetRecoilState(configAtom);
   const { proMode } = useRecoilValue(configAtom); // Get proMode value from the config
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -64,6 +66,15 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
     setOffset({ x: 0, y: 0 });
   };
 
+  const resetButterfly = () => {
+    setButterfly({ inputs: [], outputs: [] });
+    setConfigs((prev) => ({
+      ...prev,
+      isInputDeckOpen: false,
+      isOutputDeckOpen: false,
+      feeCost: 0,
+    }));
+  };
   return (
     <div
       ref={canvasRef}
@@ -123,6 +134,17 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               Action
             </div>
             <div>&#x21C5; Reset Position</div>
+          </button>
+        )}
+        {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) && (
+          <button
+            onClick={resetButterfly}
+            className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Action
+            </div>
+            <div>Clean</div>
           </button>
         )}
       </div>
