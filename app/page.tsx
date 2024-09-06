@@ -15,9 +15,14 @@ export default function Home() {
       <NavBar />
       <div className="w-full max-w-[1200px] flex flex-col items-center sm:block">
         <SubNavBar />
-        <Bowtie />
+
         <BowtieMobile />
       </div>
+      <Canvas>
+        <div className="w-full max-w-[1200px] flex flex-col items-center sm:block">
+          <Bowtie />
+        </div>
+      </Canvas>
       <ConfigDeck />
       <UtxoDeck />
       <OutputDeck />

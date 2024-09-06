@@ -10,5 +10,6 @@ export const configAtom = atom({
     isOpenModalTxId: false,
     isConfirmedModalTxId: false,
     txid: "",
+    proMode: false,
   },
 });

@@ -354,7 +354,7 @@ export const Bowtie = () => {
                 ) : null}
                 {
                   <button
-                    className="font-bold mt-2 w-full items-center justify-center text-center"
+                    className="font-bold mt-2 w-full items-center justify-center text-center hover:opacity-80"
                     onClick={onSignWithWallet}
                   >
                     Sign with wallet
