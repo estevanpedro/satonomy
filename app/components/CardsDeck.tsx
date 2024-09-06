@@ -84,22 +84,46 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
     if (inputSum - outputSum > 0) {
       let outputsUpdated = [...butterfly.outputs];
 
-      const value =
-        inputSum -
-        configs.feeCost -
-        outputSum -
-        configs.feeCost +
-        (inputSum - utxo.value);
-
       const indexUtxoToUpdateSats = butterfly.outputs.findIndex(
         (o) => o.type !== "OP RETURN" && o.type !== "runes"
       );
 
       if (indexUtxoToUpdateSats !== -1) {
+        const value =
+          outputsUpdated[indexUtxoToUpdateSats]?.value +
+          inputSum -
+          outputSum -
+          configs.feeCost;
         outputsUpdated[indexUtxoToUpdateSats] = {
           ...outputsUpdated[indexUtxoToUpdateSats],
           value: value > 0 ? value : 0,
         };
+
+        // const runesInputs = butterfly.inputs.filter((i) =>
+        //   runes?.find((r) =>
+        //     r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+        //   )
+        // );
+
+        // const hasMoreThan5RunesUtxos = runesInputs.length >= 5;
+        // const hasPlatformFee = outputsUpdated.find(
+        //   (o) => o.type === "platformFee"
+        // );
+
+        // const charge = value;
+
+        // const usersProfit = Math.floor(charge * 0.8);
+        // const platformFeeValue = Math.floor(charge - usersProfit);
+
+        // if (hasMoreThan5RunesUtxos && !hasPlatformFee && platformFeeValue > 0) {
+        //   outputsUpdated.push({
+        //     value: platformFeeValue,
+        //     address:
+        //       "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+        //     vout: outputsUpdated.length,
+        //     type: "platformFee",
+        //   });
+        // }
 
         setButterfly((prev) => ({
           ...prev,

@@ -224,7 +224,7 @@ export const Bowtie = () => {
   const runesInputSum =
     rune?.utxos.reduce((acc, cur) => {
       const utxoIsInInput = butterfly.inputs.find(
-        (i) => i.txid === cur.location.split(":")[0]
+        (i) => cur.location === `${i.txid}:${i.vout}`
       );
       if (utxoIsInInput) {
         const utxoFormattedBalance = cur.formattedBalance;

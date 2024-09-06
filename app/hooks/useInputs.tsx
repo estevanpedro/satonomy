@@ -33,16 +33,17 @@ export const useInputs = ({
 
     const isEven = inputsCount % 2 !== 0;
     const mode = Math.floor(inputsCount / 2);
-    const stroke = isEven && mode === i ? "#feb47b" : `url(#gradient-${i})`;
 
     const txid = butterfly.inputs[i].txid;
     const utxo = runes?.find((r) =>
-      r.utxos.find((u) => u.location.split(":")[0] === txid)
+      r.utxos.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
     );
     const isRune = utxo ? true : false;
 
     const stop1Color = isRune ? "#FF8A00" : "#ff7e5f";
     const stop2Color = isRune ? "#FAF22E" : "#feb47b";
+
+    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`;
 
     paths.push(
       <svg

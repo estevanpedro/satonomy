@@ -35,7 +35,6 @@ export const OptimizationCard = ({
   const profitMocked = length * 546 - feeCost - 546;
 
   const [profit, setProfit] = useState<number>(profitMocked);
-  console.log("✌️profit --->", profit);
   const profitInSats = profit;
   const profitInUsd = (profit / 100000000) * btcUsdPrice;
 
