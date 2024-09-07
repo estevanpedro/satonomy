@@ -9,6 +9,7 @@ export const useMempool = () => {
   const setUtxo = useSetRecoilState(utxoAtom);
   const { accounts } = useAccounts();
   const wallet = accounts?.[0];
+
   const previousWallet = useRef<string | undefined>(undefined);
 
   useEffect(() => {

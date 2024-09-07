@@ -11,6 +11,8 @@ import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { runesAtom } from "@/app/recoil/runesAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
+import { Tooltip } from "react-tooltip";
+import { Portfolio } from "@/app/components/Portfolio";
 
 export const UtxoDeck = () => {
   const utxos = useRecoilValue(utxoAtom);
@@ -99,32 +101,6 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           value: value > 0 ? value : 0,
         };
 
-        // const runesInputs = butterfly.inputs.filter((i) =>
-        //   runes?.find((r) =>
-        //     r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
-        //   )
-        // );
-
-        // const hasMoreThan5RunesUtxos = runesInputs.length >= 5;
-        // const hasPlatformFee = outputsUpdated.find(
-        //   (o) => o.type === "platformFee"
-        // );
-
-        // const charge = value;
-
-        // const usersProfit = Math.floor(charge * 0.8);
-        // const platformFeeValue = Math.floor(charge - usersProfit);
-
-        // if (hasMoreThan5RunesUtxos && !hasPlatformFee && platformFeeValue > 0) {
-        //   outputsUpdated.push({
-        //     value: platformFeeValue,
-        //     address:
-        //       "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
-        //     vout: outputsUpdated.length,
-        //     type: "platformFee",
-        //   });
-        // }
-
         setButterfly((prev) => ({
           ...prev,
           outputs: [...outputsUpdated],
@@ -164,25 +140,7 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
 
   return (
     <>
-      <div
-        className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex border-zinc-700 px-8 bg-zinc-800 rounded-t-lg ${
-          configs.isInputFullDeckOpen ? "flex" : "hidden"
-        }`}
-      >
-        <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-6 relative">
-          {utxos!.map((utxo, index) => {
-            return (
-              <div key={`index-${index}`} className="mt-2 z-0">
-                <CardOption onClick={onClick} utxo={utxo} />
-              </div>
-            );
-          })}
-
-          <div className="z-1">
-            <EmptyCard tooltip="Fetch more" text="+" />
-          </div>
-        </div>
-      </div>
+      <Portfolio onClick={onClick} />
 
       <div
         className={`fixed bottom-4 w-[100vw] ${
@@ -194,6 +152,11 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           className="relative w-full h-[340px] overflow-hidden flex justify-center items-center"
           style={{ touchAction: "none" }}
         >
+          <Tooltip
+            id={"select"}
+            className="max-w-[260px] bg-gray-600"
+            style={{ backgroundColor: "#292929", color: "white" }}
+          />
           <animated.div
             {...bind()}
             className="flex space-x-4 cursor-grab"

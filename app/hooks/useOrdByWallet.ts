@@ -7,7 +7,8 @@ export const useOrdByWallet = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [ord, setOrd] = useRecoilState(ordByWalletAtom);
   const { accounts } = useAccounts();
-  const account = accounts?.[0];
+  const account =
+    "bc1p9ua9ef49lkztkkvkc0ljly3ugx3ky7d4dxgehpdg0jn3cnkfz6zq4le8xh";
 
   useEffect(() => {
     const fetchOrdinals = async () => {

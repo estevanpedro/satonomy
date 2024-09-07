@@ -1,5 +1,6 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { utxoAtom } from "@/app/recoil/utxoAtom";
 import React, { useState, useRef } from "react";
 import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
 
@@ -12,7 +13,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const [scale, setScale] = useState(1);
   const start = useRef({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement | null>(null);
-
+  const utxos = useRecoilValue(utxoAtom);
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!proMode) return; // Disable panning if not in proMode
     setIsPanning(true);
@@ -139,7 +140,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
             <div className="text-[12px] flex items-center justify-center opacity-50">
               Action
             </div>
-            <div>&#x21C5; Reset Position</div>
+            <div>Reset Position &#x21C5;</div>
           </button>
         )}
         {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
@@ -156,23 +157,27 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
           )}
 
         {(proMode || isInputFullDeckOpen) && (
-          <button
-            onClick={() =>
-              setConfigs((prev) => ({
-                ...prev,
-                isInputFullDeckOpen: !prev.isInputFullDeckOpen,
-                isInputDeckOpen: false,
-              }))
-            }
-            className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
-            </div>
-            <div>
-              {isInputFullDeckOpen ? "Close portfolio" : "Open portfolio"}
-            </div>
-          </button>
+          <>
+            <button
+              onClick={() =>
+                setConfigs((prev) => ({
+                  ...prev,
+                  isInputFullDeckOpen: !prev.isInputFullDeckOpen,
+                  isInputDeckOpen: false,
+                }))
+              }
+              className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+            >
+              <div className="text-[12px] flex items-center justify-center opacity-50">
+                Action
+              </div>
+              <div>
+                {isInputFullDeckOpen
+                  ? `Close portfolio (${utxos?.length})`
+                  : "Open portfolio (${utxos?.length})"}
+              </div>
+            </button>
+          </>
         )}
       </div>
     </div>

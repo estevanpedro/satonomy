@@ -20,6 +20,12 @@ const nextConfig = {
         port: "",
         pathname: "/content/**",
       },
+      {
+        protocol: "https",
+        hostname: "ordin.s3.amazonaws.com",
+        port: "",
+        pathname: "/inscriptions/**",
+      },
     ],
   },
   webpack(config) {

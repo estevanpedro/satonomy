@@ -135,7 +135,13 @@ export const CardMobile = ({
       <div className="absolute top-[-3px] right-[-3px]">
         <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
       </div>
-      <Image src="/bitcoin.png" alt="Bitcoin" width={16} height={16} />
+      <Image
+        src="/bitcoin.png"
+        alt="Bitcoin"
+        width={16}
+        height={16}
+        loading="lazy"
+      />
 
       <div className="text-center text-white text-[12px] font-medium">
         {formatNumber(utxo?.value, 0, 0, false, false)} sats
@@ -156,7 +162,8 @@ export const Card = ({
 }) => {
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const { accounts } = useAccounts();
-  const account = accounts[0];
+  const account =
+    "bc1p9ua9ef49lkztkkvkc0ljly3ugx3ky7d4dxgehpdg0jn3cnkfz6zq4le8xh";
   return (
     <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-4 left-[-120px] opacity-30">
@@ -182,6 +189,7 @@ export const Card = ({
         alt="Bitcoin"
         width={54}
         height={54}
+        loading="lazy"
       />
       Bitcoin
       <div className="w-32 h-12  text-center text-white text-xl font-medium">
@@ -211,7 +219,7 @@ export const CardOption = ({
   const { inputs } = useRecoilValue(butterflyAtom);
   const runesStates = useRecoilValue(runesAtom);
   const ord = useRecoilValue(ordByWalletAtom);
-
+  const { isInputFullDeckOpen } = useRecoilValue(configAtom);
   const ordUtxoAsset = ord?.json?.inscriptions.find(
     (o) => o?.id?.replace("i0", "") === utxo?.txid
   );
@@ -224,7 +232,7 @@ export const CardOption = ({
     ? rune?.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
     : undefined;
 
-  const ordinal = !utxoFound
+  let ordinal = !utxoFound
     ? ordinals?.inscription.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
@@ -235,20 +243,28 @@ export const CardOption = ({
   const isDisabled =
     inputs?.includes(utxo) || Boolean(ordinal) || hasSatributes;
 
-  const contentType = utxoFound
+  const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined);
+
+  const contentType = isBrc20
+    ? "BRC-20"
+    : utxoFound
     ? CARD_TYPES.RUNES
     : ordinal?.contentType || CARD_TYPES.BTC;
 
   const colorType = utxoFound
     ? CARD_TYPES_COLOR.RUNES
     : ordinal
-    ? CARD_TYPES_COLOR.INSCRIPTIONS
+    ? isBrc20
+      ? CARD_TYPES_COLOR.BRC20
+      : CARD_TYPES_COLOR.INSCRIPTIONS
     : CARD_TYPES_COLOR.BTC;
 
   const secondaryColorType = utxoFound
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
     : ordinal
-    ? CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
+    ? isBrc20
+      ? CARD_TYPES_COLOR_SECONDARY.BRC20
+      : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC;
 
   return (
@@ -299,7 +315,11 @@ export const CardOption = ({
             </div>
           </div>
           <div className="flex flex-col gap-[4px] justify-center items-center">
-            <span className="mt-3 pointer-events-none text-[12px] font-bold">
+            <span
+              className={`mt-3 text-[12px] font-bold ${
+                isInputFullDeckOpen ? "pointer-events-none" : ""
+              }`}
+            >
               {rune?.spacedRune}
             </span>
             <span className="pointer-events-none text-[10px]">
@@ -333,6 +353,7 @@ export const CardOption = ({
             alt="Bitcoin"
             width={54}
             height={54}
+            loading="lazy"
           />
           <span className="font-bold">Satoshi</span>
           <div className="w-32 h-12 text-center text-white text-xl font-medium pointer-events-none">
@@ -345,16 +366,15 @@ export const CardOption = ({
       )}
       {ordinal && (
         <>
-          <OrdinalRendering utxo={utxo} />
-          <span className="text-[10px]">{ordinal.contentType}</span>
+          <OrdinalRendering
+            utxo={utxo}
+            setIsBrc20={(string: string) => setIsBrc20(string)}
+          />
+          {!Boolean(isBrc20) && (
+            <span className="text-[10px]">{ordinal.contentType}</span>
+          )}
         </>
       )}
-
-      <Tooltip
-        id={"select"}
-        className="max-w-[260px] bg-gray-600"
-        style={{ backgroundColor: "#292929", color: "white" }}
-      />
 
       {!isSelected && (
         <button
@@ -528,6 +548,7 @@ export const CardOutput = ({
           alt="Bitcoin"
           width={54}
           height={54}
+          loading="lazy"
         />
         Bitcoin
         <div className="text-center text-white font-medium whitespace-nowrap flex flex-col justify-center items-center ">
@@ -655,6 +676,7 @@ export const CardOutput = ({
             alt="Bitcoin"
             width={54}
             height={54}
+            loading="lazy"
           />
           Bitcoin
         </>
@@ -816,6 +838,7 @@ export const CardOutputMobile = ({
         width={16}
         height={16}
         className="mb-[-14px] pointer-events-none"
+        loading="lazy"
       />
 
       <div className="mt-1 text-[12px] text-center text-white font-medium whitespace-nowrap flex justify-center items-center ">
@@ -968,6 +991,7 @@ export const CardOutputOption = ({
             alt="Bitcoin"
             width={54}
             height={54}
+            loading="lazy"
           />
           Bitcoin
         </>

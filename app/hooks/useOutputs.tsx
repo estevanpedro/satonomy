@@ -130,7 +130,7 @@ export const useOutputs = ({
   paths.unshift(
     <svg
       style={{ animationDelay: `${paths.length}s` }}
-      key="fee"
+      key="fee-2"
       className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 200 ${totalHeight}`}

@@ -127,13 +127,16 @@ export const utxoServices = {
     return (balances?.data?.detail as RunesUtxo[]) || [];
   },
   getInscriptions: async (wallet: string): Promise<RunesUtxo[]> => {
-    const response = await fetch(`${unisatURL}/${wallet}/inscription-data`, {
-      ...nextRevalidate,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
-      },
-    });
+    const response = await fetch(
+      `${unisatURL}/${wallet}/inscription-data?size=402`,
+      {
+        ...nextRevalidate,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
+        },
+      }
+    );
     const data = await response.json();
     return data.data;
   },
