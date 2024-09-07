@@ -105,7 +105,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
 
-      <div className="fixed bottom-0 left-4 flex gap-4 ">
+      <div className="fixed bottom-0 left-4 gap-4 hidden sm:flex">
         <div
           onClick={() => {
             setConfigs((prev) => ({

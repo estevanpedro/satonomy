@@ -12,7 +12,7 @@ export const NavBar = () => {
       <p className="flex items-center justify-center gap-2 font-bold text-[24px]">
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
         SATONOMY{" "}
-        <span className="text-[12px] opacity-70 font-normal">
+        <span className="text-[12px] opacity-70 font-normal hidden sm:flex">
           {" "}
           - Manage Your Bitcoin L1 Transactions (UTXOs)
         </span>
@@ -31,7 +31,7 @@ export const NavBar = () => {
               className="max-w-[260px] bg-gray-600"
               style={{ backgroundColor: "#292929", color: "white" }}
             />
-            {recommendedFeeRate} sats/vb
+            {recommendedFeeRate} <span className="hidden sm:flex">sats/vb</span>
             <div className="w-[16px]">
               <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
                 <path
@@ -48,6 +48,7 @@ export const NavBar = () => {
         )}
 
         <Optimizations />
+
         <ConnectButton />
       </div>
     </div>

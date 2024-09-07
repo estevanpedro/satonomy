@@ -62,7 +62,9 @@ export const ConnectButton = () => {
 
   return (
     <div
-      className="relative dropdown-container gap-3 flex justify-center items-center"
+      className={`relative dropdown-container gap-3 justify-center items-center ${
+        account ? "hidden sm:flex" : "flex"
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -79,7 +81,7 @@ export const ConnectButton = () => {
 
       {account && dropdownVisible && (
         <div
-          className="absolute left-0 "
+          className="absolute left-0"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
