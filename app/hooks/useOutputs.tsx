@@ -46,6 +46,42 @@ export const useOutputs = ({
     const stop2Color = isRune ? "#FAF22E" : "#feb47b";
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-2-${i})`;
 
+    // <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+    paths.push(
+      <svg
+        key={`i-${i}`}
+        style={{ animationDelay: `${i * 2}s` }}
+        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 200 ${totalHeight}`}
+        overflow={"visible"}
+      >
+        <defs>
+          <linearGradient
+            id={`gradient-2-${i}`}
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: stop2Color, stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: stop1Color, stopOpacity: 1 }}
+            />
+          </linearGradient>
+        </defs>
+        <path
+          d={pathData}
+          stroke={stroke}
+          strokeWidth={strangenessAdjusted + 4}
+          fill="none"
+        />
+      </svg>
+    );
     paths.push(
       <svg
         key={i}
@@ -91,6 +127,32 @@ export const useOutputs = ({
     outputY
   );
 
+  paths.unshift(
+    <svg
+      style={{ animationDelay: `${paths.length}s` }}
+      key="fee"
+      className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={`0 0 200 ${totalHeight}`}
+      overflow={"visible"}
+    >
+      <defs>
+        <linearGradient id={`gradient-2-000`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: "#feb47b", stopOpacity: 1 }} />
+          <stop
+            offset="100%"
+            style={{ stopColor: "#ff7e5f", stopOpacity: 1 }}
+          />
+        </linearGradient>
+      </defs>
+      <path
+        d={feePathData}
+        stroke={`url(#gradient-2-000)`}
+        strokeWidth={"3"}
+        fill="none"
+      />
+    </svg>
+  );
   paths.unshift(
     <svg
       key="fee"

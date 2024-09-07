@@ -101,3 +101,20 @@ body {
 
   /* border: 1px solid white; */
 }
+
+@keyframes ping {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+.animate-ping {
+  animation: ping 7s cubic-bezier(0, 0, 0.2, 1) infinite;
+  transform-origin: center center; /* Ensures scaling is centered */
+  opacity: 0;
+}

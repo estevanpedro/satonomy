@@ -19,7 +19,7 @@ export const useInputs = ({
   const paths = [];
 
   const inputX = 10;
-  const outputX = 374;
+  const outputX = 371.5;
   const outputY = totalHeight / 2;
 
   for (let i = 0; i < inputsCount; i++) {
@@ -45,6 +45,41 @@ export const useInputs = ({
 
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`;
 
+    paths.push(
+      <svg
+        key={`i-${i}`}
+        style={{ animationDelay: `${i * 1}s` }}
+        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 200 ${totalHeight}`}
+        overflow={"visible"}
+      >
+        <defs>
+          <linearGradient
+            id={`gradient-${i}`}
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: stop1Color, stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: stop2Color, stopOpacity: 1 }}
+            />
+          </linearGradient>
+        </defs>
+        <path
+          d={pathData}
+          stroke={stroke}
+          strokeWidth={strangenessAdjusted + 4}
+          fill="none"
+        />
+      </svg>
+    );
     paths.push(
       <svg
         key={i}
