@@ -15,10 +15,12 @@ export const OptimizationCard = ({
   rune,
   onClose,
   index,
+  onOptimizeSelection,
 }: {
   rune: RunesUtxo;
   onClose: () => void;
   index: number;
+  onOptimizeSelection?: () => void;
 }) => {
   const [showSats, setShowSats] = useState<number | null>(null); // Track which card is hovered
 
@@ -156,6 +158,7 @@ export const OptimizationCard = ({
   }, [feeCost, address, rune, utxos, recommendedFeeRate]);
 
   const onSelect = (rune: RunesUtxo) => {
+    onOptimizeSelection?.();
     onClose();
 
     const utxosSorted = (

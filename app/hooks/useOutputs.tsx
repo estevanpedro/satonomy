@@ -51,7 +51,7 @@ export const useOutputs = ({
       <svg
         key={`i-${i}`}
         style={{ animationDelay: `${i * 2}s` }}
-        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping-2"
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 200 ${totalHeight}`}
         overflow={"visible"}
@@ -131,7 +131,7 @@ export const useOutputs = ({
     <svg
       style={{ animationDelay: `${paths.length}s` }}
       key="fee-2"
-      className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+      className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping-2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 200 ${totalHeight}`}
       overflow={"visible"}

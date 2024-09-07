@@ -49,7 +49,7 @@ export const useInputs = ({
       <svg
         key={`i-${i}`}
         style={{ animationDelay: `${i * 1}s` }}
-        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping"
+        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping-2"
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 200 ${totalHeight}`}
         overflow={"visible"}

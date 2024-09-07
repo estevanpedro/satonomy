@@ -162,8 +162,7 @@ export const Card = ({
 }) => {
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const { accounts } = useAccounts();
-  const account =
-    "bc1p9ua9ef49lkztkkvkc0ljly3ugx3ky7d4dxgehpdg0jn3cnkfz6zq4le8xh";
+  const account = accounts?.[0];
   return (
     <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-4 left-[-120px] opacity-30">

@@ -155,30 +155,6 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               <div>Clean</div>
             </button>
           )}
-
-        {(proMode || isInputFullDeckOpen) && (
-          <>
-            <button
-              onClick={() =>
-                setConfigs((prev) => ({
-                  ...prev,
-                  isInputFullDeckOpen: !prev.isInputFullDeckOpen,
-                  isInputDeckOpen: false,
-                }))
-              }
-              className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
-            >
-              <div className="text-[12px] flex items-center justify-center opacity-50">
-                Action
-              </div>
-              <div>
-                {isInputFullDeckOpen
-                  ? `Close portfolio (${utxos?.length})`
-                  : "Open portfolio (${utxos?.length})"}
-              </div>
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

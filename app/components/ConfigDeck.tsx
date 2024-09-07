@@ -8,7 +8,6 @@ import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
 import { track } from "@vercel/analytics";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
-import { useState } from "react";
 import { Modal } from "@/app/components/Modal";
 import Link from "next/link";
 import { psbtService } from "@/app/services/psbtService";
@@ -170,9 +169,16 @@ export const ConfigDeck = () => {
         </div>
       )}
 
-      {Boolean(utxos?.length) && !Boolean(configs.feeCost) ? (
+      {Boolean(utxos?.length) && (
         <div
-          className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-6 border-2 border-zinc-600`}
+          className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
+          onClick={() =>
+            setConfigs((prev) => ({
+              ...prev,
+              isInputFullDeckOpen: !prev.isInputFullDeckOpen,
+              isInputDeckOpen: false,
+            }))
+          }
         >
           <div className="text-[12px] flex items-center justify-center opacity-50">
             Total Balance
@@ -187,7 +193,7 @@ export const ConfigDeck = () => {
             </span>
           </div>
         </div>
-      ) : null}
+      )}
 
       {Boolean(configs.feeRate) && (
         <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col">
@@ -243,10 +249,20 @@ export const ConfigDeck = () => {
                 : "opacity-100 cursor-pointer"
             }`}
           >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
+            <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
+              Sign Transaction
             </div>
-            <div className="flex gap-2 justify-center items-center">
+            <div className="flex gap-2 justify-center items-center relative">
+              <div className="absolute right-[-34px] top-[-28px]">
+                <span className="relative flex h-3 w-3">
+                  {!isConfirmDisabled && !confirmed && (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </>
+                  )}
+                </span>
+              </div>
               <span className="whitespace-nowrap bold font-bold text-[16px] flex justify-center items-center">
                 Confirm <div className="mb-[-5px] ml-2">↳</div>
               </span>

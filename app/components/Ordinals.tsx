@@ -70,9 +70,6 @@ export const OrdinalRendering = ({
             height={140}
             alt="Ordinal Image"
             loading="lazy"
-            onError={() => {
-              setHasImage(false);
-            }}
           />
         )}
         {hasImage && (
@@ -151,7 +148,9 @@ const TextContent = ({ url, setIsBrc20 }: TextContentProps) => {
 
       {!isBrc20 && (
         <span className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden">
-          {text.replaceAll(`","`, `", "`)}
+          {text.length > 120
+            ? `${text.slice(0, 120)}...`
+            : text.replaceAll(`","`, `", "`)}
         </span>
       )}
     </>
