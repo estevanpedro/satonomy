@@ -163,72 +163,91 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   const ordinals = useRecoilValue(ordinalsAtom);
 
   return (
-    <div
-      className={`fixed bottom-4 w-[100vw] ${
-        !configs.isInputDeckOpen ? "hidden" : "flex"
-      }`}
-    >
+    <>
       <div
-        ref={containerRef}
-        className="relative w-full h-[340px] overflow-hidden flex justify-center items-center"
-        style={{ touchAction: "none" }}
+        className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex border-zinc-700 px-8 bg-zinc-800 rounded-t-lg ${
+          configs.isInputFullDeckOpen ? "flex" : "hidden"
+        }`}
       >
-        <animated.div
-          {...bind()}
-          className="flex space-x-4 cursor-grab"
-          style={{ x }}
-        >
+        <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-6">
           {utxos!.map((utxo, index) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const [props, api] = useSpring(() => ({ scale: 1 }));
-
-            if (runeSelected) {
-              const isSameRune = runeSelected.utxos.find(
-                (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
-              );
-
-              const rune = runes?.find((rune) =>
-                rune.utxos.find(
-                  (u) => u.location === `${utxo.txid}:${utxo.vout}`
-                )
-              );
-
-              const utxoFound = rune
-                ? rune?.utxos.find(
-                    (u) => u.location === `${utxo.txid}:${utxo.vout}`
-                  )
-                : undefined;
-
-              const ordinal = !utxoFound
-                ? ordinals?.inscription.find(
-                    (i) =>
-                      i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
-                  )
-                : undefined;
-
-              if ((!isSameRune && utxoFound) || ordinal) {
-                return null;
-              }
-            }
-
             return (
-              <animated.div
-                key={index}
-                className="flex items-center justify-center"
-                style={{
-                  ...props,
-                  width: "200px",
-                  height: "300px",
-                }}
-                onMouseEnter={() => handleMouseEnter(api)}
-                onMouseLeave={() => handleMouseLeave(api)}
-              >
+              <div key={`index-${index}`} className="mt-2">
                 <CardOption onClick={onClick} utxo={utxo} />
-              </animated.div>
+              </div>
             );
           })}
-        </animated.div>
+        </div>
       </div>
-    </div>
+
+      <div
+        className={`fixed bottom-4 w-[100vw] ${
+          !configs.isInputDeckOpen ? "hidden" : "flex"
+        }`}
+      >
+        <div
+          ref={containerRef}
+          className="relative w-full h-[340px] overflow-hidden flex justify-center items-center"
+          style={{ touchAction: "none" }}
+        >
+          <animated.div
+            {...bind()}
+            className="flex space-x-4 cursor-grab"
+            style={{ x }}
+          >
+            {utxos!.map((utxo, index) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const [props, api] = useSpring(() => ({ scale: 1 }));
+
+              if (runeSelected) {
+                const isSameRune = runeSelected.utxos.find(
+                  (runeUtxo) =>
+                    runeUtxo.location === `${utxo.txid}:${utxo.vout}`
+                );
+
+                const rune = runes?.find((rune) =>
+                  rune.utxos.find(
+                    (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                  )
+                );
+
+                const utxoFound = rune
+                  ? rune?.utxos.find(
+                      (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                    )
+                  : undefined;
+
+                const ordinal = !utxoFound
+                  ? ordinals?.inscription.find(
+                      (i) =>
+                        i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+                    )
+                  : undefined;
+
+                if ((!isSameRune && utxoFound) || ordinal) {
+                  return null;
+                }
+              }
+
+              return (
+                <animated.div
+                  key={index}
+                  className="flex items-center justify-center"
+                  style={{
+                    ...props,
+                    width: "200px",
+                    height: "300px",
+                  }}
+                  onMouseEnter={() => handleMouseEnter(api)}
+                  onMouseLeave={() => handleMouseLeave(api)}
+                >
+                  <CardOption onClick={onClick} utxo={utxo} />
+                </animated.div>
+              );
+            })}
+          </animated.div>
+        </div>
+      </div>
+    </>
   );
 };

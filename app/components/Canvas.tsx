@@ -6,7 +6,7 @@ import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const setConfigs = useSetRecoilState(configAtom);
-  const { proMode } = useRecoilValue(configAtom); // Get proMode value from the config
+  const { proMode, isInputFullDeckOpen } = useRecoilValue(configAtom); // Get proMode value from the config
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(1);
@@ -105,7 +105,11 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
 
-      <div className="fixed bottom-0 left-4 gap-4 hidden sm:flex">
+      <div
+        className={`fixed  left-4 gap-4 hidden sm:flex ${
+          isInputFullDeckOpen ? "top-[82px]" : "bottom-0"
+        }`}
+      >
         <div
           onClick={() => {
             setConfigs((prev) => ({
@@ -145,6 +149,26 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               Action
             </div>
             <div>Clean</div>
+          </button>
+        )}
+
+        {(proMode || isInputFullDeckOpen) && (
+          <button
+            onClick={() =>
+              setConfigs((prev) => ({
+                ...prev,
+                isInputFullDeckOpen: !prev.isInputFullDeckOpen,
+                isInputDeckOpen: false,
+              }))
+            }
+            className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Action
+            </div>
+            <div>
+              {isInputFullDeckOpen ? "Close portfolio" : "Open portfolio"}
+            </div>
           </button>
         )}
       </div>
