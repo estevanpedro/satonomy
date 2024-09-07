@@ -106,11 +106,20 @@ body {
   0% {
     opacity: 0;
   }
+  25% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
   75% {
+    opacity: 0.35;
+  }
+  90% {
     opacity: 0.15;
   }
   100% {
-    opacity: 0.3;
+    opacity: 0;
   }
 }
 .animate-ping {
