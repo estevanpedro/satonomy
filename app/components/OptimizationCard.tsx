@@ -199,6 +199,7 @@ export const OptimizationCard = ({
       ...prev,
       feeCost: feeCost,
       isInputDeckOpen: false,
+      isInputFullDeckOpen: false,
       isOutputDeckOpen: false,
     }));
 

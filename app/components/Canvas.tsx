@@ -1,6 +1,7 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { utxoAtom } from "@/app/recoil/utxoAtom";
+import Image from "next/image";
 import React, { useState, useRef } from "react";
 import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
 
@@ -124,10 +125,10 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
             className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
+              Mode
             </div>
             <div className="flex justify-center items-center">
-              {proMode ? "Simple Mode" : "Pro Mode"}
+              {proMode ? "Pro" : "Simple"}
             </div>
           </div>
         )}
@@ -138,9 +139,20 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
             className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
+              Position
             </div>
-            <div>Reset Position &#x21C5;</div>
+            <div className="flex gap-2">
+              Default{" "}
+              <div className="w-[18px] h-[18px] mb-[-8px] mt-[4px]">
+                <Image
+                  src="/directions.png"
+                  width={16}
+                  height={16}
+                  alt="Directions"
+                  className="w-[16px] h-[16px] "
+                />
+              </div>
+            </div>
           </button>
         )}
         {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&

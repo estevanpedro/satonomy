@@ -12,6 +12,7 @@ import { Modal } from "@/app/components/Modal";
 import Link from "next/link";
 import { psbtService } from "@/app/services/psbtService";
 import { runesAtom } from "@/app/recoil/runesAtom";
+import { config } from "process";
 
 export const ConfigDeck = () => {
   useMempool();
@@ -183,7 +184,7 @@ export const ConfigDeck = () => {
           <div className="text-[12px] flex items-center justify-center opacity-50">
             Total Balance
           </div>
-          <div className="flex gap-2 justify-center items-center">
+          <div className="flex gap-2 justify-center items-center px-2">
             <Image src="/bitcoin.png" alt="Bitcoin" width={24} height={24} />
             <span className="whitespace-nowrap">
               {utxos?.length
@@ -191,6 +192,16 @@ export const ConfigDeck = () => {
                 : `0.000000000`}{" "}
               BTC
             </span>
+
+            <Image
+              src="/arrow.png"
+              alt="Arrow"
+              width={16}
+              height={16}
+              style={{
+                transform: configs.isInputFullDeckOpen ? "" : "rotate(180deg)",
+              }}
+            />
           </div>
         </div>
       )}
@@ -253,7 +264,7 @@ export const ConfigDeck = () => {
               Sign Transaction
             </div>
             <div className="flex gap-2 justify-center items-center relative">
-              <div className="absolute right-[-34px] top-[-28px]">
+              <div className="absolute right-[-40px] top-[-28px]">
                 <span className="relative flex h-3 w-3">
                   {!isConfirmDisabled && !confirmed && (
                     <>
