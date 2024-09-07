@@ -25,8 +25,13 @@ export const ConfigDeck = () => {
   const account = accounts[0];
 
   const isDeckOpen = configs?.isInputDeckOpen || configs?.isOutputDeckOpen;
-  const position =
+
+  let position =
     isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]";
+
+  if (configs.isInputFullDeckOpen) {
+    position = "top-[82px]";
+  }
 
   const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0);
   const outputValues =
@@ -166,7 +171,9 @@ export const ConfigDeck = () => {
       )}
 
       {Boolean(utxos?.length) && !Boolean(configs.feeCost) ? (
-        <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-6 border-2 border-zinc-600">
+        <div
+          className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-6 border-2 border-zinc-600`}
+        >
           <div className="text-[12px] flex items-center justify-center opacity-50">
             Total Balance
           </div>

@@ -110,26 +110,28 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
           isInputFullDeckOpen ? "top-[82px]" : "bottom-0"
         }`}
       >
-        <div
-          onClick={() => {
-            setConfigs((prev) => ({
-              ...prev,
-              isInputDeckOpen: false,
-              isOutputDeckOpen: false,
-              proMode: !prev.proMode,
-            }));
-          }}
-          className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
-        >
-          <div className="text-[12px] flex items-center justify-center opacity-50">
-            Action
+        {!isInputFullDeckOpen && (
+          <div
+            onClick={() => {
+              setConfigs((prev) => ({
+                ...prev,
+                isInputDeckOpen: false,
+                isOutputDeckOpen: false,
+                proMode: !prev.proMode,
+              }));
+            }}
+            className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Action
+            </div>
+            <div className="flex justify-center items-center">
+              {proMode ? "Simple Mode" : "Pro Mode"}
+            </div>
           </div>
-          <div className="flex justify-center items-center">
-            {proMode ? "Simple Mode" : "Pro Mode"}
-          </div>
-        </div>
+        )}
 
-        {proMode && (
+        {proMode && !isInputFullDeckOpen && (
           <button
             onClick={resetCanvas}
             className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
@@ -140,17 +142,18 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
             <div>&#x21C5; Reset Position</div>
           </button>
         )}
-        {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) && (
-          <button
-            onClick={resetButterfly}
-            className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
-            </div>
-            <div>Clean</div>
-          </button>
-        )}
+        {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
+          !isInputFullDeckOpen && (
+            <button
+              onClick={resetButterfly}
+              className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+            >
+              <div className="text-[12px] flex items-center justify-center opacity-50">
+                Action
+              </div>
+              <div>Clean</div>
+            </button>
+          )}
 
         {(proMode || isInputFullDeckOpen) && (
           <button

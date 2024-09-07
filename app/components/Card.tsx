@@ -39,16 +39,20 @@ export function generateBowtiePath(
 export const EmptyCard = ({
   onClick,
   className,
+  text,
+  tooltip,
 }: {
   onClick?: () => void;
   className?: string;
+  text?: string;
+  tooltip?: string;
 }) => {
   return (
     <>
       <div
         className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative mb-8`}
       >
-        {className && (
+        {!text && className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
             <select className="outline-none w-[110px]" defaultValue="Transfer">
               <option>Transfer</option>
@@ -64,23 +68,27 @@ export const EmptyCard = ({
         )}
 
         <Tooltip
-          id={"emptyCard"}
-          className="max-w-[210px] bg-gray-600 text-[12px] pr-0"
+          id={`emptyCard-${className}-${text}`}
+          className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
           style={{ backgroundColor: "#292929", color: "white" }}
         />
 
         <div
-          data-tooltip-id={"emptyCard"}
-          data-tooltip-content={`${
-            className
-              ? "Add a new output"
-              : "Open the deck of UTXOs and select an Input"
-          }`}
+          data-tooltip-id={`emptyCard-${className}-${text}`}
+          data-tooltip-content={
+            tooltip
+              ? tooltip
+              : `${
+                  className
+                    ? "Add a new output"
+                    : "Open the deck of UTXOs and select an Input"
+                }`
+          }
           data-tooltip-place={className ? "left" : "right"}
           onClick={onClick}
           className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center text-4xl cursor-pointer border bg-zinc-950 relative hover:border-zinc-500`}
         >
-          +
+          {text || "+"}
         </div>
       </div>
     </>
@@ -353,11 +361,9 @@ export const CardOption = ({
           data-tooltip-id={"select"}
           data-tooltip-content={
             isDisabled
-              ? !Boolean(utxoFound) && !Boolean(ordinal)
+              ? !Boolean(ordinal)
                 ? "UTXO already selected"
-                : `${
-                    Boolean(ordinal) ? "Inscriptions" : "Runes"
-                  } are not available yet.`
+                : `Inscriptions are not available yet.`
               : ""
           }
           data-tooltip-place="top"

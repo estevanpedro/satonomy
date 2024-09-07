@@ -4,7 +4,7 @@ export const configAtom = atom({
   key: "configAtom",
   default: {
     isInputDeckOpen: false,
-    isInputFullDeckOpen: false,
+    isInputFullDeckOpen: true,
     isOutputDeckOpen: false,
     feeRate: 0,
     feeCost: 0,

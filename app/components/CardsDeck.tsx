@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from "react";
 import { useSpring, animated } from "react-spring";
 import { useDrag } from "@use-gesture/react";
 
-import { CardOption } from "@/app/components/Card";
+import { CardOption, EmptyCard } from "@/app/components/Card";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
@@ -169,14 +169,18 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           configs.isInputFullDeckOpen ? "flex" : "hidden"
         }`}
       >
-        <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-6">
+        <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-6 relative">
           {utxos!.map((utxo, index) => {
             return (
-              <div key={`index-${index}`} className="mt-2">
+              <div key={`index-${index}`} className="mt-2 z-0">
                 <CardOption onClick={onClick} utxo={utxo} />
               </div>
             );
           })}
+
+          <div className="z-1">
+            <EmptyCard tooltip="Fetch more" text="+" />
+          </div>
         </div>
       </div>
 
