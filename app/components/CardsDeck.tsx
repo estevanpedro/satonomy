@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from "react";
 import { useSpring, animated } from "react-spring";
 import { useDrag } from "@use-gesture/react";
 
-import { CardOption, EmptyCard } from "@/app/components/Card";
+import { CardOption } from "@/app/components/Card";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
@@ -164,7 +164,7 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           >
             {utxos!.map((utxo, index) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
-              const [props, api] = useSpring(() => ({ scale: 1 }));
+              // const [props, api] = useSpring(() => ({ scale: 1 }));
 
               if (runeSelected) {
                 const isSameRune = runeSelected.utxos.find(
@@ -201,7 +201,7 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
                   key={index}
                   className="flex items-center justify-center"
                   style={{
-                    ...props,
+                    // ...props,
                     width: "200px",
                     height: "300px",
                   }}
