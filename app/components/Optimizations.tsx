@@ -7,6 +7,7 @@ import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
 import { useAccounts } from "@particle-network/btc-connectkit";
 import { formatAddress } from "@/app/utils/format";
 import Image from "next/image";
+import { track } from "@vercel/analytics";
 
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +49,7 @@ export const Optimizations = () => {
 
   const copyToClipboard = () => {
     setIsCopied(true);
+    track("referrer-copied", { wallet: account }, { flags: ["copy"] });
     if (navigator.clipboard) {
       navigator.clipboard.writeText(referralUrl).then(
         () => console.log("Text copied to clipboard"),

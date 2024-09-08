@@ -261,6 +261,7 @@ export const Bowtie = () => {
       const result = await res.json();
 
       if (result?.psbtHex) {
+        track("psbt-created", { wallet: account });
         const psbtHexSigned = await provider.signPsbt(result.psbtHex);
         const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned);
         if (txidRes) {

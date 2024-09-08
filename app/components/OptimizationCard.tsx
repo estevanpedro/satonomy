@@ -8,6 +8,7 @@ import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 
 import { formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
+import { track } from "@vercel/analytics";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -284,6 +285,11 @@ export const OptimizationCard = ({
     };
 
     setButterfly(newButterfly);
+
+    track("optimization-clicked", {
+      wallet: address,
+      inputs: newButterfly.inputs.length,
+    });
   };
 
   if (profitInSats < 0) return null;

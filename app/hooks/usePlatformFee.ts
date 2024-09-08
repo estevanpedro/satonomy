@@ -6,6 +6,7 @@ import { configAtom } from "@/app/recoil/confgsAtom";
 import { utxoAtom } from "@/app/recoil/utxoAtom"; // BTC UTXOs
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { useParams } from "next/navigation"; // Import the useParams hook
+import { track } from "@vercel/analytics";
 
 export const usePlatformFee = () => {
   const { referrer } = useParams(); // Get the referrer from the URL
@@ -123,6 +124,12 @@ export const usePlatformFee = () => {
         };
 
         setButterfly(updatedButterfly); // Update state with the updated or new platform fee
+
+        track(
+          "referrer-fee",
+          { referrer: referrer as string },
+          { flags: ["referrer-fee"] }
+        );
       } else {
         // If the platform fee should not exist (profit <= 0 or <= 5 Rune UTXOs)
         const updatedOutputs = butterfly.outputs.filter(

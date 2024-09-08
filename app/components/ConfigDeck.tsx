@@ -86,7 +86,7 @@ export const ConfigDeck = () => {
         const psbtHexSigned = await provider.signPsbt(result.psbtHex);
         const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned);
         if (txidRes) {
-          track("psbt-sign", { wallet: account });
+          track("psbt-sign", { wallet: account }, { flags: ["confirm"] });
 
           setConfigs((prev) => ({
             ...prev,
@@ -173,13 +173,14 @@ export const ConfigDeck = () => {
       {Boolean(utxos?.length) && (
         <div
           className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
-          onClick={() =>
+          onClick={() => {
+            track("portfolio", {}, { flags: ["portfolio"] });
             setConfigs((prev) => ({
               ...prev,
               isInputFullDeckOpen: !prev.isInputFullDeckOpen,
               isInputDeckOpen: false,
-            }))
-          }
+            }));
+          }}
         >
           <div className="text-[12px] flex items-center justify-center opacity-50">
             {utxos?.length} UTXOs

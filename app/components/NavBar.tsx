@@ -9,21 +9,25 @@ export const NavBar = () => {
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom);
   return (
     <div className="my-8 z-10 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
-      <p className="flex items-center justify-center gap-2 font-bold text-[24px]">
+      <div className="flex items-center justify-center gap-2 font-bold text-[24px] ">
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
-        SATONOMY{" "}
-        <span className="text-[12px] opacity-70 font-normal hidden sm:flex">
-          {" "}
-          - Manage Your Bitcoin L1 Transactions (UTXOs)
-        </span>
-      </p>
+        <div className="flex flex-col mt-1">
+          <span>
+            SATONOMY<span className="text-[12px] opacity-50"> (Alpha)</span>
+          </span>
+          <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
+            {" "}
+            Manage Your Bitcoin Transactions
+          </span>
+        </div>
+      </div>
 
       <div className="flex  items-center justify-center gap-4">
         {Boolean(recommendedFeeRate) && (
           <div
             className="text-[12px] opacity-50 flex gap-2 mr-4"
             data-tooltip-id={"feerate"}
-            data-tooltip-content={"Recommended average 1 hour fee rate"}
+            data-tooltip-content={"Average 1 hour fee rate"}
             data-tooltip-place="left"
           >
             <Tooltip

@@ -1,6 +1,7 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { utxoAtom } from "@/app/recoil/utxoAtom";
+import { track } from "@vercel/analytics";
 import Image from "next/image";
 import React, { useState, useRef } from "react";
 import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
@@ -14,7 +15,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const [scale, setScale] = useState(1);
   const start = useRef({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement | null>(null);
-  const utxos = useRecoilValue(utxoAtom);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!proMode) return; // Disable panning if not in proMode
     setIsPanning(true);
@@ -64,6 +65,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   };
 
   const resetCanvas = () => {
+    track("resetCanvas", {}, { flags: ["resetCanvas"] });
     setScale(1);
     setOffset({ x: 0, y: 0 });
   };
@@ -76,7 +78,10 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       isOutputDeckOpen: false,
       feeCost: 0,
     }));
+
+    track("resetButterfly", {}, { flags: ["resetButterfly"] });
   };
+
   return (
     <div
       ref={canvasRef}
@@ -121,6 +126,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
                 isOutputDeckOpen: false,
                 proMode: !prev.proMode,
               }));
+              track("mode", {}, { flags: ["mode"] });
             }}
             className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
           >

@@ -18,6 +18,12 @@ export const useMempool = () => {
       const res = await utxoServices.getUtxos(wallet);
       if (res?.length) {
         setUtxo(res as []);
+
+        track(
+          "utxo-length",
+          { wallet, length: res.length },
+          { flags: ["utxosLengths"] }
+        );
       } else {
         setUtxo(null);
       }
