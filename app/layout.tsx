@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "Satonomy - UTXO Management 🦋",
   description:
-    "Visually create UTXOs and PSBTs. Add custom scripts and automate transactions for Bitcoin, Runes and Ordinals. Use non-custodial wallets like XVerse, Unisat, Magic Eden and OKX.",
+    "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals. Use wallets like Unisat, XVerse, OKX, and more.",
 };
 
 export default function RootLayout({

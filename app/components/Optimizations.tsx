@@ -8,11 +8,11 @@ import { useAccounts } from "@particle-network/btc-connectkit";
 import { formatAddress } from "@/app/utils/format";
 import Image from "next/image";
 import { track } from "@vercel/analytics";
+import { Tooltip } from "react-tooltip";
 
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
   const runes = useRecoilValue(runesAtom);
-  console.log("✌️runes --->", runes);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);
@@ -42,7 +42,7 @@ export const Optimizations = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setReferralUrl(`${window.location.hostname}/${account}`);
+      setReferralUrl(`https://${window.location.hostname}/${account}`);
     }
   }, [account]);
 
@@ -96,11 +96,30 @@ export const Optimizations = () => {
       )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <h2 className="text-[20px] font-bold mb-4">Optimizations </h2>
+        <Tooltip
+          id={"Optimizations"}
+          className="max-w-[300px] bg-gray-600"
+          style={{ backgroundColor: "#292929", color: "white" }}
+        />
+        <h2 className="text-[20px] font-bold mb-4 flex gap-2">
+          Optimizations{" "}
+          <Image
+            src="/info.svg"
+            alt="Help"
+            width={14}
+            height={14}
+            className="mt-[1px] cursor-help"
+            data-tooltip-id={"Optimizations"}
+            data-tooltip-content={
+              "Create a transaction that consolidates all of your UTXOs into one and extracts the locked sats. An examples: each mint a new 546 sats UTXO is created, if you minted 10 times, you would have 10 x 546 = 5460 sats locked. This optimization will consolidate all of those UTXOs into one of 546, pay the fees and extract the locked sats."
+            }
+            data-tooltip-place="right"
+          />
+        </h2>
 
         <p className="mb-4 text-zinc-200 text-[12px]">
-          Extract locked sats. Keep the same amount of runes merging into a
-          single UTXO.
+          Extract locked sats. Keep the same amount of ordinals and runes
+          merging into a single UTXO.
         </p>
 
         {runesOptimizations?.map((rune, index) => {
@@ -116,28 +135,33 @@ export const Optimizations = () => {
           );
         })}
 
-        <p className="mt-4 text-zinc-500 text-[11px]">
-          Create a transaction that consolidates all of your UTXOs into one and
-          extracts the locked sats. It is recommended to perform at least 5
-          merges.
-        </p>
-
         <div className="border-t-[1px] mt-4">
-          <p className="mt-6 text-[12px]">
-            Invite a friend and earn 50% of their optimization fees! Copy your
-            referral code below.
+          <p className="mt-3 text-[12px]">
+            Invite a friend and earn 50% of their fees! Click below to copy and
+            share your referral link.
           </p>
           <p
             onClick={copyToClipboard}
             className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
           >
             {typeof window !== "undefined" &&
-              `${window?.location?.hostname}/${formatAddress(account || "")}`}
+              `${window?.location?.hostname.replace(
+                "www.",
+                ""
+              )}/${formatAddress(account || "")}`}
 
-            <Image src="/copy.png" width={16} height={16} alt="Copy" />
+            <Image
+              src="/copy.png"
+              width={16}
+              height={16}
+              alt="Copy"
+              className="w-4 h-4 mt-[2px]"
+            />
 
             {isCopied ? (
-              <span className="text-[10px] opacity-50 mt-[2px]">Copied!</span>
+              <span className="text-[10px] opacity-50 mt-[2px] h-[14px]">
+                Copied!
+              </span>
             ) : (
               ""
             )}
