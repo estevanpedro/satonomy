@@ -12,13 +12,13 @@ export const NavBar = () => {
       <div className="flex items-center justify-center gap-2 font-bold text-[24px] ">
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
         <div className="flex flex-col mt-1">
-          <span>
+          <div className="flex gap-1">
             SATONOMY
             <span className="text-[12px] opacity-50 hidden sm:flex">
               {" "}
               (Alpha)
             </span>
-          </span>
+          </div>
           <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
             {" "}
             Manage Your Bitcoin Transactions
