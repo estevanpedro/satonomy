@@ -177,8 +177,10 @@ export const ConfigDeck = () => {
             track("portfolio", {}, { flags: ["portfolio"] });
             setConfigs((prev) => ({
               ...prev,
-              isInputFullDeckOpen: !prev.isInputFullDeckOpen,
-              isInputDeckOpen: false,
+              isInputFullDeckOpen:
+                (utxos?.length || 0) >= 20 ? !prev.isInputFullDeckOpen : false,
+              isInputDeckOpen:
+                (utxos?.length || 0) < 20 ? !prev.isInputDeckOpen : false,
             }));
           }}
         >

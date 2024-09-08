@@ -295,9 +295,18 @@ export const OptimizationCard = ({
   if (profitInSats < 0) return null;
 
   return (
-    <div
-      className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"
-      onClick={() => onSelect(rune)}
+    <button
+      className={`flex justify-start items-start w-full h-full border p-2  ${
+        !Boolean(profitInSats) || !Boolean(profitInUsd)
+          ? "opacity-50 cursor-progress"
+          : "opacity-100 hover:border-gray-50 cursor-pointer"
+      }`}
+      onClick={() => {
+        if (!Boolean(profitInSats) || !Boolean(profitInUsd)) {
+        } else {
+          onSelect(rune);
+        }
+      }}
       onMouseEnter={() => setShowSats(index)} // Show sats on hover
       onMouseLeave={() => setShowSats(null)} // Hide sats when not hovered
     >
@@ -330,6 +339,6 @@ export const OptimizationCard = ({
         )}
         <span className="text-[10px] font-bold ">{length} merges</span>
       </div>
-    </div>
+    </button>
   );
 };
