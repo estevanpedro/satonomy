@@ -232,7 +232,7 @@ export const BowtieMobile = () => {
               totalHeight ? `h-[${totalHeight + 1}px]` : ""
             } flex flex-col w-full`}
           >
-            {configs.feeCost > 0 ? outputPaths : null}
+            {outputPaths}
 
             {butterfly.outputs.map((_, i) => (
               <div
