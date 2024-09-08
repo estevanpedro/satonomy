@@ -21,7 +21,7 @@ export const NavBar = () => {
           </div>
           <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
             {" "}
-            Manage Your Bitcoin Transactions
+            Manage Bitcoin Transactions
           </span>
         </div>
       </div>

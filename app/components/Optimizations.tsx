@@ -74,8 +74,8 @@ export const Optimizations = () => {
 
   return (
     <>
-      {Boolean(runesOptimizations?.length) && (
-        <div className=" items-center mt-4">
+      {
+        <div className={`items-center mt-4 ${account ? "" : "hidden sm:flex"}`}>
           <div
             className="flex gap-2 cursor-pointer -mt-4"
             onClick={() => setIsOpen(true)}
@@ -84,7 +84,7 @@ export const Optimizations = () => {
               Optimize
             </span>{" "}
             <span className="relative flex h-3 w-3">
-              {!optimizationSelected && (
+              {Boolean(runesOptimizations?.length) && !optimizationSelected && (
                 <>
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -93,7 +93,7 @@ export const Optimizations = () => {
             </span>
           </div>
         </div>
-      )}
+      }
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <Tooltip
@@ -122,6 +122,24 @@ export const Optimizations = () => {
           merging into a single UTXO.
         </p>
 
+        {!runesOptimizations.length && (
+          <div className="flex justify-start items-start w-full h-full border p-2">
+            <div className="flex items-center gap-2">
+              <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
+                <span>?</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold">
+                  No optimizations available
+                </span>
+                <span className="text-[10px]">
+                  You do not have enough UTXOs to optimize
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {runesOptimizations?.map((rune, index) => {
           return (
             <div key={index}>
@@ -140,32 +158,40 @@ export const Optimizations = () => {
             Invite a friend and earn 50% of their fees! Click below to copy and
             share your referral link.
           </p>
-          <p
-            onClick={copyToClipboard}
-            className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
-          >
-            {typeof window !== "undefined" &&
-              `${window?.location?.hostname.replace(
-                "www.",
+
+          {!Boolean(account) && (
+            <p className="mt-4 opacity-50 text-[12px]">
+              Connect your wallet to get the link
+            </p>
+          )}
+          {Boolean(account) && (
+            <p
+              onClick={copyToClipboard}
+              className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
+            >
+              {typeof window !== "undefined" &&
+                `${window?.location?.hostname.replace(
+                  "www.",
+                  ""
+                )}/${formatAddress(account || "")}`}
+
+              <Image
+                src="/copy.png"
+                width={16}
+                height={16}
+                alt="Copy"
+                className="w-4 h-4 mt-[2px]"
+              />
+
+              {isCopied ? (
+                <span className="text-[10px] opacity-50 mt-[2px] h-[14px]">
+                  Copied!
+                </span>
+              ) : (
                 ""
-              )}/${formatAddress(account || "")}`}
-
-            <Image
-              src="/copy.png"
-              width={16}
-              height={16}
-              alt="Copy"
-              className="w-4 h-4 mt-[2px]"
-            />
-
-            {isCopied ? (
-              <span className="text-[10px] opacity-50 mt-[2px] h-[14px]">
-                Copied!
-              </span>
-            ) : (
-              ""
-            )}
-          </p>
+              )}
+            </p>
+          )}
         </div>
       </Modal>
     </>
