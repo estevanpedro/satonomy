@@ -12,6 +12,7 @@ import { track } from "@vercel/analytics";
 export const Optimizations = () => {
   const [isOpen, setIsOpen] = useState(false);
   const runes = useRecoilValue(runesAtom);
+  console.log("✌️runes --->", runes);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);

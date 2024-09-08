@@ -1,7 +1,7 @@
 import { InscriptionData, ordAtom } from "@/app/recoil/ordAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 import { useAccounts } from "@particle-network/btc-connectkit";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 export const useOrd = () => {
@@ -11,6 +11,8 @@ export const useOrd = () => {
 
   const { accounts } = useAccounts();
   const account = accounts?.[0];
+
+  const previousWallet = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchOrdinals = async () => {
@@ -37,7 +39,15 @@ export const useOrd = () => {
       }
     };
 
-    if (ord === undefined && !isLoading && account) fetchOrdinals();
+    if (!isLoading && account && previousWallet.current !== account) {
+      fetchOrdinals();
+      previousWallet.current = account;
+    }
+
+    if (!account) {
+      previousWallet.current = undefined;
+      setOrd(null);
+    }
   }, [ord, isLoading, setOrd, account, ordinals?.inscription]);
 
   return { ord };
