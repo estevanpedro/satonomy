@@ -239,8 +239,21 @@ export const CardOption = ({
 
   const hasSatributes = Boolean(ordUtxoAsset?.satributes.length);
 
+  const runeSelected = runesStates?.find((rune) =>
+    inputs.find((i) =>
+      rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+    )
+  );
+
+  const isSameRune = runeSelected?.utxos.find(
+    (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
+  );
+
   const isDisabled =
-    inputs?.includes(utxo) || Boolean(ordinal) || hasSatributes;
+    inputs?.includes(utxo) ||
+    Boolean(ordinal) ||
+    hasSatributes ||
+    (Boolean(runeSelected) && !isSameRune && Boolean(rune));
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined);
 

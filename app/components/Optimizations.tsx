@@ -9,7 +9,7 @@ import { formatAddress } from "@/app/utils/format";
 import Image from "next/image";
 
 export const Optimizations = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const runes = useRecoilValue(runesAtom);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []

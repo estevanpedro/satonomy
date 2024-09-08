@@ -28,7 +28,7 @@ export const Portfolio = ({
         configs.isInputFullDeckOpen ? "flex" : "hidden"
       }`}
     >
-      <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-6 relative">
+      <div className="flex flex-wrap gap-4 justify-around overflow-y-scroll mt-8 relative">
         {configs.isInputFullDeckOpen &&
           utxosFiltered!.map((utxo, index) => {
             return (
