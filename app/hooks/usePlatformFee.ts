@@ -126,7 +126,8 @@ export const usePlatformFee = () => {
       } else {
         // If the platform fee should not exist (profit <= 0 or <= 5 Rune UTXOs)
         const updatedOutputs = butterfly.outputs.filter(
-          (output) => output.type !== "platformFee"
+          (output) =>
+            output.type !== "platformFee" && output.type !== "referrer"
         );
 
         const updatedButterfly = {

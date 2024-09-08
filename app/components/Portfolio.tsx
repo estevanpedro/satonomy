@@ -32,15 +32,20 @@ export const Portfolio = ({
         {configs.isInputFullDeckOpen &&
           utxosFiltered!.map((utxo, index) => {
             return (
-              <div key={`index-${index}`} className="mt-2 z-0">
+              <div key={`index-${index}`} className="mt-2 z-0 mr-auto">
                 <CardOption onClick={onClick} utxo={utxo} />
               </div>
             );
           })}
 
-        <div className="z-1">
-          <EmptyCard tooltip="Expand more" text="+" onClick={onExpand} />
-        </div>
+        {configs.fullDeckPage * 40 < utxos!.length && (
+          <div className="z-1">
+            <EmptyCard tooltip="Expand more" text="+" onClick={onExpand} />
+          </div>
+        )}
+
+        {/* Add an invisible div to fix alignment issues on the last row */}
+        <div className="w-full h-0"></div>
       </div>
     </div>
   );

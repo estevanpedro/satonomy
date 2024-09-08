@@ -451,6 +451,8 @@ export const CardOutput = ({
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
     : CARD_TYPES_COLOR_SECONDARY.BTC;
 
+  const type = butterfly.outputs[index]?.type;
+
   if (butterfly.outputs[index]?.type === "OP RETURN" && rune) {
     return (
       <div className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
@@ -498,12 +500,14 @@ export const CardOutput = ({
     );
   }
 
-  if (butterfly.outputs[index]?.type === "platformFee") {
+  if (type === "platformFee" || type === "referrer") {
     return (
       <div
         className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center opacity-60"
         data-tooltip-id={"confirm"}
-        data-tooltip-content={"Platform fee"}
+        data-tooltip-content={
+          type === "platformFee" ? "Satonomy fee" : "Referrer fee"
+        }
         data-tooltip-place="right"
       >
         <div className="absolute top-[-3px] right-[-3px] pointer-events-none">

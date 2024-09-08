@@ -129,7 +129,7 @@ export const Optimizations = () => {
             className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
           >
             {typeof window !== "undefined" &&
-              `${window.location.hostname}/${formatAddress(account)}`}
+              `${window?.location?.hostname}/${formatAddress(account || "")}`}
 
             <Image src="/copy.png" width={16} height={16} alt="Copy" />
 
