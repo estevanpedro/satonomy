@@ -182,7 +182,7 @@ export const ConfigDeck = () => {
           }
         >
           <div className="text-[12px] flex items-center justify-center opacity-50">
-            Total Balance
+            {utxos?.length} UTXOs
           </div>
           <div className="flex gap-2 justify-center items-center px-2">
             <Image src="/bitcoin.png" alt="Bitcoin" width={24} height={24} />

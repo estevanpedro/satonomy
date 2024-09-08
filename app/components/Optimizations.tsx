@@ -4,14 +4,19 @@ import { useRecoilValue } from "recoil";
 import { Modal } from "@/app/components/Modal";
 import { OptimizationCard } from "@/app/components/OptimizationCard";
 import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
+import { useAccounts } from "@particle-network/btc-connectkit";
+import { formatAddress } from "@/app/utils/format";
+import Image from "next/image";
 
 export const Optimizations = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const runes = useRecoilValue(runesAtom);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);
 
+  const { accounts } = useAccounts();
+  const account = accounts?.[0];
   const onClose = () => setIsOpen(false);
 
   useEffect(() => {
@@ -29,6 +34,39 @@ export const Optimizations = () => {
   const [optimizationSelected, setOptimizationSelected] = useState(false);
   const onOptimizeSelection = () => {
     setOptimizationSelected(true);
+  };
+
+  const [referralUrl, setReferralUrl] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setReferralUrl(`${window.location.hostname}/${account}`);
+    }
+  }, [account]);
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    setIsCopied(true);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(referralUrl).then(
+        () => console.log("Text copied to clipboard"),
+        (err) => console.error("Could not copy text: ", err)
+      );
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = referralUrl;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        console.log("Text copied to clipboard");
+      } catch (err) {
+        console.error("Could not copy text: ", err);
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   return (
@@ -80,6 +118,28 @@ export const Optimizations = () => {
           extracts the locked sats. It is recommended to perform at least 5
           merges.
         </p>
+
+        <div className="border-t-[1px] mt-4">
+          <p className="mt-6 text-[12px]">
+            Invite a friend and earn 50% of their optimization fees! Copy your
+            referral code below.
+          </p>
+          <p
+            onClick={copyToClipboard}
+            className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
+          >
+            {typeof window !== "undefined" &&
+              `${window.location.hostname}/${formatAddress(account)}`}
+
+            <Image src="/copy.png" width={16} height={16} alt="Copy" />
+
+            {isCopied ? (
+              <span className="text-[10px] opacity-50 mt-[2px]">Copied!</span>
+            ) : (
+              ""
+            )}
+          </p>
+        </div>
       </Modal>
     </>
   );

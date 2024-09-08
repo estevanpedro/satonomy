@@ -8,6 +8,7 @@ import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 
 import { formatNumber } from "@/app/utils/format";
 import { useAccounts } from "@particle-network/btc-connectkit";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
@@ -33,6 +34,7 @@ export const OptimizationCard = ({
   const address = accounts[0];
   const length = rune?.utxos.length;
   const [feeCost, setFeeCost] = useState<number>(500);
+  const { referrer } = useParams();
 
   const profitMocked = length * 546 - feeCost - 546;
 
@@ -91,6 +93,21 @@ export const OptimizationCard = ({
           return;
         }
 
+        const referrerFee = !referrer
+          ? 0
+          : Math.ceil(usersProfit - usersProfit * 0.9);
+
+        const referrerOutput = referrer
+          ? [
+              {
+                value: referrerFee,
+                address: referrer as string,
+                vout: 5,
+                type: "referrer",
+              },
+            ]
+          : [];
+
         const chargeOutput = [
           {
             value: usersProfit,
@@ -104,6 +121,7 @@ export const OptimizationCard = ({
             vout: 4,
             type: "platformFee",
           },
+          ...referrerOutput,
         ];
 
         const newButterfly = {
@@ -204,13 +222,29 @@ export const OptimizationCard = ({
     }));
 
     const charge = allBtcInputsValue - 546 - feeCost;
+    const usersProfit = charge * 0.8;
+    const finalUserProfit = Math.floor(usersProfit);
+    const satonomyFees = charge - finalUserProfit; // 20%
+    const platformFee = referrer
+      ? Math.floor(satonomyFees * 0.5)
+      : Math.floor(satonomyFees * 1);
+    const referrerFee = referrer ? Math.floor(satonomyFees * 0.5) : 0;
+    const difference = Math.floor(satonomyFees - platformFee - referrerFee);
 
-    const usersProfit = Math.floor(charge * 0.8);
-    const platformFee = Math.floor(charge - usersProfit);
+    const referrerOutput = referrer
+      ? [
+          {
+            value: referrerFee,
+            address: referrer as string,
+            vout: 5,
+            type: "referrer",
+          },
+        ]
+      : [];
 
     const chargeOutput = [
       {
-        value: usersProfit,
+        value: finalUserProfit + difference,
         address: address,
         vout: 3,
       },
@@ -221,6 +255,7 @@ export const OptimizationCard = ({
         vout: 4,
         type: "platformFee",
       },
+      ...referrerOutput,
     ];
 
     const newButterfly = {
@@ -252,7 +287,7 @@ export const OptimizationCard = ({
   };
 
   if (profitInSats < 0) return null;
-  // debugger;
+
   return (
     <div
       className="flex justify-start items-start w-full h-full border p-2 hover:border-gray-50 cursor-pointer"

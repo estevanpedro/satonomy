@@ -5,8 +5,10 @@ import { runesAtom } from "@/app/recoil/runesAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
 import { utxoAtom } from "@/app/recoil/utxoAtom"; // BTC UTXOs
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
+import { useParams } from "next/navigation"; // Import the useParams hook
 
 export const usePlatformFee = () => {
+  const { referrer } = useParams(); // Get the referrer from the URL
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
   const runes = useRecoilValue(runesAtom); // Rune UTXOs
   const btcUtxos = useRecoilValue(utxoAtom); // BTC UTXOs
@@ -54,18 +56,34 @@ export const usePlatformFee = () => {
         0
       );
 
-      const profit = totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos;
+      const firstProfit =
+        totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos;
 
-      // If the profit is negative or zero, no platform fee should be applied
-      if (runeUtxoCount >= 5 && profit > 0) {
-        const platformFee = Math.ceil(profit - profit * 0.8); // 20% of the profit for the platform
+      const charge = firstProfit;
+      const usersProfit = charge * 0.8;
+      const finalUserProfit = Math.floor(usersProfit);
+      const satonomyFees = charge - finalUserProfit;
+      const platformFee = referrer
+        ? Math.floor(satonomyFees * 0.5)
+        : Math.floor(satonomyFees * 1);
+      const referrerFee = referrer ? Math.floor(satonomyFees * 0.5) : 0;
+      const difference = Math.floor(satonomyFees - platformFee - referrerFee);
 
+      const userProfitValue = finalUserProfit + difference;
+
+      if (runeUtxoCount >= 5 && userProfitValue > 0) {
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {
             // Update the existing platform fee in place
             return {
               ...output,
               value: platformFee,
+            };
+          }
+          if (output.type === "referrer") {
+            return {
+              ...output,
+              value: referrerFee,
             };
           }
           return output;
@@ -83,6 +101,19 @@ export const usePlatformFee = () => {
               "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93", // Platform fee address
             vout: butterfly.outputs.length + 1,
             type: "platformFee",
+          });
+        }
+
+        const referrerExists = butterfly.outputs.some(
+          (output) => output.type === "referrer"
+        );
+
+        if (!referrerExists && referrer) {
+          updatedOutputs.push({
+            value: referrerFee,
+            address: referrer as string,
+            vout: butterfly.outputs.length + 2,
+            type: "referrer",
           });
         }
 
@@ -108,7 +139,14 @@ export const usePlatformFee = () => {
     };
 
     updatePlatformFee();
-  }, [butterfly.inputs, runes, btcUtxos, config.feeCost, setButterfly]);
+  }, [
+    butterfly.inputs,
+    runes,
+    btcUtxos,
+    config.feeCost,
+    setButterfly,
+    referrer,
+  ]);
 
   return butterfly;
 };
