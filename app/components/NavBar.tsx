@@ -13,7 +13,11 @@ export const NavBar = () => {
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
         <div className="flex flex-col mt-1">
           <span>
-            SATONOMY<span className="text-[12px] opacity-50"> (Alpha)</span>
+            SATONOMY
+            <span className="text-[12px] opacity-50 hidden sm:flex">
+              {" "}
+              (Alpha)
+            </span>
           </span>
           <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
             {" "}
