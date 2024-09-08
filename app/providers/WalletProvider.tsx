@@ -34,6 +34,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         },
         walletOptions: {
           visible: false,
+          preload: false,
         },
       }}
       connectors={[

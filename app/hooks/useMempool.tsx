@@ -9,6 +9,7 @@ export const useMempool = () => {
   const setUtxo = useSetRecoilState(utxoAtom);
   const { accounts } = useAccounts();
   const wallet = accounts?.[0];
+
   const previousWallet = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -17,6 +18,12 @@ export const useMempool = () => {
       const res = await utxoServices.getUtxos(wallet);
       if (res?.length) {
         setUtxo(res as []);
+
+        track(
+          "utxo-length",
+          { wallet, length: res.length },
+          { flags: ["utxosLengths"] }
+        );
       } else {
         setUtxo(null);
       }

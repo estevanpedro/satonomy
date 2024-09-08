@@ -1,16 +1,58 @@
 import { ConnectButton } from "@/app/components/Connect";
-import { Tutorial } from "@/app/components/Tutorial";
+import { Optimizations } from "@/app/components/Optimizations";
+import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom";
 import Image from "next/image";
+import { Tooltip } from "react-tooltip";
+import { useRecoilValue } from "recoil";
 
 export const NavBar = () => {
+  const recommendedFeeRate = useRecoilValue(recommendedFeesAtom);
   return (
-    <div className="my-8 z-10 w-full max-w-5xl items-center justify-around font-mono text-sm flex  sm:justify-between">
-      <p className="flex items-center justify-center gap-2 font-bold text-[24px]">
+    <div className="my-8 z-10 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
+      <div className="flex items-center justify-center gap-2 font-bold text-[24px] ">
         <Image src="/satonomy-logo.png" alt="Satonomy" width={40} height={40} />
-        SATONOMY
-      </p>
+        <div className="flex flex-col mt-1">
+          <span>
+            SATONOMY<span className="text-[12px] opacity-50"> (Alpha)</span>
+          </span>
+          <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
+            {" "}
+            Manage Your Bitcoin Transactions
+          </span>
+        </div>
+      </div>
+
       <div className="flex  items-center justify-center gap-4">
-        <Tutorial />
+        {Boolean(recommendedFeeRate) && (
+          <div
+            className="text-[12px] opacity-50 flex gap-2 mr-4"
+            data-tooltip-id={"feerate"}
+            data-tooltip-content={"Average 1 hour fee rate"}
+            data-tooltip-place="left"
+          >
+            <Tooltip
+              id={"feerate"}
+              className="max-w-[260px] bg-gray-600"
+              style={{ backgroundColor: "#292929", color: "white" }}
+            />
+            {recommendedFeeRate} <span className="hidden sm:flex">sats/vb</span>
+            <div className="w-[16px]">
+              <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M304 96c0-9-7-16-16-16H128c-9 0-16 7-16 16v128c0 9 7 16 16 16h160c9 0 16-7 16-16V96zm-32 112H144v-96h128v96z"
+                ></path>
+                <path
+                  fill="currentColor"
+                  d="m488 113-64-32c-8-4-18 0-22 8s0 17 8 21l24 12-2 6c0 21 16 38 32 45v195a16 16 0 0 1-32 0V240c0-39-32-71-64-79V64c0-36-28-64-63-64H113C77 0 48 28 48 64v358l-23 11c-6 3-9 9-9 15v48c0 9 8 16 17 16h352c9 0 15-7 15-16v-48c0-6-3-12-9-15l-23-11V195c16 6 32 24 32 45v128a48 48 0 0 0 96 0V128c0-6-3-12-8-15zM368 480H48v-22l23-12c6-3 9-8 9-14V64c0-18 15-32 33-32h192c17 0 31 14 31 32v368c0 6 3 11 9 14l23 12v22z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        )}
+
+        <Optimizations />
+
         <ConnectButton />
       </div>
     </div>
@@ -18,15 +60,31 @@ export const NavBar = () => {
 };
 
 export const SubNavBar = () => {
+  const showOptimizations = true;
+
   return (
     <>
-      {" "}
-      <h1 className="text-4xl font-bold text-center text-gray-100">
-        Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
-      </h1>
-      <p className="text-center  text-gray-400 px-4">
-        Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
-      </p>
+      {!showOptimizations && (
+        <>
+          <h1 className="text-4xl font-bold text-center text-gray-100">
+            Create PSBT <span className="text-[12px] opacity-50">(alpha)</span>
+          </h1>
+          <p className="text-center  text-gray-400 px-4">
+            Visualize and Program Your Bitcoin L1 Transactions (UTXOs)
+          </p>
+        </>
+      )}
+      {/* {showOptimizations && (
+        <div className="flex w-full flex-col items-start justify-start border-b-2 pb-8">
+          <h1 className="text-4xl font-bold text-center text-gray-100">
+            Extract Locked Sats{" "}
+          </h1>
+          <p className="text-center  text-gray-400">
+            Merge all of your Runes UTXOs into one, and extract the locked sats
+          </p>
+          <Optimizations />
+        </div>
+      )} */}
     </>
   );
 };

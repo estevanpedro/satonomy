@@ -9,6 +9,10 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { runesAtom } from "@/app/recoil/runesAtom";
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
+import { Tooltip } from "react-tooltip";
+import { Portfolio } from "@/app/components/Portfolio";
 
 export const UtxoDeck = () => {
   const utxos = useRecoilValue(utxoAtom);
@@ -20,6 +24,7 @@ export const UtxoDeck = () => {
 export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   const [configs, setConfigs] = useRecoilState(configAtom);
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
+  const runes = useRecoilValue(runesAtom);
   const containerRef = useRef<HTMLDivElement>(null);
   const [{ x }, api] = useSpring(() => ({ x: 0 }));
   const bind = useDrag(
@@ -81,61 +86,135 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
     if (inputSum - outputSum > 0) {
       let outputsUpdated = [...butterfly.outputs];
 
-      outputsUpdated[butterfly.outputs.length - 1] = {
-        ...outputsUpdated[butterfly.outputs.length - 1],
-        value:
-          inputSum -
-          configs.feeCost -
-          outputSum -
-          configs.feeCost +
-          (inputSum - utxo.value),
-      };
+      const indexUtxoToUpdateSats = butterfly.outputs.findIndex(
+        (o) => o.type !== "OP RETURN" && o.type !== "runes"
+      );
 
+      if (indexUtxoToUpdateSats !== -1) {
+        const value =
+          outputsUpdated[indexUtxoToUpdateSats]?.value +
+          inputSum -
+          outputSum -
+          configs.feeCost;
+        outputsUpdated[indexUtxoToUpdateSats] = {
+          ...outputsUpdated[indexUtxoToUpdateSats],
+          value: value > 0 ? value : 0,
+        };
+
+        setButterfly((prev) => ({
+          ...prev,
+          outputs: [...outputsUpdated],
+        }));
+      }
+    }
+
+    const rune = runes?.find((rune) =>
+      rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+    );
+
+    const hasOutputOp = butterfly.outputs.find((o) => o.type === "OP RETURN");
+    if (rune && !hasOutputOp) {
       setButterfly((prev) => ({
         ...prev,
-        outputs: [...outputsUpdated],
+        outputs: [
+          ...prev.outputs,
+          {
+            value: 0,
+            address: "",
+            vout: prev.outputs.length,
+            type: "OP RETURN",
+            rune: rune,
+          },
+        ],
       }));
     }
   };
 
-  return (
-    <div
-      className={`fixed bottom-4 w-[100vw] ${
-        !configs.isInputDeckOpen ? "hidden" : "flex"
-      }`}
-    >
-      <div
-        ref={containerRef}
-        className="relative w-full h-[340px] overflow-hidden flex justify-center items-center"
-        style={{ touchAction: "none" }}
-      >
-        <animated.div
-          {...bind()}
-          className="flex space-x-4 cursor-grab"
-          style={{ x }}
-        >
-          {utxos!.map((utxo, index) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const [props, api] = useSpring(() => ({ scale: 1 }));
+  const runeSelected = runes?.find((rune) =>
+    butterfly.inputs.find((i) =>
+      rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+    )
+  );
 
-            return (
-              <animated.div
-                key={index}
-                className="flex items-center justify-center"
-                style={{
-                  ...props,
-                  width: "200px",
-                  height: "300px",
-                }}
-                onMouseEnter={() => handleMouseEnter(api)}
-                onMouseLeave={() => handleMouseLeave(api)}
-              >
-                <CardOption onClick={onClick} utxo={utxo} />
-              </animated.div>
-            );
-          })}
-        </animated.div>
+  const ordinals = useRecoilValue(ordinalsAtom);
+
+  return (
+    <>
+      <Portfolio onClick={onClick} />
+
+      <div
+        className={`fixed bottom-4 w-[100vw] ${
+          !configs.isInputDeckOpen ? "hidden" : "flex"
+        }`}
+      >
+        <div
+          ref={containerRef}
+          className="relative w-full h-[340px] overflow-hidden flex justify-center items-center"
+          style={{ touchAction: "none" }}
+        >
+          <Tooltip
+            id={"select"}
+            className="max-w-[260px] bg-gray-600"
+            style={{ backgroundColor: "#292929", color: "white" }}
+          />
+          <animated.div
+            {...bind()}
+            className="flex space-x-4 cursor-grab"
+            style={{ x }}
+          >
+            {utxos!.map((utxo, index) => {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              // const [props, api] = useSpring(() => ({ scale: 1 }));
+
+              if (runeSelected) {
+                const isSameRune = runeSelected.utxos.find(
+                  (runeUtxo) =>
+                    runeUtxo.location === `${utxo.txid}:${utxo.vout}`
+                );
+
+                const rune = runes?.find((rune) =>
+                  rune.utxos.find(
+                    (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                  )
+                );
+
+                const utxoFound = rune
+                  ? rune?.utxos.find(
+                      (u) => u.location === `${utxo.txid}:${utxo.vout}`
+                    )
+                  : undefined;
+
+                const ordinal = !utxoFound
+                  ? ordinals?.inscription.find(
+                      (i) =>
+                        i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+                    )
+                  : undefined;
+
+                if ((!isSameRune && utxoFound) || ordinal) {
+                  return null;
+                }
+              }
+
+              return (
+                <animated.div
+                  key={index}
+                  className="flex items-center justify-center"
+                  style={{
+                    // ...props,
+                    width: "200px",
+                    height: "300px",
+                  }}
+                  onMouseEnter={() => handleMouseEnter(api)}
+                  onMouseLeave={() => handleMouseLeave(api)}
+                >
+                  <CardOption onClick={onClick} utxo={utxo} />
+                </animated.div>
+              );
+            })}
+          </animated.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

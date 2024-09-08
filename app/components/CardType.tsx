@@ -4,12 +4,14 @@ export const CARD_TYPES: Record<string, string> = {
 };
 
 export const CARD_TYPES_COLOR: Record<string, string> = {
+  BRC20: "#ff085f",
   RUNES: "#FF8A00",
   BTC: "#52525B",
   INSCRIPTIONS: "#FF61F6",
 };
 
 export const CARD_TYPES_COLOR_SECONDARY: Record<string, string> = {
+  BRC20: "#ff639a",
   RUNES: "#FAF22E",
   BTC: "#818189",
   INSCRIPTIONS: "#FF95F9",
@@ -32,7 +34,15 @@ export const Category = ({ color, type }: { color: string; type: string }) => {
           fill={color}
         />
       </svg>
-      <div className="z-4 absolute top-[1px] right-4 text-[12px] pointer-events-none font-bold capitalize">
+      <div
+        className="z-4 absolute top-[1px] right-4 text-[12px] pointer-events-none font-bold capitalize"
+        style={{
+          maxWidth: "50px", // Ensures the maximum width is 78px
+          whiteSpace: "nowrap", // Prevents the text from wrapping to the next line
+          overflow: "hidden", // Hides overflow text
+          textOverflow: "ellipsis", // Adds the '...' when the text overflows
+        }}
+      >
         {type.split("/")[0]}
       </div>
     </>
