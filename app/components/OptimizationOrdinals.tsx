@@ -316,7 +316,7 @@ export const OptimizationOrdinals = ({
             </span>
           </div>
         )}
-        <span className="text-[10px] font-bold ">{length} merges</span>
+        <span className="text-[10px] font-bold ">{length} merge</span>
       </div>
     </button>
   );
