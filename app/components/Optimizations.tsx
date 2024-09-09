@@ -9,20 +9,36 @@ import { formatAddress } from "@/app/utils/format";
 import Image from "next/image";
 import { track } from "@vercel/analytics";
 import { Tooltip } from "react-tooltip";
+import { ConnectButton } from "@/app/components/Connect";
+import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom";
+import { OptimizationOrdinals } from "@/app/components/OptimizationOrdinals";
 
 export const Optimizations = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { accounts } = useAccounts();
+  const ordinals = useRecoilValue(ordinalsAtom);
   const runes = useRecoilValue(runesAtom);
+
+  const [isOpen, setIsOpen] = useState(true);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);
+  const [ordinalsOptimizations, setOrdinalsOptimizations] = useState<
+    OrdinalData[] | []
+  >([]);
 
-  const { accounts } = useAccounts();
   const account = accounts?.[0];
   const onClose = () => setIsOpen(false);
 
   useEffect(() => {
+    const ordinalsOptimizationsFiltered = ordinals?.inscription?.filter(
+      (o) => o.utxo.satoshi > 546
+    );
+
+    if (ordinalsOptimizationsFiltered?.length) {
+      setOrdinalsOptimizations(ordinalsOptimizationsFiltered);
+    }
     const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5);
+
     if (runesOptimizations) {
       const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations");
       if (!hasSavedOnLocalStorage) {
@@ -31,7 +47,7 @@ export const Optimizations = () => {
       }
       setRunesOptimizations(runesOptimizations);
     }
-  }, [runes]);
+  }, [runes, ordinals?.inscription]);
 
   const [optimizationSelected, setOptimizationSelected] = useState(false);
   const onOptimizeSelection = () => {
@@ -122,23 +138,24 @@ export const Optimizations = () => {
           merging into a single UTXO.
         </p>
 
-        {!runesOptimizations.length && (
-          <div className="flex justify-start items-start w-full h-full border p-2">
-            <div className="flex items-center gap-2">
-              <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
-                <span>?</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[12px] font-bold">
-                  No optimizations available
-                </span>
-                <span className="text-[10px]">
-                  You do not have enough UTXOs to optimize
-                </span>
+        {Boolean(!runesOptimizations.length) &&
+          Boolean(!ordinalsOptimizations.length) && (
+            <div className="flex justify-start items-start w-full h-full border p-2">
+              <div className="flex items-center gap-2">
+                <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
+                  <span>?</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[12px] font-bold">
+                    No optimizations available
+                  </span>
+                  <span className="text-[10px]">
+                    You do not have enough UTXOs to optimize
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {runesOptimizations?.map((rune, index) => {
           return (
@@ -153,6 +170,23 @@ export const Optimizations = () => {
           );
         })}
 
+        {ordinalsOptimizations.length > 0 && (
+          <>
+            {ordinalsOptimizations.map((ordinal, index) => {
+              return (
+                <div key={index}>
+                  <OptimizationOrdinals
+                    ordinal={ordinal}
+                    onClose={onClose}
+                    index={index}
+                    onOptimizeSelection={onOptimizeSelection}
+                  />
+                </div>
+              );
+            })}
+          </>
+        )}
+
         <div className="border-t-[1px] mt-4">
           <p className="mt-3 text-[12px]">
             Invite a friend and earn 50% of their fees! Click below to copy and
@@ -161,7 +195,7 @@ export const Optimizations = () => {
 
           {!Boolean(account) && (
             <p className="mt-4 opacity-50 text-[12px]">
-              Connect your wallet to get the link
+              <ConnectButton />
             </p>
           )}
           {Boolean(account) && (

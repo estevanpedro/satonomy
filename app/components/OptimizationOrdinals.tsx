@@ -1,9 +1,10 @@
 "use client";
+import { OrdinalRendering } from "@/app/components/Ordinals";
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
 import { butterflyAtom } from "@/app/recoil/butterflyAtom";
 import { configAtom } from "@/app/recoil/confgsAtom";
+import { OrdinalData } from "@/app/recoil/ordinalsAtom";
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom";
-import { RunesUtxo } from "@/app/recoil/runesAtom";
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
 
 import { formatNumber } from "@/app/utils/format";
@@ -13,13 +14,13 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
-export const OptimizationCard = ({
-  rune,
+export const OptimizationOrdinals = ({
+  ordinal,
   onClose,
   index,
   onOptimizeSelection,
 }: {
-  rune: RunesUtxo;
+  ordinal: OrdinalData;
   onClose: () => void;
   index: number;
   onOptimizeSelection?: () => void;
@@ -33,7 +34,7 @@ export const OptimizationCard = ({
   const btcUsdPrice = useRecoilValue(btcPriceAtom);
   const { accounts } = useAccounts();
   const address = accounts[0];
-  const length = rune?.utxos.length;
+  const length = 1;
   const [feeCost, setFeeCost] = useState<number>(500);
   const { referrer } = useParams();
 
@@ -44,25 +45,16 @@ export const OptimizationCard = ({
   const profitInUsd = (profit / 100000000) * btcUsdPrice;
 
   useEffect(() => {
-    if (!rune) return;
+    if (!ordinal) return;
 
     const utxosSorted = (
       JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
     )?.sort((a, b) => a.value - b.value);
 
-    let allBtcInputsValue = rune.utxos.reduce(
-      (acc, curr) =>
-        acc +
-        Number(
-          utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
-        ),
-      0
-    );
+    let allBtcInputsValue = ordinal.utxo.satoshi;
 
     const inputUtxos =
-      utxos?.filter((utxo) =>
-        rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
-      ) || [];
+      utxos?.filter((utxo) => ordinal.utxo.txid === utxo.txid) || [];
 
     if (allBtcInputsValue < feeCost) {
       const bestBtcInput = (utxosSorted || [])?.find(
@@ -133,17 +125,13 @@ export const OptimizationCard = ({
               value: 0,
               address: address,
               vout: 1,
-              rune: rune,
+              ordinal: ordinal,
             },
             {
               type: "runes",
               value: 546,
               address: address,
-              rune: rune,
-              runesValue: rune.utxos.reduce(
-                (acc, curr) => acc + Number(curr.formattedBalance),
-                0
-              ),
+              ordinal: ordinal,
               vout: 2,
             },
             ...chargeOutput,
@@ -174,9 +162,9 @@ export const OptimizationCard = ({
     };
 
     if (!feeCost || feeCost === 500) fetchFees();
-  }, [feeCost, address, rune, utxos, recommendedFeeRate]);
+  }, [feeCost, address, ordinal, utxos, recommendedFeeRate]);
 
-  const onSelect = (rune: RunesUtxo) => {
+  const onSelect = (ordinal: OrdinalData) => {
     onOptimizeSelection?.();
     onClose();
 
@@ -184,19 +172,10 @@ export const OptimizationCard = ({
       JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
     )?.sort((a, b) => a.value - b.value);
 
-    let allBtcInputsValue = rune.utxos.reduce(
-      (acc, curr) =>
-        acc +
-        Number(
-          utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
-        ),
-      0
-    );
+    let allBtcInputsValue = ordinal.utxo.satoshi;
 
     const inputUtxos =
-      utxos?.filter((utxo) =>
-        rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
-      ) || [];
+      utxos?.filter((utxo) => ordinal.utxo.txid === utxo.txid) || [];
 
     if (allBtcInputsValue < feeCost) {
       const bestBtcInput = (utxosSorted || [])?.find(
@@ -267,17 +246,13 @@ export const OptimizationCard = ({
           value: 0,
           address: address,
           vout: 1,
-          rune: rune,
+          ordinal: ordinal,
         },
         {
           type: "runes",
           value: 546,
           address: address,
-          rune: rune,
-          runesValue: rune.utxos.reduce(
-            (acc, curr) => acc + Number(curr.formattedBalance),
-            0
-          ),
+          ordinal: ordinal,
           vout: 2,
         },
         ...chargeOutput,
@@ -296,29 +271,34 @@ export const OptimizationCard = ({
 
   return (
     <button
-      className={`flex justify-start items-start w-full h-full border p-2  ${
+      data-tooltip-id={"Optimizations"}
+      data-tooltip-content={"Coming Soon"}
+      data-tooltip-place="right"
+      className={`cursor-progress flex justify-start items-start w-full h-full border p-2  ${
         !Boolean(profitInSats) || !Boolean(profitInUsd)
           ? "opacity-50 cursor-progress"
           : "opacity-100 hover:border-gray-50 cursor-pointer"
       }`}
-      onClick={() => {
-        if (!Boolean(profitInSats) || !Boolean(profitInUsd)) {
-        } else {
-          onSelect(rune);
-        }
-      }}
       onMouseEnter={() => setShowSats(index)} // Show sats on hover
       onMouseLeave={() => setShowSats(null)} // Hide sats when not hovered
     >
       <div className="justify-center items-center flex text-center text-[52px] mr-4">
         <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
-          {rune?.symbol}
+          {!ordinal.utxo.inscriptions[0].isBRC20 && (
+            <OrdinalRendering
+              utxo={ordinal.utxo as unknown as MempoolUTXO}
+              setIsBrc20={() => {}}
+              size={40}
+            />
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-[4px] justify-center items-start">
-        <span className="text-[12px] font-bold">{rune?.spacedRune}</span>
-        <span className="text-[10px]">{rune?.runeid}</span>
+        <span className="text-[12px] font-bold">{ordinal.contentType}</span>
+        <span className="text-[10px]">
+          {ordinal.utxo.inscriptions[0]?.inscriptionNumber}
+        </span>
       </div>
 
       <div className="flex-end flex items-end justify-end w-full flex-col">

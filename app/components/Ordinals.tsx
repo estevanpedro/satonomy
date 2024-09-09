@@ -11,9 +11,11 @@ const ORDIN_URL = `https://ordin.s3.amazonaws.com/inscriptions`;
 export const OrdinalRendering = ({
   utxo,
   setIsBrc20,
+  size,
 }: {
   utxo: MempoolUTXO;
   setIsBrc20: (string: string) => void;
+  size?: number;
 }) => {
   const ordinals = useRecoilValue(ordinalsAtom);
   const [hasImage, setHasImage] = useState<boolean | undefined>(true);
@@ -66,8 +68,8 @@ export const OrdinalRendering = ({
           <Image
             loader={({ src }) => src}
             src={`https://ordinals.com/content/${ordinal?.inscriptionId}`}
-            width={140}
-            height={140}
+            width={size || 140}
+            height={size || 140}
             alt="Ordinal Image"
             loading="lazy"
           />
@@ -76,8 +78,8 @@ export const OrdinalRendering = ({
           <Image
             loader={({ src }) => src}
             src={`${ORDIN_URL}/${ordinal?.inscriptionId}`}
-            width={140}
-            height={140}
+            width={size || 140}
+            height={size || 140}
             alt="Ordinal Image"
             loading="lazy"
             onError={() => {

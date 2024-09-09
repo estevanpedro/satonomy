@@ -35,7 +35,7 @@ interface OrdinalUTXO {
   inscriptions: Inscription[];
 }
 
-interface OrdinalData {
+export interface OrdinalData {
   utxo: OrdinalUTXO;
   address: string;
   offset: number;
