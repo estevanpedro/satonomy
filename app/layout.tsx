@@ -9,9 +9,33 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Satonomy - UTXO Management 🦋",
+  title: "Satonomy - UTXO Management",
   description:
-    "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals. Use wallets like Unisat, XVerse, OKX, and more.",
+    "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals.",
+  openGraph: {
+    title: "Satonomy - UTXO Management",
+    description:
+      "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals.",
+    url: "https://satonomy.io",
+    siteName: "Satonomy",
+    images: [
+      {
+        url: "/twitter-image.png", // Ensure this path points to the image in your public folder
+        width: 1200,
+        height: 630,
+        alt: "Satonomy UTXO Management Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Satonomy - UTXO Management",
+    description:
+      "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals.",
+    images: ["/twitter-image.png"], // Ensure this path points to the image in your public folder
+  },
 };
 
 export default function RootLayout({
