@@ -18,7 +18,7 @@ export const Optimizations = () => {
   const ordinals = useRecoilValue(ordinalsAtom);
   const runes = useRecoilValue(runesAtom);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);
