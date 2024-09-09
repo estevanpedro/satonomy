@@ -2,7 +2,7 @@ import { Modal } from "@/app/components/Modal";
 import { useState } from "react";
 
 export const AddOutput = ({ onClick }: { onClick: () => void }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
 
   return (

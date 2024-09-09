@@ -91,7 +91,7 @@ export const Optimizations = () => {
   return (
     <>
       {
-        <div className={`items-center mt-4 ${account ? "" : "hidden sm:flex"}`}>
+        <div className={`items-center mt-4 `}>
           <div
             className="flex gap-2 cursor-pointer -mt-4"
             onClick={() => setIsOpen(true)}
@@ -195,7 +195,7 @@ export const Optimizations = () => {
 
           {!Boolean(account) && (
             <p className="mt-4 opacity-50 text-[12px]">
-              <ConnectButton />
+              <ConnectButton mobileVisible={true} />
             </p>
           )}
           {Boolean(account) && (

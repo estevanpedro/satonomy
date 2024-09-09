@@ -7,7 +7,11 @@ import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom";
 import { runesAtom } from "@/app/recoil/runesAtom";
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
 
-export const ConnectButton = () => {
+export const ConnectButton = ({
+  mobileVisible,
+}: {
+  mobileVisible?: boolean;
+}) => {
   const { openConnectModal, disconnect } = useConnectModal();
   const { accounts } = useAccounts();
 
@@ -63,7 +67,7 @@ export const ConnectButton = () => {
   return (
     <div
       className={`relative dropdown-container gap-3 justify-center items-center ${
-        account ? "hidden sm:flex" : "flex"
+        mobileVisible ? "flex" : "hidden sm:flex"
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
