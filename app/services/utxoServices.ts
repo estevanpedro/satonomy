@@ -110,10 +110,10 @@ export const utxoServices = {
       throw error;
     }
   },
-  getUtxos: async (address: string) => {
+  getUtxos: async (address: string, notConfirmed?: boolean) => {
     const mempool = await fetch(`${mempoolURL}/address/${address}/utxo`);
     const utxos: MempoolUTXO[] = await mempool.json();
-    return utxos.filter((utxo) => utxo.status.confirmed);
+    return utxos.filter((utxo) => utxo.status.confirmed || notConfirmed);
   },
   getRunesBalances: async (wallet: string): Promise<RunesUtxo[]> => {
     const response = await fetch(`${unisatURL}/${wallet}/runes/balance-list`, {

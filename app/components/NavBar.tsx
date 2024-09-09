@@ -1,12 +1,25 @@
 import { ConnectButton } from "@/app/components/Connect";
 import { Optimizations } from "@/app/components/Optimizations";
+import { configAtom } from "@/app/recoil/confgsAtom";
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom";
 import Image from "next/image";
+import { useState } from "react";
 import { Tooltip } from "react-tooltip";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const NavBar = () => {
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom);
+  const [clicked, setClicked] = useState(0);
+  const setConfig = useSetRecoilState(configAtom);
+
+  const onGasClick = () => {
+    setClicked(clicked + 1);
+    if (clicked > 5) {
+      setConfig((old) => ({ ...old, notConfirmed: true }));
+      alert("UTXO Unconfirmed Activated");
+    }
+  };
+
   return (
     <div className="my-8 z-10 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
       <div className="flex items-center justify-center gap-2 font-bold text-[24px] ">
@@ -40,7 +53,7 @@ export const NavBar = () => {
               style={{ backgroundColor: "#292929", color: "white" }}
             />
             {recommendedFeeRate} <span className="hidden sm:flex">sats/vb</span>
-            <div className="w-[16px]">
+            <div className="w-[16px]" onClick={onGasClick}>
               <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
                 <path
                   fill="currentColor"
