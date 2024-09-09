@@ -150,7 +150,7 @@ export const Bowtie = () => {
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: false,
-      feeCost: prev.feeCost ? prev.feeCost : 1000,
+      feeCost: prev.feeCost ? prev.feeCost : 1836,
     }));
 
     const outputSum = butterfly.outputs.reduce(

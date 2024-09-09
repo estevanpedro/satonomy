@@ -284,13 +284,14 @@ export const OptimizationOrdinals = ({
     >
       <div className="justify-center items-center flex text-center text-[52px] mr-4">
         <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
-          {!ordinal.utxo.inscriptions[0].isBRC20 && (
-            <OrdinalRendering
-              utxo={ordinal.utxo as unknown as MempoolUTXO}
-              setIsBrc20={() => {}}
-              size={40}
-            />
-          )}
+          {!ordinal.utxo.inscriptions[0].isBRC20 &&
+            ordinal.contentType.includes("image") && (
+              <OrdinalRendering
+                utxo={ordinal.utxo as unknown as MempoolUTXO}
+                setIsBrc20={() => {}}
+                size={40}
+              />
+            )}
         </div>
       </div>
 

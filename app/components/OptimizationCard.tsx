@@ -34,7 +34,7 @@ export const OptimizationCard = ({
   const { accounts } = useAccounts();
   const address = accounts[0];
   const length = rune?.utxos.length;
-  const [feeCost, setFeeCost] = useState<number>(500);
+  const [feeCost, setFeeCost] = useState<number>(1836);
   const { referrer } = useParams();
 
   const profitMocked = length * 546 - feeCost - 546;
@@ -173,7 +173,7 @@ export const OptimizationCard = ({
       }
     };
 
-    if (!feeCost || feeCost === 500) fetchFees();
+    if (!feeCost || feeCost === 1836) fetchFees();
   }, [feeCost, address, rune, utxos, recommendedFeeRate]);
 
   const onSelect = (rune: RunesUtxo) => {
