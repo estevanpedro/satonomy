@@ -298,7 +298,9 @@ export const OptimizationOrdinals = ({
       </div>
 
       <div className="flex flex-col gap-[4px] justify-center items-start">
-        <span className="text-[12px] font-bold">{ordinal.contentType}</span>
+        <span className="text-[12px] font-bold whitespace-nowrap">
+          {ordinal.contentType}
+        </span>
         <span className="text-[10px]">
           {ordinal.utxo.inscriptions[0]?.inscriptionNumber}
         </span>
