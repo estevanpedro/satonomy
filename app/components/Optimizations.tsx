@@ -135,7 +135,7 @@ export const Optimizations = () => {
 
         <p className="mb-4 text-zinc-200 text-[12px]">
           Extract locked sats. Keep the same amount of ordinals and runes
-          merging into a single UTXO.
+          merging into a smaller UTXO.
         </p>
 
         {Boolean(!runesOptimizations.length) &&
