@@ -18,7 +18,7 @@ export const Optimizations = () => {
   const ordinals = useRecoilValue(ordinalsAtom);
   const runes = useRecoilValue(runesAtom);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
   >([]);
@@ -112,120 +112,122 @@ export const Optimizations = () => {
       }
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <Tooltip
-          id={"Optimizations"}
-          className="max-w-[300px] bg-gray-600"
-          style={{ backgroundColor: "#292929", color: "white" }}
-        />
-        <h2 className="text-[20px] font-bold mb-4 flex gap-2">
-          Optimizations{" "}
-          <Image
-            src="/info.svg"
-            alt="Help"
-            width={14}
-            height={14}
-            className="mt-[1px] cursor-help"
-            data-tooltip-id={"Optimizations"}
-            data-tooltip-content={
-              "Create a transaction that consolidates all of your UTXOs into one and extracts the locked sats. An examples: each mint a new 546 sats UTXO is created, if you minted 10 times, you would have 10 x 546 = 5460 sats locked. This optimization will consolidate all of those UTXOs into one of 546, pay the fees and extract the locked sats."
-            }
-            data-tooltip-place="right"
+        <div className="max-h-[600px] overflow-y-auto no-scrollbar">
+          <Tooltip
+            id={"Optimizations"}
+            className="max-w-[300px] bg-gray-600"
+            style={{ backgroundColor: "#292929", color: "white" }}
           />
-        </h2>
+          <h2 className="text-[20px] font-bold mb-4 flex gap-2">
+            Optimizations{" "}
+            <Image
+              src="/info.svg"
+              alt="Help"
+              width={14}
+              height={14}
+              className="mt-[1px] cursor-help"
+              data-tooltip-id={"Optimizations"}
+              data-tooltip-content={
+                "Create a transaction that consolidates all of your UTXOs into one and extracts the locked sats. An examples: each mint a new 546 sats UTXO is created, if you minted 10 times, you would have 10 x 546 = 5460 sats locked. This optimization will consolidate all of those UTXOs into one of 546, pay the fees and extract the locked sats."
+              }
+              data-tooltip-place="right"
+            />
+          </h2>
 
-        <p className="mb-4 text-zinc-200 text-[12px]">
-          Extract locked sats. Keep the same amount of ordinals and runes
-          merging into a smaller UTXO.
-        </p>
-
-        {Boolean(!runesOptimizations.length) &&
-          Boolean(!ordinalsOptimizations.length) && (
-            <div className="flex justify-start items-start w-full h-full border p-2">
-              <div className="flex items-center gap-2">
-                <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
-                  <span>?</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[12px] font-bold">
-                    No optimizations available
-                  </span>
-                  <span className="text-[10px]">
-                    You do not have enough UTXOs to optimize
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-        {runesOptimizations?.map((rune, index) => {
-          return (
-            <div key={index}>
-              <OptimizationCard
-                rune={rune}
-                onClose={onClose}
-                index={index}
-                onOptimizeSelection={onOptimizeSelection}
-              />
-            </div>
-          );
-        })}
-
-        {ordinalsOptimizations.length > 0 && (
-          <>
-            {ordinalsOptimizations.map((ordinal, index) => {
-              return (
-                <div key={index}>
-                  <OptimizationOrdinals
-                    ordinal={ordinal}
-                    onClose={onClose}
-                    index={index}
-                    onOptimizeSelection={onOptimizeSelection}
-                  />
-                </div>
-              );
-            })}
-          </>
-        )}
-
-        <div className="border-t-[1px] mt-4">
-          <p className="mt-3 text-[12px]">
-            Invite a friend and earn 50% of their fees! Click below to copy and
-            share your referral link.
+          <p className="mb-4 text-zinc-200 text-[12px]">
+            Extract locked sats. Keep the same amount of ordinals and runes
+            merging into a smaller UTXO.
           </p>
 
-          {!Boolean(account) && (
-            <p className="mt-4 opacity-50 text-[12px]">
-              <ConnectButton mobileVisible={true} />
-            </p>
+          {Boolean(!runesOptimizations.length) &&
+            Boolean(!ordinalsOptimizations.length) && (
+              <div className="flex justify-start items-start w-full h-full border p-2">
+                <div className="flex items-center gap-2">
+                  <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">
+                    <span>?</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] font-bold">
+                      No optimizations available
+                    </span>
+                    <span className="text-[10px]">
+                      You do not have enough UTXOs to optimize
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          {runesOptimizations?.map((rune, index) => {
+            return (
+              <div key={index}>
+                <OptimizationCard
+                  rune={rune}
+                  onClose={onClose}
+                  index={index}
+                  onOptimizeSelection={onOptimizeSelection}
+                />
+              </div>
+            );
+          })}
+
+          {ordinalsOptimizations.length > 0 && (
+            <>
+              {ordinalsOptimizations.map((ordinal, index) => {
+                return (
+                  <div key={index}>
+                    <OptimizationOrdinals
+                      ordinal={ordinal}
+                      onClose={onClose}
+                      index={index}
+                      onOptimizeSelection={onOptimizeSelection}
+                    />
+                  </div>
+                );
+              })}
+            </>
           )}
-          {Boolean(account) && (
-            <p
-              onClick={copyToClipboard}
-              className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
-            >
-              {typeof window !== "undefined" &&
-                `${window?.location?.hostname.replace(
-                  "www.",
+
+          <div className="border-t-[1px] mt-4">
+            <p className="mt-3 text-[12px]">
+              Invite a friend and earn 50% of their fees! Click below to copy
+              and share your referral link.
+            </p>
+
+            {!Boolean(account) && (
+              <p className="mt-4 opacity-50 text-[12px]">
+                <ConnectButton mobileVisible={true} />
+              </p>
+            )}
+            {Boolean(account) && (
+              <p
+                onClick={copyToClipboard}
+                className="text-[12px] mt-2 opacity-50 flex gap-2 hover:opacity-100 cursor-pointer "
+              >
+                {typeof window !== "undefined" &&
+                  `${window?.location?.hostname.replace(
+                    "www.",
+                    ""
+                  )}/${formatAddress(account || "")}`}
+
+                <Image
+                  src="/copy.png"
+                  width={16}
+                  height={16}
+                  alt="Copy"
+                  className="w-4 h-4 mt-[2px]"
+                />
+
+                {isCopied ? (
+                  <span className="text-[10px] opacity-50 mt-[2px] h-[14px]">
+                    Copied!
+                  </span>
+                ) : (
                   ""
-                )}/${formatAddress(account || "")}`}
-
-              <Image
-                src="/copy.png"
-                width={16}
-                height={16}
-                alt="Copy"
-                className="w-4 h-4 mt-[2px]"
-              />
-
-              {isCopied ? (
-                <span className="text-[10px] opacity-50 mt-[2px] h-[14px]">
-                  Copied!
-                </span>
-              ) : (
-                ""
-              )}
-            </p>
-          )}
+                )}
+              </p>
+            )}
+          </div>
         </div>
       </Modal>
     </>
