@@ -16,18 +16,23 @@ export const useFeeRate = () => {
 
   const fetchEstimatedFee = useCallback(async () => {
     if (!butterfly.inputs?.length || !butterfly.outputs?.length) return
+    const editedButterfly = {
+      ...butterfly,
+      outputs: butterfly.outputs.map((output) => ({
+        ...output,
+        value: output.value <= 0 ? 1 : output.value,
+      })),
+    }
 
     const currentRequest = ++requestCounter.current
-    console.log("✌️currentRequest --->", currentRequest)
 
-    const inputsWithZeroValues = butterfly.inputs.filter(
+    const inputsWithZeroValues = editedButterfly.inputs.filter(
       (input) => input.value <= 0
     )
-    const outputsWithZeroValues = butterfly.outputs.filter(
+    const outputsWithZeroValues = editedButterfly.outputs.filter(
       (output) => output.value <= 0
     )
     const noZerosValue = [...inputsWithZeroValues, ...outputsWithZeroValues]
-    console.log("✌️noZerosValue --->", noZerosValue)
 
     if (noZerosValue.length > 0) return
 
@@ -39,13 +44,11 @@ export const useFeeRate = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          butterfly: butterfly,
+          butterfly: editedButterfly,
           address: account,
           feeCost: configs?.feeCost,
         }),
       })
-
-      console.log("✌️res --->", res)
 
       if (currentRequest === requestCounter.current) {
         // Only process the latest request
@@ -76,8 +79,6 @@ export const useFeeRate = () => {
     const timeSinceLastRequest = now - lastRequestTime.current
 
     if (timeSinceLastRequest >= 300) {
-      console.log("✌️timeSinceLastRequest --->", timeSinceLastRequest)
-      // If enough time has passed, make the request immediately
       lastRequestTime.current = now
       fetchEstimatedFee()
     } else {

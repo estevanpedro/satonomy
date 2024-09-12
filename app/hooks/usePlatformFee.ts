@@ -136,8 +136,6 @@ export const usePlatformFee = () => {
             updatedButterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) +
             feeCost
 
-          console.log("✌️inputValues --->", inputValues)
-          console.log("✌️outputValues --->", outputValues)
           if (inputValues - outputValues !== 0) {
             const butterflyOutput = updatedButterfly.outputs
               .filter(
@@ -158,24 +156,6 @@ export const usePlatformFee = () => {
 
             if (usersOutput) {
               const outputIndex = butterfly.outputs.indexOf(usersOutput)
-
-              console.log("✌️usersOutputLength --->", usersOutputLength)
-              console.log(
-                "✌️inputValues - outputValues --->",
-                inputValues - outputValues
-              )
-              console.log("✌️outputValues --->", outputValues)
-              console.log("✌️inputValues --->", inputValues)
-
-              // if (usersOutputLength === 1 && inputValues - outputValues > 0) {
-              //   console.log("✌️userProfitValue --->", userProfitValue);
-
-              //   userProfitValue =
-              //     userProfitValue + (inputValues - outputValues);
-
-              // }
-
-              console.log("✌️userProfitValue last 1--->", userProfitValue)
               updatedButterfly.outputs[outputIndex] = {
                 ...updatedButterfly.outputs[outputIndex],
                 value: userProfitValue,
@@ -238,7 +218,6 @@ export const usePlatformFee = () => {
                 inputValues - outputValues > 0
               ) {
                 userProfitValue = userProfitValue + (inputValues - outputValues)
-                console.log("✌️userProfitValue 321--->", userProfitValue)
               }
 
               if (runeUtxoCount <= 5 || userProfitValue <= 0) {
@@ -247,8 +226,6 @@ export const usePlatformFee = () => {
                   (prevFeeCost.current || 0) -
                   feeCost
               }
-
-              console.log("123 ✌️userProfitValue --->", userProfitValue)
 
               if (userProfitValue > 0) {
                 updatedButterfly.outputs[outputIndex] = {

@@ -39,7 +39,13 @@ export const NetworkFee = () => {
   const onFeeRateChange = async (feeType: string) => {
     try {
       const selectedFeeRate = getSelectedFeeRate(feeType)
-      let newButterfly = butterfly
+      let newButterfly = {
+        ...butterfly,
+        outputs: butterfly.outputs.map((output) => ({
+          ...output,
+          value: output.value <= 0 ? 1 : output.value,
+        })),
+      }
 
       if (runes && btcUtxos) {
         let runeUtxoCount = 0

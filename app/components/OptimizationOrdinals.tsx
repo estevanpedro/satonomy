@@ -159,14 +159,12 @@ export const OptimizationOrdinals = ({
           setFeeCost(result)
 
           const charge = allBtcInputsValue - 546 - result
-          console.log("✌️charge --->", charge)
           const usersProfit = Math.floor(charge * 0.8)
 
           setProfit(usersProfit)
         }
       } catch (error) {
         console.error(error)
-        console.log(allBtcInputsValue)
       }
     }
 

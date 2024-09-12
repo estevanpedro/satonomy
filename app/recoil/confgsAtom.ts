@@ -15,6 +15,6 @@ export const configAtom = atom({
     txid: "",
     proMode: false,
     notConfirmed: false,
-    feeType: "fast",
+    feeType: "custom",
   },
 })

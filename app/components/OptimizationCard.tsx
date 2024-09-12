@@ -66,22 +66,6 @@ export const OptimizationCard = ({
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
 
-    // if (allBtcInputsValue < feeCost) {
-    //   const bestBtcInput = (utxosSorted || [])?.find(
-    //     (utxo) => utxo.value > feeCost && utxo.value > 546
-    //   )
-
-    //   if (!bestBtcInput?.value) {
-    //     console.log("No BTC input found to pay fees")
-    //     return
-    //   }
-    //   if (bestBtcInput) {
-    //     inputUtxos.push(bestBtcInput)
-    //   }
-
-    //   allBtcInputsValue += bestBtcInput.value
-    // }
-
     const charge = allBtcInputsValue - 546 - feeCost
 
     const usersProfit = Math.floor(charge * 0.8)
@@ -199,22 +183,6 @@ export const OptimizationCard = ({
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
-
-    // if (allBtcInputsValue < feeCost) {
-    //   const bestBtcInput = (utxosSorted || [])?.find(
-    //     (utxo) => utxo.value > feeCost && utxo.value > 546
-    //   );
-
-    //   if (!bestBtcInput?.value) {
-    //     console.log("No BTC input found to pay fees");
-    //     return;
-    //   }
-    //   if (bestBtcInput) {
-    //     inputUtxos.push(bestBtcInput);
-    //   }
-
-    //   allBtcInputsValue += bestBtcInput.value;
-    // }
 
     setConfigs((prev) => ({
       ...prev,
