@@ -475,7 +475,7 @@ export const Bowtie = () => {
         </div>
       </div>
 
-      <div className=" hidden sm:flex">
+      <div className="hidden sm:flex pb-[100px]">
         <div className="w-full">
           <div
             className={`relative ${

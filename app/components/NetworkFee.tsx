@@ -154,14 +154,16 @@ export const NetworkFee = () => {
         },
         body: body,
       })
-      const result = await res.json()
 
-      setConfigs((prev) => ({
-        ...prev,
-        feeRate: selectedFeeRate,
-        feeType,
-        feeCost: result,
-      }))
+      const result = await res.json()
+      if (result && !result?.error) {
+        setConfigs((prev) => ({
+          ...prev,
+          feeRate: selectedFeeRate,
+          feeType,
+          feeCost: result,
+        }))
+      }
     } catch (error) {
       console.error(error)
     }
@@ -198,18 +200,19 @@ export const NetworkFee = () => {
         />{" "}
         <div className="mt-[-15px] text-[12px]">sats</div>
       </div>
-      {Boolean(configs.feeRateEstimated || configs.feeRate) && (
-        <div className="mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]">
-          {formatNumber(
-            configs.feeRateEstimated || configs.feeRate,
-            0,
-            1,
-            false,
-            false
-          )}{" "}
-          sats/vb
-        </div>
-      )}
+      {Boolean(configs.feeRateEstimated || configs.feeRate) &&
+        Boolean(typeof configs.feeRate === "number") && (
+          <div className="mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]">
+            {formatNumber(
+              configs.feeRateEstimated || configs.feeRate,
+              0,
+              1,
+              false,
+              false
+            )}{" "}
+            sats/vb
+          </div>
+        )}
 
       <div className="flex flex-col gap-3 absolute top-0 -right-[84px]">
         <div

@@ -809,7 +809,15 @@ export const CardOutputMobile = ({
       <div className="absolute top-0 right-0 pointer-events-none ">
         <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
       </div>
-      <div className="absolute top-0  right-[-28px] flex flex-col gap-4 justify-center items-end">
+      <div
+        className={`absolute top-0 right-[-28px] flex-col gap-4 justify-center items-end ${
+          butterfly.outputs[index]?.type === "platformFee" ||
+          butterfly.outputs[index]?.type === "referrer" ||
+          butterfly.outputs[index]?.type === "OP RETURN"
+            ? "hidden"
+            : "flex"
+        }`}
+      >
         <button
           className=" opacity-30 hover:opacity-100"
           onClick={() => {

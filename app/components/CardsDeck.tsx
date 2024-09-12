@@ -37,7 +37,7 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
       e.preventDefault()
       e.stopPropagation()
 
-      api.start({ x: x.get() - e.deltaY })
+      api.start({ x: x.get() - e.deltaY * 5 })
     }
 
     const container = containerRef.current
@@ -158,9 +158,6 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
             style={{ x }}
           >
             {utxos!.map((utxo, index) => {
-              // eslint-disable-next-line react-hooks/rules-of-hooks
-              // const [props, api] = useSpring(() => ({ scale: 1 }));
-
               if (runeSelected) {
                 const isSameRune = runeSelected.utxos.find(
                   (runeUtxo) =>
@@ -196,7 +193,6 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
                   key={index}
                   className="flex items-center justify-center"
                   style={{
-                    // ...props,
                     width: "200px",
                     height: "300px",
                   }}

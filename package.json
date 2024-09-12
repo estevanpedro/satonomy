@@ -27,7 +27,6 @@
     "recoil": "^0.7.7",
     "runelib": "^1.0.7",
     "slick-carousel": "^1.8.1",
-    "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tiny-secp256k1": "^2.2.3"
   },
