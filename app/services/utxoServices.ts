@@ -161,6 +161,6 @@ export const utxoServices = {
       nextRevalidate
     );
     const feeRateJson = await feeRate.json();
-    return feeRateJson.hourFee as number;
+    return feeRateJson;
   },
 };

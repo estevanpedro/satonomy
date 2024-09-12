@@ -1,17 +1,17 @@
-"use client";
-import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
-import { butterflyAtom } from "@/app/recoil/butterflyAtom";
-import { configAtom } from "@/app/recoil/confgsAtom";
-import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom";
-import { RunesUtxo } from "@/app/recoil/runesAtom";
-import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
+"use client"
+import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
+import { configAtom } from "@/app/recoil/confgsAtom"
+import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
+import { RunesUtxo } from "@/app/recoil/runesAtom"
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 
-import { formatNumber } from "@/app/utils/format";
-import { useAccounts } from "@particle-network/btc-connectkit";
-import { track } from "@vercel/analytics";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { formatNumber } from "@/app/utils/format"
+import { useAccounts } from "@particle-network/btc-connectkit"
+import { track } from "@vercel/analytics"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 export const OptimizationCard = ({
   rune,
@@ -19,36 +19,38 @@ export const OptimizationCard = ({
   index,
   onOptimizeSelection,
 }: {
-  rune: RunesUtxo;
-  onClose: () => void;
-  index: number;
-  onOptimizeSelection?: () => void;
+  rune: RunesUtxo
+  onClose: () => void
+  index: number
+  onOptimizeSelection?: () => void
 }) => {
-  const [showSats, setShowSats] = useState<number | null>(null); // Track which card is hovered
+  const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
 
-  const setButterfly = useSetRecoilState(butterflyAtom);
-  const setConfigs = useSetRecoilState(configAtom);
-  const recommendedFeeRate = useRecoilValue(recommendedFeesAtom);
-  const utxos = useRecoilValue(utxoAtom);
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const { accounts } = useAccounts();
-  const address = accounts[0];
-  const length = rune?.utxos.length;
-  const [feeCost, setFeeCost] = useState<number>(1836);
-  const { referrer } = useParams();
+  const setButterfly = useSetRecoilState(butterflyAtom)
+  const [configs, setConfigs] = useRecoilState(configAtom)
+  const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
+  const utxos = useRecoilValue(utxoAtom)
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const { accounts } = useAccounts()
+  const address = accounts[0]
+  const length = rune?.utxos.length
+  const [feeCost, setFeeCost] = useState<number>(500)
+  const { referrer } = useParams()
 
-  const profitMocked = length * 546 - feeCost - 546;
+  const selectedFeeRate = configs.feeRate || recommendedFeeRate?.hourFee
 
-  const [profit, setProfit] = useState<number>(profitMocked);
-  const profitInSats = profit;
-  const profitInUsd = (profit / 100000000) * btcUsdPrice;
+  const profitMocked = length * 546 - feeCost - 546
+
+  const [profit, setProfit] = useState<number>(profitMocked)
+  const profitInSats = profit
+  const profitInUsd = (profit / 100000000) * btcUsdPrice
 
   useEffect(() => {
-    if (!rune) return;
+    if (!rune) return
 
     const utxosSorted = (
       JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value);
+    )?.sort((a, b) => a.value - b.value)
 
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>
@@ -57,46 +59,46 @@ export const OptimizationCard = ({
           utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
         ),
       0
-    );
+    )
 
     const inputUtxos =
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
-      ) || [];
+      ) || []
 
-    if (allBtcInputsValue < feeCost) {
-      const bestBtcInput = (utxosSorted || [])?.find(
-        (utxo) => utxo.value > feeCost && utxo.value > 546
-      );
+    // if (allBtcInputsValue < feeCost) {
+    //   const bestBtcInput = (utxosSorted || [])?.find(
+    //     (utxo) => utxo.value > feeCost && utxo.value > 546
+    //   )
 
-      if (!bestBtcInput?.value) {
-        console.log("No BTC input found to pay fees");
-        return;
-      }
-      if (bestBtcInput) {
-        inputUtxos.push(bestBtcInput);
-      }
+    //   if (!bestBtcInput?.value) {
+    //     console.log("No BTC input found to pay fees")
+    //     return
+    //   }
+    //   if (bestBtcInput) {
+    //     inputUtxos.push(bestBtcInput)
+    //   }
 
-      allBtcInputsValue += bestBtcInput.value;
-    }
+    //   allBtcInputsValue += bestBtcInput.value
+    // }
 
-    const charge = allBtcInputsValue - 546 - feeCost;
+    const charge = allBtcInputsValue - 546 - feeCost
 
-    const usersProfit = Math.floor(charge * 0.8);
-    const platformFee = Math.floor(charge - usersProfit);
+    const usersProfit = Math.floor(charge * 0.8)
+    const platformFee = Math.floor(charge - usersProfit)
 
-    setProfit(usersProfit);
+    setProfit(usersProfit)
 
     const fetchFees = async () => {
       try {
         if (!inputUtxos) {
-          console.log("No inputUtxos found");
-          return;
+          console.log("No inputUtxos found")
+          return
         }
 
         const referrerFee = !referrer
           ? 0
-          : Math.ceil(usersProfit - usersProfit * 0.9);
+          : Math.ceil(usersProfit - usersProfit * 0.9)
 
         const referrerOutput = referrer
           ? [
@@ -107,7 +109,7 @@ export const OptimizationCard = ({
                 type: "referrer",
               },
             ]
-          : [];
+          : []
 
         const chargeOutput = [
           {
@@ -123,7 +125,7 @@ export const OptimizationCard = ({
             type: "platformFee",
           },
           ...referrerOutput,
-        ];
+        ]
 
         const newButterfly = {
           inputs: [...inputUtxos],
@@ -148,13 +150,13 @@ export const OptimizationCard = ({
             },
             ...chargeOutput,
           ],
-        };
+        }
 
         const body = JSON.stringify({
           newButterfly,
           address,
-          feeRate: recommendedFeeRate,
-        });
+          feeRate: selectedFeeRate,
+        })
 
         const res = await fetch(`/api/estimateFees`, {
           method: "POST",
@@ -162,27 +164,27 @@ export const OptimizationCard = ({
             "Content-Type": "application/json",
           },
           body: body,
-        });
-        const result = await res.json();
+        })
+        const result = await res.json()
 
         if (!result?.error) {
-          setFeeCost(result);
+          setFeeCost(result)
         }
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
 
-    if (!feeCost || feeCost === 1836) fetchFees();
-  }, [feeCost, address, rune, utxos, recommendedFeeRate]);
+    if (!feeCost || feeCost === 500) fetchFees()
+  }, [feeCost, address, rune, utxos, selectedFeeRate])
 
   const onSelect = (rune: RunesUtxo) => {
-    onOptimizeSelection?.();
-    onClose();
+    onOptimizeSelection?.()
+    onClose()
 
     const utxosSorted = (
       JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value);
+    )?.sort((a, b) => a.value - b.value)
 
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>
@@ -191,28 +193,28 @@ export const OptimizationCard = ({
           utxos?.find((u) => curr.location === `${u.txid}:${u.vout}`)?.value
         ),
       0
-    );
+    )
 
     const inputUtxos =
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
-      ) || [];
+      ) || []
 
-    if (allBtcInputsValue < feeCost) {
-      const bestBtcInput = (utxosSorted || [])?.find(
-        (utxo) => utxo.value > feeCost && utxo.value > 546
-      );
+    // if (allBtcInputsValue < feeCost) {
+    //   const bestBtcInput = (utxosSorted || [])?.find(
+    //     (utxo) => utxo.value > feeCost && utxo.value > 546
+    //   );
 
-      if (!bestBtcInput?.value) {
-        console.log("No BTC input found to pay fees");
-        return;
-      }
-      if (bestBtcInput) {
-        inputUtxos.push(bestBtcInput);
-      }
+    //   if (!bestBtcInput?.value) {
+    //     console.log("No BTC input found to pay fees");
+    //     return;
+    //   }
+    //   if (bestBtcInput) {
+    //     inputUtxos.push(bestBtcInput);
+    //   }
 
-      allBtcInputsValue += bestBtcInput.value;
-    }
+    //   allBtcInputsValue += bestBtcInput.value;
+    // }
 
     setConfigs((prev) => ({
       ...prev,
@@ -220,17 +222,17 @@ export const OptimizationCard = ({
       isInputDeckOpen: false,
       isInputFullDeckOpen: false,
       isOutputDeckOpen: false,
-    }));
+    }))
 
-    const charge = allBtcInputsValue - 546 - feeCost;
-    const usersProfit = charge * 0.8;
-    const finalUserProfit = Math.floor(usersProfit);
-    const satonomyFees = charge - finalUserProfit; // 20%
+    const charge = allBtcInputsValue - 546 - feeCost
+    const usersProfit = charge * 0.8
+    const finalUserProfit = Math.floor(usersProfit)
+    const satonomyFees = charge - finalUserProfit // 20%
     const platformFee = referrer
       ? Math.floor(satonomyFees * 0.5)
-      : Math.floor(satonomyFees * 1);
-    const referrerFee = referrer ? Math.floor(satonomyFees * 0.5) : 0;
-    const difference = Math.floor(satonomyFees - platformFee - referrerFee);
+      : Math.floor(satonomyFees * 1)
+    const referrerFee = referrer ? Math.floor(satonomyFees * 0.5) : 0
+    const difference = Math.floor(satonomyFees - platformFee - referrerFee)
 
     const referrerOutput = referrer
       ? [
@@ -241,7 +243,7 @@ export const OptimizationCard = ({
             type: "referrer",
           },
         ]
-      : [];
+      : []
 
     const chargeOutput = [
       {
@@ -257,7 +259,7 @@ export const OptimizationCard = ({
         type: "platformFee",
       },
       ...referrerOutput,
-    ];
+    ]
 
     const newButterfly = {
       inputs: [...inputUtxos],
@@ -282,17 +284,17 @@ export const OptimizationCard = ({
         },
         ...chargeOutput,
       ],
-    };
+    }
 
-    setButterfly(newButterfly);
+    setButterfly(newButterfly)
 
     track("optimization-clicked", {
       wallet: address,
       inputs: newButterfly.inputs.length,
-    });
-  };
+    })
+  }
 
-  if (profitInSats < 0) return null;
+  if (profitInSats < 0) return null
 
   return (
     <button
@@ -304,7 +306,7 @@ export const OptimizationCard = ({
       onClick={() => {
         if (!Boolean(profitInSats) || !Boolean(profitInUsd)) {
         } else {
-          onSelect(rune);
+          onSelect(rune)
         }
       }}
       onMouseEnter={() => setShowSats(index)} // Show sats on hover
@@ -339,5 +341,5 @@ export const OptimizationCard = ({
         <span className="text-[10px] font-bold ">{length} merges</span>
       </div>
     </button>
-  );
-};
+  )
+}

@@ -5,31 +5,22 @@ export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
   try {
-    const { newButterfly, address, feeRate } = await request.json()
+    const { butterfly, address, feeCost } = await request.json()
 
-    if (!address || !newButterfly || !feeRate) {
+    if (!address || !butterfly || !feeCost) {
       return NextResponse.json(
         {
           error:
-            "Missing required parameters: 'address' or 'newButterfly' or 'feeRate'",
+            "Missing required parameters: 'address' or 'butterfly' or 'feeCost'",
         },
         { status: 400 }
       )
     }
 
-    if (newButterfly?.inputs?.length === 0) {
-      return NextResponse.json(0, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    }
-
-    const psbt = await psbtService.createPsbtFull(newButterfly, address)
-    const feeCost = psbtService.calculateTransactionFee(psbt, feeRate)
-
-    return NextResponse.json(feeCost, {
+    const psbt = await psbtService.createPsbtFull(butterfly, address)
+    const virtualSize = psbtService.estimateTxSize(psbt)
+    const feeRate = feeCost / virtualSize
+    return NextResponse.json(feeRate, {
       status: 200,
       headers: {
         "Content-Type": "application/json",

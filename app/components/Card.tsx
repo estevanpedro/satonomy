@@ -3,21 +3,21 @@ import {
   CARD_TYPES_COLOR,
   CARD_TYPES_COLOR_SECONDARY,
   Category,
-} from "@/app/components/CardType";
-import { MempoolUTXO } from "@/app/recoil/utxoAtom";
-import { formatAddress, formatNumber } from "@/app/utils/format";
-import { useAccounts } from "@particle-network/btc-connectkit";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { OrdinalRendering } from "@/app/components/Ordinals";
-import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
-import { butterflyAtom } from "@/app/recoil/butterflyAtom";
-import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
-import { btcPriceAtom } from "@/app/recoil/btcPriceAtom";
-import { Tooltip } from "react-tooltip";
-import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom";
-import { configAtom } from "@/app/recoil/confgsAtom";
+} from "@/app/components/CardType"
+import { MempoolUTXO } from "@/app/recoil/utxoAtom"
+import { formatAddress, formatNumber } from "@/app/utils/format"
+import { useAccounts } from "@particle-network/btc-connectkit"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { OrdinalRendering } from "@/app/components/Ordinals"
+import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom"
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
+import { Tooltip } from "react-tooltip"
+import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
+import { configAtom } from "@/app/recoil/confgsAtom"
 
 export function generateBowtiePath(
   inputX: number,
@@ -25,15 +25,15 @@ export function generateBowtiePath(
   outputX: number,
   outputY: number
 ): string {
-  const controlPointX1 = (inputX + outputX) / 2;
-  const controlPointY1 = inputY;
-  const controlPointX2 = (inputX + outputX) / 2;
-  const controlPointY2 = outputY;
+  const controlPointX1 = (inputX + outputX) / 2
+  const controlPointY1 = inputY
+  const controlPointX2 = (inputX + outputX) / 2
+  const controlPointY2 = outputY
 
   return `
       M ${inputX},${inputY}
       C ${controlPointX1},${controlPointY1} ${controlPointX2},${controlPointY2} ${outputX},${outputY}
-    `;
+    `
 }
 
 export const EmptyCard = ({
@@ -42,17 +42,17 @@ export const EmptyCard = ({
   text,
   tooltip,
 }: {
-  onClick?: () => void;
-  className?: string;
-  text?: string;
-  tooltip?: string;
+  onClick?: () => void
+  className?: string
+  text?: string
+  tooltip?: string
 }) => {
   return (
     <>
       <div
         className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative mb-8`}
       >
-        {!text && className && (
+        {/* {!text && className && (
           <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
             <select className="outline-none w-[110px]" defaultValue="Transfer">
               <option>Transfer</option>
@@ -65,7 +65,7 @@ export const EmptyCard = ({
               <option disabled>Stake with Arch</option>
             </select>
           </div>
-        )}
+        )} */}
 
         <Tooltip
           id={`emptyCard-${className}-${text}`}
@@ -92,15 +92,15 @@ export const EmptyCard = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 export const EmptyCardMobile = ({
   onClick,
   className,
 }: {
-  onClick?: () => void;
-  className?: string;
+  onClick?: () => void
+  className?: string
 }) => {
   return (
     <div
@@ -109,25 +109,25 @@ export const EmptyCardMobile = ({
     >
       +
     </div>
-  );
-};
+  )
+}
 
 export const CardMobile = ({
   onRemove,
   utxo,
 }: {
-  onRemove?: (output: MempoolUTXO) => void;
-  utxo: MempoolUTXO;
+  onRemove?: (output: MempoolUTXO) => void
+  utxo: MempoolUTXO
 }) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const { accounts } = useAccounts();
-  const account = accounts[0];
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const { accounts } = useAccounts()
+  const account = accounts[0]
   return (
     <div className="relative w-[100px] h-[100px] max-h-[100px]  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col items-center justify-center pt-2">
       <button
         className="absolute top-0 left-[-32px] opacity-30 hover:opacity-100"
         onClick={() => {
-          onRemove?.(utxo);
+          onRemove?.(utxo)
         }}
       >
         🗑️
@@ -150,19 +150,19 @@ export const CardMobile = ({
         ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const Card = ({
   onRemove,
   utxo,
 }: {
-  onRemove?: (output: MempoolUTXO) => void;
-  utxo: MempoolUTXO;
+  onRemove?: (output: MempoolUTXO) => void
+  utxo: MempoolUTXO
 }) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const { accounts } = useAccounts();
-  const account = accounts?.[0];
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const { accounts } = useAccounts()
+  const account = accounts?.[0]
   return (
     <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-4 left-[-120px] opacity-30">
@@ -174,7 +174,7 @@ export const Card = ({
       <button
         className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
         onClick={() => {
-          onRemove?.(utxo);
+          onRemove?.(utxo)
         }}
       >
         REMOVE 🗑️
@@ -196,8 +196,8 @@ export const Card = ({
       </div>
       <div>${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}</div>
     </div>
-  );
-};
+  )
+}
 
 export const CardOption = ({
   onClick,
@@ -205,63 +205,63 @@ export const CardOption = ({
   onRemove,
   isSelected,
 }: {
-  onClick?: (utxo: MempoolUTXO) => void;
-  utxo: MempoolUTXO;
-  onRemove?: (utxo: MempoolUTXO) => void;
-  isSelected?: boolean;
+  onClick?: (utxo: MempoolUTXO) => void
+  utxo: MempoolUTXO
+  onRemove?: (utxo: MempoolUTXO) => void
+  isSelected?: boolean
 }) => {
-  const { accounts } = useAccounts();
-  const account = accounts[0];
+  const { accounts } = useAccounts()
+  const account = accounts[0]
 
-  const ordinals = useRecoilValue(ordinalsAtom);
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const { inputs } = useRecoilValue(butterflyAtom);
-  const runesStates = useRecoilValue(runesAtom);
-  const ord = useRecoilValue(ordByWalletAtom);
-  const { isInputFullDeckOpen } = useRecoilValue(configAtom);
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const { inputs } = useRecoilValue(butterflyAtom)
+  const runesStates = useRecoilValue(runesAtom)
+  const ord = useRecoilValue(ordByWalletAtom)
+  const { isInputFullDeckOpen } = useRecoilValue(configAtom)
   const ordUtxoAsset = ord?.json?.inscriptions.find(
     (o) => o?.id?.replace("i0", "") === utxo?.txid
-  );
+  )
 
   const rune = runesStates?.find((rune) =>
     rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
-  );
+  )
 
   const utxoFound = rune
     ? rune?.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
-    : undefined;
+    : undefined
 
   let ordinal = !utxoFound
     ? ordinals?.inscription.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
-    : undefined;
+    : undefined
 
-  const hasSatributes = Boolean(ordUtxoAsset?.satributes.length);
+  const hasSatributes = Boolean(ordUtxoAsset?.satributes.length)
 
   const runeSelected = runesStates?.find((rune) =>
     inputs.find((i) =>
       rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
     )
-  );
+  )
 
   const isSameRune = runeSelected?.utxos.find(
     (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
-  );
+  )
 
   const isDisabled =
     inputs?.includes(utxo) ||
     Boolean(ordinal) ||
     hasSatributes ||
-    (Boolean(runeSelected) && !isSameRune && Boolean(rune));
+    (Boolean(runeSelected) && !isSameRune && Boolean(rune))
 
-  const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined);
+  const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
   const contentType = isBrc20
     ? "BRC-20"
     : utxoFound
     ? CARD_TYPES.RUNES
-    : ordinal?.contentType || CARD_TYPES.BTC;
+    : ordinal?.contentType || CARD_TYPES.BTC
 
   const colorType = utxoFound
     ? CARD_TYPES_COLOR.RUNES
@@ -269,7 +269,7 @@ export const CardOption = ({
     ? isBrc20
       ? CARD_TYPES_COLOR.BRC20
       : CARD_TYPES_COLOR.INSCRIPTIONS
-    : CARD_TYPES_COLOR.BTC;
+    : CARD_TYPES_COLOR.BTC
 
   const secondaryColorType = utxoFound
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
@@ -277,7 +277,7 @@ export const CardOption = ({
     ? isBrc20
       ? CARD_TYPES_COLOR_SECONDARY.BRC20
       : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
-    : CARD_TYPES_COLOR_SECONDARY.BTC;
+    : CARD_TYPES_COLOR_SECONDARY.BTC
 
   return (
     <div
@@ -303,7 +303,7 @@ export const CardOption = ({
           <button
             className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
             onClick={() => {
-              onRemove?.(utxo);
+              onRemove?.(utxo)
             }}
           >
             REMOVE 🗑️
@@ -367,7 +367,7 @@ export const CardOption = ({
             height={54}
             loading="lazy"
           />
-          <span className="font-bold">Satoshi</span>
+          <span className="font-bold">Bitcoin</span>
           <div className="w-32 h-12 text-center text-white text-xl font-medium pointer-events-none">
             {formatNumber(utxo?.value, 0, 0, false, false)} sats
           </div>
@@ -426,45 +426,45 @@ export const CardOption = ({
         ></div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const CardOutput = ({
   onRemove,
   index,
 }: {
-  onRemove: (index: number) => void;
-  index: number;
+  onRemove: (index: number) => void
+  index: number
 }) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
 
-  const [addressInputFocused, setAddressInputFocused] = useState(false);
+  const [addressInputFocused, setAddressInputFocused] = useState(false)
   const onInputFocus = () => {
-    setAddressInputFocused(true);
-    document.getElementById("address")?.focus();
-  };
+    setAddressInputFocused(true)
+    document.getElementById("address")?.focus()
+  }
 
   const onClone = () => {
     setButterfly((prev) => {
-      const outputs = JSON.parse(JSON.stringify(prev.outputs));
-      const output = outputs[index];
-      outputs.push({ ...output, vout: outputs.length + 1 });
-      return { ...prev, outputs };
-    });
-  };
+      const outputs = JSON.parse(JSON.stringify(prev.outputs))
+      const output = outputs[index]
+      outputs.push({ ...output, vout: outputs.length + 1 })
+      return { ...prev, outputs }
+    })
+  }
 
-  const rune = butterfly.outputs[index]?.rune;
+  const rune = butterfly.outputs[index]?.rune
 
-  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC;
+  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC
 
-  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC;
+  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC
 
   const secondaryColorType = rune
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
-    : CARD_TYPES_COLOR_SECONDARY.BTC;
+    : CARD_TYPES_COLOR_SECONDARY.BTC
 
-  const type = butterfly.outputs[index]?.type;
+  const type = butterfly.outputs[index]?.type
 
   if (butterfly.outputs[index]?.type === "OP RETURN" && rune) {
     return (
@@ -510,7 +510,7 @@ export const CardOutput = ({
           </div>
         </>
       </div>
-    );
+    )
   }
 
   if (type === "platformFee" || type === "referrer") {
@@ -545,10 +545,10 @@ export const CardOutput = ({
               value={butterfly.outputs[index]?.address}
               onChange={(e) => {
                 setButterfly((prev) => {
-                  const outputs = JSON.parse(JSON.stringify(prev.outputs));
-                  outputs[index].address = e.target.value;
-                  return { ...prev, outputs };
-                });
+                  const outputs = JSON.parse(JSON.stringify(prev.outputs))
+                  outputs[index].address = e.target.value
+                  return { ...prev, outputs }
+                })
               }}
               onFocus={() => setAddressInputFocused(true)}
               onBlur={() => setAddressInputFocused(false)}
@@ -578,14 +578,14 @@ export const CardOutput = ({
             }
             onChange={(e) => {
               setButterfly((prev) => {
-                const outputs = JSON.parse(JSON.stringify(prev.outputs));
+                const outputs = JSON.parse(JSON.stringify(prev.outputs))
                 if (rune) {
-                  outputs[index].runesValue = Number(e.target.value);
+                  outputs[index].runesValue = Number(e.target.value)
                 } else {
-                  outputs[index].value = Number(e.target.value);
+                  outputs[index].value = Number(e.target.value)
                 }
-                return { ...prev, outputs };
-              });
+                return { ...prev, outputs }
+              })
             }}
             placeholder="0"
             className="ml-2 bg-transparent text-[20px] border text-center outline-none border-transparent w-24 h-12"
@@ -611,7 +611,7 @@ export const CardOutput = ({
           ></div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -642,10 +642,10 @@ export const CardOutput = ({
             value={butterfly.outputs[index]?.address}
             onChange={(e) => {
               setButterfly((prev) => {
-                const outputs = JSON.parse(JSON.stringify(prev.outputs));
-                outputs[index].address = e.target.value;
-                return { ...prev, outputs };
-              });
+                const outputs = JSON.parse(JSON.stringify(prev.outputs))
+                outputs[index].address = e.target.value
+                return { ...prev, outputs }
+              })
             }}
             onFocus={() => setAddressInputFocused(true)}
             onBlur={() => setAddressInputFocused(false)}
@@ -661,7 +661,7 @@ export const CardOutput = ({
         <button
           className=" opacity-30 hover:opacity-100"
           onClick={() => {
-            onRemove?.(index);
+            onRemove?.(index)
           }}
         >
           REMOVE 🗑️
@@ -707,14 +707,14 @@ export const CardOutput = ({
           }
           onChange={(e) => {
             setButterfly((prev) => {
-              const outputs = JSON.parse(JSON.stringify(prev.outputs));
+              const outputs = JSON.parse(JSON.stringify(prev.outputs))
               if (rune) {
-                outputs[index].runesValue = Number(e.target.value);
+                outputs[index].runesValue = Number(e.target.value)
               } else {
-                outputs[index].value = Number(e.target.value);
+                outputs[index].value = Number(e.target.value)
               }
-              return { ...prev, outputs };
-            });
+              return { ...prev, outputs }
+            })
           }}
           placeholder="0"
           className="ml-[10px] bg-transparent text-[20px] border text-center outline-none border-transparent w-[140px] h-12"
@@ -740,10 +740,10 @@ export const CardOutput = ({
             value={butterfly.outputs[index].value}
             onChange={(e) => {
               setButterfly((prev) => {
-                const outputs = JSON.parse(JSON.stringify(prev.outputs));
-                outputs[index].value = Number(e.target.value);
-                return { ...prev, outputs };
-              });
+                const outputs = JSON.parse(JSON.stringify(prev.outputs))
+                outputs[index].value = Number(e.target.value)
+                return { ...prev, outputs }
+              })
             }}
             placeholder="0"
             className="ml-[12px] bg-transparent text-[16px] border text-center outline-none border-transparent w-20 mb-[-12px]"
@@ -768,41 +768,41 @@ export const CardOutput = ({
         ></div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const CardOutputMobile = ({
   onRemove,
   index,
 }: {
-  onRemove: (index: number) => void;
-  index: number;
+  onRemove: (index: number) => void
+  index: number
 }) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom);
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
 
-  const [addressInputFocused, setAddressInputFocused] = useState(false);
+  const [addressInputFocused, setAddressInputFocused] = useState(false)
   const onInputFocus = () => {
-    setAddressInputFocused(true);
-    document.getElementById("address")?.focus();
-  };
+    setAddressInputFocused(true)
+    document.getElementById("address")?.focus()
+  }
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (!addressInputFocused) {
-        document.removeEventListener("click", handleClick);
+        document.removeEventListener("click", handleClick)
       }
       if (e.target instanceof HTMLElement && !e.target.closest("#address")) {
-        setAddressInputFocused(false);
+        setAddressInputFocused(false)
       }
-    };
+    }
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener("click", handleClick)
 
     return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  }, [addressInputFocused]);
+      document.removeEventListener("click", handleClick)
+    }
+  }, [addressInputFocused])
 
   return (
     <div className="w-[100px] h-[100px] bg-zinc-900 rounded-xl border-[3px] border-zinc-600 flex flex-col items-center justify-center pt-2">
@@ -813,7 +813,7 @@ export const CardOutputMobile = ({
         <button
           className=" opacity-30 hover:opacity-100"
           onClick={() => {
-            onRemove?.(index);
+            onRemove?.(index)
           }}
         >
           🗑️
@@ -835,10 +835,10 @@ export const CardOutputMobile = ({
             value={butterfly.outputs[index].address}
             onChange={(e) => {
               setButterfly((prev) => {
-                const outputs = JSON.parse(JSON.stringify(prev.outputs));
-                outputs[index].address = e.target.value;
-                return { ...prev, outputs };
-              });
+                const outputs = JSON.parse(JSON.stringify(prev.outputs))
+                outputs[index].address = e.target.value
+                return { ...prev, outputs }
+              })
             }}
             onFocus={() => setAddressInputFocused(true)}
             onBlur={() => setAddressInputFocused(false)}
@@ -862,10 +862,10 @@ export const CardOutputMobile = ({
           value={butterfly.outputs[index].value || ""}
           onChange={(e) => {
             setButterfly((prev) => {
-              const outputs = JSON.parse(JSON.stringify(prev.outputs));
-              outputs[index].value = Number(e.target.value);
-              return { ...prev, outputs };
-            });
+              const outputs = JSON.parse(JSON.stringify(prev.outputs))
+              outputs[index].value = Number(e.target.value)
+              return { ...prev, outputs }
+            })
           }}
           placeholder="0"
           className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mb-[-10px] ml-[-19px]" //
@@ -886,47 +886,47 @@ export const CardOutputMobile = ({
         </div>
       ) : null}
     </div>
-  );
-};
+  )
+}
 
 export const CardOutputOption = ({
   action,
 }: {
-  action: RunesUtxo | undefined | null;
+  action: RunesUtxo | undefined | null
 }) => {
-  const { accounts } = useAccounts();
-  const account = accounts?.[0];
+  const { accounts } = useAccounts()
+  const account = accounts?.[0]
 
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
-  const runes = useRecoilValue(runesAtom);
-  const setConfig = useSetRecoilState(configAtom);
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const runes = useRecoilValue(runesAtom)
+  const setConfig = useSetRecoilState(configAtom)
 
   const runeIndex = runes?.findIndex((r) =>
     butterfly.inputs.find((i) =>
       r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
     )
-  );
+  )
 
-  const rune = action ? runes?.[runeIndex!] : null;
+  const rune = action ? runes?.[runeIndex!] : null
 
-  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC;
+  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC
 
-  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC;
+  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC
 
   const secondaryColorType = rune
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
-    : CARD_TYPES_COLOR_SECONDARY.BTC;
+    : CARD_TYPES_COLOR_SECONDARY.BTC
 
-  const configs = useRecoilValue(configAtom);
+  const configs = useRecoilValue(configAtom)
 
   const onSelectOutput = () => {
     setButterfly((prev) => {
-      const outputs = JSON.parse(JSON.stringify(prev.outputs));
-      const rune = runes?.[runeIndex!];
+      const outputs = JSON.parse(JSON.stringify(prev.outputs))
+      const rune = runes?.[runeIndex!]
 
       const runeAmount = rune?.utxos.find((u) =>
         prev.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
-      )?.formattedBalance;
+      )?.formattedBalance
 
       const inputRunesTotalAmount = prev.inputs.reduce(
         (acc, cur) =>
@@ -937,12 +937,12 @@ export const CardOutputOption = ({
             )?.formattedBalance || "0"
           ),
         0
-      );
+      )
 
       const outputRunesTotalAmount = prev.outputs.reduce(
         (acc, cur) => acc + (cur?.runesValue || 0),
         0
-      );
+      )
 
       if (rune && action) {
         outputs.push({
@@ -952,7 +952,7 @@ export const CardOutputOption = ({
           rune: rune,
           runesValue: inputRunesTotalAmount - outputRunesTotalAmount,
           vout: outputs.length + 1,
-        });
+        })
       } else {
         outputs.push({
           value:
@@ -965,16 +965,16 @@ export const CardOutputOption = ({
               : 1,
           vout: prev.outputs.length,
           address: account,
-        });
+        })
       }
 
-      return { ...prev, outputs };
-    });
+      return { ...prev, outputs }
+    })
 
     setConfig((prev) => {
-      return { ...prev, isOutputDeckOpen: false };
-    });
-  };
+      return { ...prev, isOutputDeckOpen: false }
+    })
+  }
 
   return (
     <div className="h-[320px] relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
@@ -1037,5 +1037,5 @@ export const CardOutputOption = ({
         ></div>
       </div>
     </div>
-  );
-};
+  )
+}

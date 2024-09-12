@@ -8,9 +8,10 @@ import { Tooltip } from "react-tooltip";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 export const NavBar = () => {
-  const recommendedFeeRate = useRecoilValue(recommendedFeesAtom);
+  const recommendedFees = useRecoilValue(recommendedFeesAtom);
   const [clicked, setClicked] = useState(0);
   const setConfig = useSetRecoilState(configAtom);
+  const hourFee = recommendedFees?.halfHourFee;
 
   const onGasClick = () => {
     setClicked(clicked + 1);
@@ -40,7 +41,7 @@ export const NavBar = () => {
       </div>
 
       <div className="flex  items-center justify-center gap-4">
-        {Boolean(recommendedFeeRate) && (
+        {Boolean(hourFee) && (
           <div
             className="text-[12px] opacity-50 flex gap-2 mr-4"
             data-tooltip-id={"feerate"}
@@ -52,7 +53,7 @@ export const NavBar = () => {
               className="max-w-[260px] bg-gray-600"
               style={{ backgroundColor: "#292929", color: "white" }}
             />
-            {recommendedFeeRate} <span className="hidden sm:flex">sats/vb</span>
+            {hourFee} <span className="hidden sm:flex">sats/vb</span>
             <div className="w-[16px]" onClick={onGasClick}>
               <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
                 <path

@@ -1,9 +1,9 @@
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "path"
+import { fileURLToPath } from "url"
 
 // Polyfill __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -32,7 +32,7 @@ const nextConfig = {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
-    );
+    )
 
     config.module.rules.push(
       // Reapply the existing rule, but only for svg imports ending in ?url
@@ -52,19 +52,19 @@ const nextConfig = {
           titleProp: true,
         },
       }
-    );
+    )
 
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
-    fileLoaderRule.exclude = /\.svg$/i;
+    fileLoaderRule.exclude = /\.svg$/i
 
     // Use path.resolve instead of require.resolve for bitcore-lib
     config.resolve.alias = {
       ...config.resolve.alias,
       "bitcore-lib": path.resolve(__dirname, "node_modules/bitcore-lib"),
-    };
+    }
 
-    return config;
+    return config
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

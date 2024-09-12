@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom } from "recoil"
 
 export const configAtom = atom({
   key: "configAtom",
@@ -8,11 +8,13 @@ export const configAtom = atom({
     fullDeckPage: 1,
     isOutputDeckOpen: false,
     feeRate: 0,
+    feeRateEstimated: 0,
     feeCost: 0,
     isOpenModalTxId: false,
     isConfirmedModalTxId: false,
     txid: "",
     proMode: false,
     notConfirmed: false,
+    feeType: "fast",
   },
-});
+})

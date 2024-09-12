@@ -1,45 +1,45 @@
-import React from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { useAccounts } from "@particle-network/btc-connectkit";
+import React from "react"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { useAccounts } from "@particle-network/btc-connectkit"
 
-import { formatNumber } from "@/app/utils/format";
-import { useOutputs } from "@/app/hooks/useOutputs";
-import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
+import { formatNumber } from "@/app/utils/format"
+import { useOutputs } from "@/app/hooks/useOutputs"
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 import {
   CardMobile,
   CardOutput,
   CardOutputMobile,
   EmptyCardMobile,
-} from "@/app/components/Card";
+} from "@/app/components/Card"
 
-import { butterflyAtom } from "@/app/recoil/butterflyAtom";
-import { configAtom } from "@/app/recoil/confgsAtom";
-import { useInputsMobile } from "@/app/hooks/useInputsMobile";
-import { useOutputsMobile } from "@/app/hooks/useOutputsMobile";
-import Image from "next/image";
-import { AddOutput } from "@/app/components/AddOutput";
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
+import { configAtom } from "@/app/recoil/confgsAtom"
+import { useInputsMobile } from "@/app/hooks/useInputsMobile"
+import { useOutputsMobile } from "@/app/hooks/useOutputsMobile"
+import Image from "next/image"
+import { AddOutput } from "@/app/components/AddOutput"
 
 export const BowtieMobile = () => {
-  const utxos = useRecoilValue(utxoAtom);
-  const [configs, setConfigs] = useRecoilState(configAtom);
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
-  const { accounts } = useAccounts();
+  const utxos = useRecoilValue(utxoAtom)
+  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const { accounts } = useAccounts()
 
-  const account = accounts[0];
-  const inputsCount = butterfly.inputs.length;
-  const outputsCount = butterfly.outputs.length;
+  const account = accounts[0]
+  const inputsCount = butterfly.inputs.length
+  const outputsCount = butterfly.outputs.length
 
-  const height = 116;
-  const inputHeight = 116 * inputsCount;
-  const outputHeight = 116 * outputsCount;
-  const totalHeight = Math.max(inputHeight, outputHeight);
+  const height = 116
+  const inputHeight = 116 * inputsCount
+  const outputHeight = 116 * outputsCount
+  const totalHeight = Math.max(inputHeight, outputHeight)
 
   const inputPaths = useInputsMobile({
     butterfly,
     totalHeight: inputHeight,
     inputsCount,
     height,
-  });
+  })
 
   const outputPaths = useOutputsMobile({
     butterfly,
@@ -48,14 +48,14 @@ export const BowtieMobile = () => {
     height,
     inputHeight,
     inputsCount,
-  });
+  })
 
   const onAddInput = () => {
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: !prev.isInputDeckOpen,
-    }));
-  };
+    }))
+  }
 
   const onAddOutput = () => {
     setButterfly((prev) => ({
@@ -75,54 +75,51 @@ export const BowtieMobile = () => {
           address: account,
         },
       ],
-    }));
-  };
+    }))
+  }
 
   const onRemoveOutput = (index: number) => {
     setButterfly((prev) => ({
       ...prev,
       outputs: prev.outputs.filter((_, key) => key !== index),
-    }));
-  };
+    }))
+  }
 
   const onRemoveInput = (utxo: MempoolUTXO) => {
     setButterfly((prev) => ({
       ...prev,
       inputs: prev.inputs.filter((input) => input !== utxo),
-    }));
-  };
+    }))
+  }
 
   const inputTotalBtc = butterfly.inputs.reduce(
     (acc, cur) => acc + cur.value / 100000000,
     0
-  );
+  )
 
   const bestUtxo = JSON.parse(JSON.stringify(utxos))?.sort(
     (a: MempoolUTXO, b: MempoolUTXO) => b.value - a.value
-  )[0];
+  )[0]
 
   const selectNewUtxoInput = (utxo: MempoolUTXO) => {
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: false,
-      feeCost: prev.feeCost ? prev.feeCost : 1836,
-    }));
+      feeCost: prev.feeCost ? prev.feeCost : 500,
+    }))
 
-    const outputSum = butterfly.outputs.reduce(
-      (acc, cur) => acc + cur.value,
-      0
-    );
+    const outputSum = butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0)
 
     const inputSum =
-      butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0) + utxo.value;
+      butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0) + utxo.value
 
     setButterfly((prev: any) => ({
       ...prev,
       inputs: [...prev.inputs, utxo],
-    }));
+    }))
 
     if (inputSum - outputSum > 0) {
-      let outputsUpdated = [...butterfly.outputs];
+      let outputsUpdated = [...butterfly.outputs]
 
       outputsUpdated[butterfly.outputs.length - 1] = {
         ...outputsUpdated[butterfly.outputs.length - 1],
@@ -132,27 +129,26 @@ export const BowtieMobile = () => {
           outputSum -
           configs.feeCost +
           (inputSum - utxo.value),
-      };
+      }
 
       setButterfly((prev) => ({
         ...prev,
         outputs: [...outputsUpdated],
-      }));
+      }))
     }
-  };
+  }
 
-  const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0);
+  const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0)
   const outputValues =
-    butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) +
-    configs.feeCost;
+    butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) + configs.feeCost
 
-  const difference = inputValues - outputValues;
+  const difference = inputValues - outputValues
   const isConfirmDisabled =
-    difference !== 0 || outputValues - configs.feeCost < 0;
+    difference !== 0 || outputValues - configs.feeCost < 0
 
-  const usersOutputs = butterfly.outputs.filter((o) => o.address === account);
-  const isTransfer = usersOutputs.length < butterfly.outputs.length;
-  const isSplit = usersOutputs.length === butterfly.outputs.length;
+  const usersOutputs = butterfly.outputs.filter((o) => o.address === account)
+  const isTransfer = usersOutputs.length < butterfly.outputs.length
+  const isSplit = usersOutputs.length === butterfly.outputs.length
 
   const confirmTooltip = utxos?.length
     ? isConfirmDisabled
@@ -174,7 +170,7 @@ export const BowtieMobile = () => {
             false
           )} sats; it should be 0.`
       : "Create PSBT and sign"
-    : "No UTXOs";
+    : "No UTXOs"
 
   return (
     <>
@@ -196,7 +192,7 @@ export const BowtieMobile = () => {
                   setConfigs((prev) => ({
                     ...prev,
                     feeCost: Number(e.target.value),
-                  }));
+                  }))
                 }}
                 placeholder="0"
                 className="text-[12px] bg-transparent border text-end outline-none  w-[50px] h-10 border-transparent mt-[-8px]" //
@@ -247,5 +243,5 @@ export const BowtieMobile = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

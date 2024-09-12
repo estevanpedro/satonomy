@@ -1,57 +1,59 @@
-import React from "react";
-import Image from "next/image";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit";
+import React from "react"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 
-import { useRunes } from "@/app/hooks/useRunes";
-import { useInputs } from "@/app/hooks/useInputs";
+import { useRunes } from "@/app/hooks/useRunes"
+import { useInputs } from "@/app/hooks/useInputs"
 
-import { formatNumber } from "@/app/utils/format";
-import { useOutputs } from "@/app/hooks/useOutputs";
-import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom";
-import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card";
+import { formatNumber } from "@/app/utils/format"
+import { useOutputs } from "@/app/hooks/useOutputs"
+import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
+import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card"
 
-import { useOrdinals } from "@/app/hooks/useOrdinals";
-import { butterflyAtom } from "@/app/recoil/butterflyAtom";
-import { configAtom } from "@/app/recoil/confgsAtom";
-import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice";
-import { Tooltip } from "react-tooltip";
-import { useOrdByWallet } from "@/app/hooks/useOrdByWallet";
-import { runesAtom } from "@/app/recoil/runesAtom";
-import { Tutorial } from "@/app/components/Tutorial";
-import { useRecommendedFees } from "@/app/hooks/useRecommendedFees";
-import { usePlatformFee } from "@/app/hooks/usePlatformFee";
-import { psbtService } from "@/app/services/psbtService";
-import { track } from "@vercel/analytics";
+import { useOrdinals } from "@/app/hooks/useOrdinals"
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
+import { configAtom } from "@/app/recoil/confgsAtom"
+import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice"
+
+import { useOrdByWallet } from "@/app/hooks/useOrdByWallet"
+import { runesAtom } from "@/app/recoil/runesAtom"
+import { Tutorial } from "@/app/components/Tutorial"
+import { useRecommendedFees } from "@/app/hooks/useRecommendedFees"
+import { usePlatformFee } from "@/app/hooks/usePlatformFee"
+import { psbtService } from "@/app/services/psbtService"
+import { track } from "@vercel/analytics"
+import { NetworkFee } from "@/app/components/NetworkFee"
+import { useFeeRate } from "@/app/hooks/useFeeRate"
+import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 
 export const Bowtie = () => {
-  useRunes();
-  useOrdinals();
-  useBitcoinPrice();
-  useOrdByWallet();
-  useRecommendedFees();
-  usePlatformFee();
+  useRunes()
+  useOrdinals()
+  useBitcoinPrice()
+  useOrdByWallet()
+  useRecommendedFees()
+  usePlatformFee()
+  useFeeRate()
+  const utxos = useRecoilValue(utxoAtom)
+  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const { accounts } = useAccounts()
 
-  const utxos = useRecoilValue(utxoAtom);
-  const [configs, setConfigs] = useRecoilState(configAtom);
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom);
-  const { accounts } = useAccounts();
+  const account = accounts[0]
+  const inputsCount = butterfly.inputs.length
+  const outputsCount = butterfly.outputs.length
 
-  const account = accounts[0];
-  const inputsCount = butterfly.inputs.length;
-  const outputsCount = butterfly.outputs.length;
-
-  const height = 320;
-  const inputHeight = 320 * inputsCount;
-  const outputHeight = 320 * outputsCount;
-  const totalHeight = Math.max(inputHeight, outputHeight);
+  const height = 320
+  const inputHeight = 320 * inputsCount
+  const outputHeight = 320 * outputsCount
+  const totalHeight = Math.max(inputHeight, outputHeight)
 
   const inputPaths = useInputs({
     butterfly,
     totalHeight: inputHeight,
     inputsCount,
     height,
-  });
+  })
 
   const outputPaths = useOutputs({
     butterfly,
@@ -60,31 +62,31 @@ export const Bowtie = () => {
     height,
     inputHeight,
     inputsCount,
-  });
+  })
 
   const onAddInput = () => {
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: !prev.isInputDeckOpen,
-    }));
-  };
+    }))
+  }
 
-  const runes = useRecoilValue(runesAtom);
+  const runes = useRecoilValue(runesAtom)
   const onAddOutput = () => {
     const runeIndex = runes?.findIndex((r) =>
       butterfly.inputs.find((i) =>
         r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
       )
-    );
+    )
 
-    const rune = runes?.[runeIndex!];
+    const rune = runes?.[runeIndex!]
 
     if (rune) {
       setConfigs((prev) => ({
         ...prev,
         isOutputDeckOpen: !prev.isOutputDeckOpen,
-      }));
-      return;
+      }))
+      return
     }
 
     setButterfly((prev) => ({
@@ -104,26 +106,26 @@ export const Bowtie = () => {
           address: account,
         },
       ],
-    }));
-  };
+    }))
+  }
 
   const onRemoveOutput = (index: number) => {
     setButterfly((prev) => ({
       ...prev,
       outputs: prev.outputs.filter((_, key) => key !== index),
-    }));
-  };
+    }))
+  }
 
   const onRemoveInput = (utxo: MempoolUTXO) => {
-    const hasOpReturn = butterfly.outputs.find((o) => o.type === "OP RETURN");
+    const hasOpReturn = butterfly.outputs.find((o) => o.type === "OP RETURN")
     const isThisRune = runes?.find((r) =>
       r.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
-    );
+    )
     const runesInputLength = butterfly.inputs.filter((i) =>
       runes?.find((r) =>
         r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
       )
-    ).length;
+    ).length
 
     setButterfly((prev) => ({
       ...prev,
@@ -134,40 +136,57 @@ export const Bowtie = () => {
               (o) => !(o.type === "runes" || o.type === "OP RETURN")
             )
           : prev.outputs,
-    }));
-  };
+    }))
+  }
 
   const inputTotalBtc = butterfly.inputs.reduce(
     (acc, cur) => acc + cur.value / 100000000,
     0
-  );
+  )
 
   const bestUtxo = JSON.parse(JSON.stringify(utxos))?.sort(
     (a: MempoolUTXO, b: MempoolUTXO) => b.value - a.value
-  )[0];
+  )[0]
+
+  const recommendedFees = useRecoilValue(recommendedFeesAtom)
+
+  const getSelectedFeeRate = (feeType: string) => {
+    if (!recommendedFees) return 0
+    switch (feeType) {
+      case "slow":
+        return recommendedFees.minimumFee + 0.25
+      case "mid":
+        return (
+          (recommendedFees.minimumFee + 0.25 + recommendedFees.fastestFee) / 2
+        )
+      case "fast":
+        return recommendedFees.fastestFee
+      default:
+        return recommendedFees?.hourFee
+    }
+  }
 
   const selectNewUtxoInput = (utxo: MempoolUTXO) => {
-    setConfigs((prev: any) => ({
+    const selectedFeeRate = getSelectedFeeRate(configs.feeType)
+
+    setConfigs((prev) => ({
       ...prev,
       isInputDeckOpen: false,
-      feeCost: prev.feeCost ? prev.feeCost : 1836,
-    }));
+      feeCost: prev.feeCost ? prev.feeCost : 500,
+    }))
 
-    const outputSum = butterfly.outputs.reduce(
-      (acc, cur) => acc + cur.value,
-      0
-    );
+    const outputSum = butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0)
 
     const inputSum =
-      butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0) + utxo.value;
+      butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0) + utxo.value
 
     setButterfly((prev: any) => ({
       ...prev,
       inputs: [...prev.inputs, utxo],
-    }));
+    }))
 
     if (inputSum - outputSum > 0) {
-      let outputsUpdated = [...butterfly.outputs];
+      let outputsUpdated = [...butterfly.outputs]
 
       outputsUpdated[butterfly.outputs.length - 1] = {
         ...outputsUpdated[butterfly.outputs.length - 1],
@@ -177,25 +196,24 @@ export const Bowtie = () => {
           outputSum -
           configs.feeCost +
           (inputSum - utxo.value),
-      };
+      }
 
       setButterfly((prev) => ({
         ...prev,
         outputs: [...outputsUpdated],
-      }));
+      }))
     }
-  };
+  }
 
-  const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0);
+  const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0)
   const outputValues =
-    butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) +
-    configs.feeCost;
+    butterfly.outputs.reduce((acc, cur) => acc + cur.value, 0) + configs.feeCost
 
-  const difference = inputValues - outputValues;
+  const difference = inputValues - outputValues
 
-  const usersOutputs = butterfly.outputs.filter((o) => o.address === account);
-  const isTransfer = usersOutputs.length < butterfly.outputs.length;
-  const isSplit = usersOutputs.length === butterfly.outputs.length;
+  const usersOutputs = butterfly.outputs.filter((o) => o.address === account)
+  const isTransfer = usersOutputs.length < butterfly.outputs.length
+  const isSplit = usersOutputs.length === butterfly.outputs.length
 
   // const confirmTooltip = utxos?.length
   //   ? isConfirmDisabled
@@ -223,63 +241,63 @@ export const Bowtie = () => {
     r.utxos.find((u) =>
       butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
     )
-  );
+  )
 
   const runesInputSum =
     rune?.utxos.reduce((acc, cur) => {
       const utxoIsInInput = butterfly.inputs.find(
         (i) => cur.location === `${i.txid}:${i.vout}`
-      );
+      )
       if (utxoIsInInput) {
-        const utxoFormattedBalance = cur.formattedBalance;
-        return acc + Number(utxoFormattedBalance);
+        const utxoFormattedBalance = cur.formattedBalance
+        return acc + Number(utxoFormattedBalance)
       }
 
-      return acc;
-    }, 0) || 0;
+      return acc
+    }, 0) || 0
 
   const runesOutputSum = butterfly.outputs.reduce((acc, cur) => {
-    return (cur?.runesValue || 0) + acc;
-  }, 0);
+    return (cur?.runesValue || 0) + acc
+  }, 0)
 
-  const runesButterflyBalance = runesInputSum - runesOutputSum;
+  const runesButterflyBalance = runesInputSum - runesOutputSum
 
   const isConfirmDisabled =
     difference !== 0 ||
     outputValues - configs.feeCost < 0 ||
-    runesButterflyBalance !== 0;
+    runesButterflyBalance !== 0
 
-  const { provider } = useBTCProvider();
+  const { provider } = useBTCProvider()
 
   const onSignWithWallet = async (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       const res = await fetch("/api/psbt", {
         method: "POST",
         body: JSON.stringify({ butterfly, account }),
-      });
-      const result = await res.json();
+      })
+      const result = await res.json()
 
       if (result?.psbtHex) {
-        track("psbt-created", { wallet: account });
-        const psbtHexSigned = await provider.signPsbt(result.psbtHex);
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned);
+        track("psbt-created", { wallet: account })
+        const psbtHexSigned = await provider.signPsbt(result.psbtHex)
+        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
         if (txidRes) {
-          track("psbt-sign", { wallet: account });
+          track("psbt-sign", { wallet: account })
           setConfigs((prev) => ({
             ...prev,
             txid: txidRes,
             isOpenModalTxId: true,
             isConfirmedModalTxId: true,
-          }));
+          }))
         } else {
-          track("error-psbt-sign", { wallet: account });
+          track("error-psbt-sign", { wallet: account })
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   return (
     <>
@@ -453,43 +471,7 @@ export const Bowtie = () => {
 
         <div className="h-60 w-full flex mb-2 text-[12px] justify-end relative">
           <div className="absolute -top-6 right-0 opacity-50">Outputs</div>
-          <div
-            className="py-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 "
-            data-tooltip-id={"fee-tool"}
-            data-tooltip-content={"Type the total fee cost in sats"}
-            data-tooltip-place="right"
-          >
-            {Boolean(configs.feeRate) && <div>{configs.feeRate} sat/vb</div>}
-
-            <Image
-              className="w-14 h-14"
-              src="/bitcoin.png"
-              alt="Bitcoin"
-              width={54}
-              height={54}
-            />
-            <div className="text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center ">
-              <input
-                type="number"
-                value={configs.feeCost}
-                onChange={(e) => {
-                  setConfigs((prev) => ({
-                    ...prev,
-                    feeCost: Number(e.target.value),
-                  }));
-                }}
-                placeholder="0"
-                className="bg-transparent text-[20px] border text-center outline-none border-transparent w-20 h-12 ml-[16px]"
-              />{" "}
-              <div className="mt-[-15px] text-[12px]">sats</div>
-            </div>
-            <Tooltip
-              id={"fee-tool"}
-              className="max-w-[150px] bg-gray-600"
-              style={{ backgroundColor: "#292929", color: "white" }}
-            />
-            <div>Network Fee</div>
-          </div>
+          <NetworkFee />
         </div>
       </div>
 
@@ -539,5 +521,5 @@ export const Bowtie = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

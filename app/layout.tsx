@@ -1,14 +1,16 @@
-import "react-tooltip/dist/react-tooltip.css";
+import "react-tooltip/dist/react-tooltip.css"
 
-import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/react";
-import { Inter } from "next/font/google";
+import type { Metadata } from "next"
+import { Analytics } from "@vercel/analytics/react"
+import { Inter } from "next/font/google"
 
-import "./globals.css";
+import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("http://localhost:3000"),
+
   title: "Satonomy - UTXO Management",
   description:
     "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals.",
@@ -36,12 +38,12 @@ export const metadata: Metadata = {
       "Optimize and unlock the sats in your wallet. Manage Bitcoin transactions, Runes, and Ordinals.",
     images: ["/twitter-image.png"], // Ensure this path points to the image in your public folder
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
@@ -52,5 +54,5 @@ export default function RootLayout({
         </main>
       </body>
     </html>
-  );
+  )
 }
