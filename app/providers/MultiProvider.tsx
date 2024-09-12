@@ -1,7 +1,7 @@
-import { ThemeProvider } from "@/app/providers/ThemeProvider";
-import { WalletProvider } from "@/app/providers/WalletProvider";
-import { StrictMode } from "react";
-import { RecoilRoot } from "recoil";
+import { ThemeProvider } from "@/app/providers/ThemeProvider"
+import { WalletProvider } from "@/app/providers/WalletProvider"
+import { StrictMode } from "react"
+import { RecoilRoot } from "recoil"
 
 export const MultiProvider = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -17,5 +17,5 @@ export const MultiProvider = ({ children }: { children: React.ReactNode }) => {
         </ThemeProvider>
       </WalletProvider>
     </StrictMode>
-  );
-};
+  )
+}

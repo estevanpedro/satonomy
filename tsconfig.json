@@ -26,7 +26,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "lib/customBitcore.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -57,12 +57,10 @@ const nextConfig = {
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i
 
-    // Use path.resolve instead of require.resolve for bitcore-lib
     config.resolve.alias = {
       ...config.resolve.alias,
-      "bitcore-lib": path.resolve(__dirname, "node_modules/bitcore-lib"),
+      "bitcore-lib": path.resolve(__dirname, "lib/customBitcore.ts"),
     }
-
     return config
   },
 }

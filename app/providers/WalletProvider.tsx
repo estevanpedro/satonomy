@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 import {
   ConnectProvider,
@@ -11,9 +11,9 @@ import {
   BybitConnector,
   WizzConnector,
   XverseConnector,
-} from "@particle-network/btc-connectkit";
+} from "@particle-network/btc-connectkit"
 
-import { Merlin, BEVM, MAPProtocol } from "@particle-network/chains";
+import { Merlin, BEVM, MAPProtocol } from "@particle-network/chains"
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -49,5 +49,5 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     >
       {children}
     </ConnectProvider>
-  );
-};
+  )
+}

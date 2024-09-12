@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { MultiProvider } from "@/app/providers/MultiProvider";
-import { NavBar, SubNavBar } from "@/app/components/NavBar";
-import { Bowtie } from "@/app/components/Bowtie";
-import { ConfigDeck } from "@/app/components/ConfigDeck";
-import { UtxoDeck } from "@/app/components/CardsDeck";
-import { BowtieMobile } from "@/app/components/BowtieMobile";
-import { OutputDeck } from "@/app/components/CardsOutputDeck";
-import { Canvas } from "@/app/components/Canvas";
+import { MultiProvider } from "@/app/providers/MultiProvider"
+import { NavBar, SubNavBar } from "@/app/components/NavBar"
+import { Bowtie } from "@/app/components/Bowtie"
+import { ConfigDeck } from "@/app/components/ConfigDeck"
+import { UtxoDeck } from "@/app/components/CardsDeck"
+import { BowtieMobile } from "@/app/components/BowtieMobile"
+import { OutputDeck } from "@/app/components/CardsOutputDeck"
+import { Canvas } from "@/app/components/Canvas"
 
 export default function Home() {
   return (
@@ -27,5 +27,5 @@ export default function Home() {
       <UtxoDeck />
       <OutputDeck />
     </MultiProvider>
-  );
+  )
 }
