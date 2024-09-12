@@ -201,7 +201,7 @@ export const NetworkFee = () => {
         <div className="mt-[-15px] text-[12px]">sats</div>
       </div>
       {Boolean(configs.feeRateEstimated || configs.feeRate) &&
-        Boolean(typeof configs.feeRate === "number") && (
+        Boolean(typeof configs.feeRateEstimated === "number") && (
           <div className="mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]">
             {formatNumber(
               configs.feeRateEstimated || configs.feeRate,
