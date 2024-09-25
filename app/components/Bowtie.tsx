@@ -26,6 +26,7 @@ import { NetworkFee } from "@/app/components/NetworkFee"
 import { useFeeRate } from "@/app/hooks/useFeeRate"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { useUrlButterfly } from "@/app/hooks/useUrlButterfly"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export const Bowtie = () => {
   useRunes()
@@ -39,6 +40,7 @@ export const Bowtie = () => {
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
   const { accounts } = useAccounts()
 
   const account = accounts[0]
@@ -240,7 +242,7 @@ export const Bowtie = () => {
   //   : "No UTXOs";
 
   const rune = runes?.find((r) =>
-    r.utxos.find((u) =>
+    r.utxos?.find((u) =>
       butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
     )
   )
@@ -300,6 +302,14 @@ export const Bowtie = () => {
       console.log(error)
     }
   }
+
+  const hasSomeSigned = Boolean(
+    psbtSigned.inputsSigned.find((i) =>
+      butterfly.inputs.find(
+        (input) => input.txid === i.txid && input.vout === i.vout
+      )
+    )
+  )
 
   return (
     <>
@@ -500,7 +510,7 @@ export const Bowtie = () => {
             {inputPaths}
           </div>
 
-          <EmptyCard onClick={onAddInput} />
+          {!hasSomeSigned && <EmptyCard onClick={onAddInput} />}
         </div>
 
         <div className={`w-full flex flex-col`}>
@@ -520,7 +530,9 @@ export const Bowtie = () => {
               </div>
             ))}
           </div>
-          <EmptyCard onClick={onAddOutput} className="self-end" />
+          {!hasSomeSigned && (
+            <EmptyCard onClick={onAddOutput} className="self-end" />
+          )}
         </div>
       </div>
     </>

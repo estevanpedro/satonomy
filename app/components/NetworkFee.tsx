@@ -9,6 +9,7 @@ import { runesAtom } from "@/app/recoil/runesAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { useParams } from "next/navigation"
 import { formatNumber } from "@/app/utils/format"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export const NetworkFee = () => {
   const [configs, setConfigs] = useRecoilState(configAtom)
@@ -29,6 +30,7 @@ export const NetworkFee = () => {
         return recommendedFees?.hourFee
     }
   }
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
   const butterfly = useRecoilValue(butterflyAtom)
   const { accounts } = useAccounts()
   const account = accounts?.[0]
@@ -169,6 +171,14 @@ export const NetworkFee = () => {
     }
   }
 
+  const hasSomeSigned = Boolean(
+    psbtSigned.inputsSigned.find((i) =>
+      butterfly.inputs.find(
+        (input) => input.txid === i.txid && input.vout === i.vout
+      )
+    )
+  )
+
   return (
     <div className="pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ">
       <Image
@@ -187,6 +197,7 @@ export const NetworkFee = () => {
         data-tooltip-place="left"
       >
         <input
+          disabled={hasSomeSigned}
           type="number"
           value={configs.feeCost || ""}
           onChange={(e) => {
@@ -220,10 +231,13 @@ export const NetworkFee = () => {
             configs.feeType === "slow" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("slow")
+            if (!hasSomeSigned) {
+              onFeeRateChange("slow")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="slow"
@@ -231,7 +245,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="slow" className="cursor-pointer ">
+          <label
+            htmlFor="slow"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Slow
           </label>
         </div>
@@ -240,10 +257,13 @@ export const NetworkFee = () => {
             configs.feeType === "mid" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("mid")
+            if (!hasSomeSigned) {
+              onFeeRateChange("mid")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="mid"
@@ -251,7 +271,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="mid" className="cursor-pointer">
+          <label
+            htmlFor="mid"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Mid
           </label>
         </div>
@@ -261,10 +284,13 @@ export const NetworkFee = () => {
             configs.feeType === "fast" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("fast")
+            if (!hasSomeSigned) {
+              onFeeRateChange("fast")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="fast"
@@ -272,7 +298,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="fast" className="cursor-pointer">
+          <label
+            htmlFor="fast"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Fast
           </label>
         </div>

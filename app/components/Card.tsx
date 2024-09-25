@@ -18,6 +18,7 @@ import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { Tooltip } from "react-tooltip"
 import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
 import { configAtom } from "@/app/recoil/confgsAtom"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export function generateBowtiePath(
   inputX: number,
@@ -169,6 +170,7 @@ export const CardOption = ({
   const { accounts } = useAccounts()
   const account = accounts[0]
 
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const { inputs } = useRecoilValue(butterflyAtom)
@@ -184,7 +186,7 @@ export const CardOption = ({
   )
 
   const rune = runesStates?.find((rune) =>
-    rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+    rune.utxos?.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
   )
 
   const utxoFound = rune
@@ -202,7 +204,7 @@ export const CardOption = ({
 
   const runeSelected = runesStates?.find((rune) =>
     inputs.find((i) =>
-      rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+      rune.utxos?.find((u) => u.location === `${i.txid}:${i.vout}`)
     )
   )
 
@@ -210,11 +212,24 @@ export const CardOption = ({
     (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
   )
 
+  const isSigned = psbtSigned.inputsSigned.find(
+    (i) => i.txid === utxo.txid && i.vout === utxo.vout
+  )
+
+  const hasSomeSigned = psbtSigned.inputsSigned.find((i) =>
+    inputs.find((input) => input.txid === i.txid && input.vout === i.vout)
+  )
+
+  const isDifferentRuneId = Boolean(
+    runeSelected?.runeid !== rune?.runeid && rune && runeSelected?.runeid
+  )
+
   const isDisabled =
     inputs?.includes(utxo) ||
     Boolean(ordinal) ||
     hasSatributes ||
-    (Boolean(runeSelected) && !isSameRune && Boolean(rune))
+    (Boolean(runeSelected) && !isSameRune && Boolean(rune)) ||
+    isDifferentRuneId
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
@@ -261,20 +276,26 @@ export const CardOption = ({
           <div className="opacity-30">
             {utxo?.wallet ? formatAddress(utxo.wallet) : ""}
           </div>
-          <button
-            className="opacity-30 hover:opacity-100"
-            onClick={() => {
-              onRemove?.(utxo)
-            }}
-          >
-            REMOVE 🗑️
-          </button>
+          {Boolean(isSigned) || Boolean(hasSomeSigned) ? null : (
+            <button
+              className="opacity-30 hover:opacity-100"
+              onClick={() => {
+                onRemove?.(utxo)
+              }}
+              disabled={Boolean(isSigned)}
+            >
+              REMOVE 🗑️
+            </button>
+          )}
 
           <button
-            className="opacity-30 hover:opacity-100"
+            className={`hover:opacity-100 ${
+              Boolean(isSigned) ? "" : "opacity-30"
+            }`}
             onClick={onSignClick}
+            disabled={Boolean(isSigned)}
           >
-            Sign ✍️
+            {Boolean(isSigned) ? "Signed ✅" : "Sign ✍️"}
           </button>
         </div>
       ) : null}
@@ -406,6 +427,7 @@ export const CardOutput = ({
 }) => {
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
 
   const [addressInputFocused, setAddressInputFocused] = useState(false)
   const onInputFocus = () => {
@@ -433,6 +455,14 @@ export const CardOutput = ({
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
   const type = butterfly.outputs[index]?.type
+
+  const hasSomeSigned = Boolean(
+    psbtSigned.inputsSigned.find((i) =>
+      butterfly.inputs.find(
+        (input) => input.txid === i.txid && input.vout === i.vout
+      )
+    )
+  )
 
   if (butterfly.outputs[index]?.type === "OP RETURN" && rune) {
     return (
@@ -605,6 +635,7 @@ export const CardOutput = ({
           )}
 
           <input
+            disabled={hasSomeSigned}
             id="address"
             placeholder="Address"
             value={butterfly.outputs[index]?.address}
@@ -623,17 +654,22 @@ export const CardOutput = ({
           />
         </div>
 
-        <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
-          CLONE 📋
-        </button>
-        <button
-          className=" opacity-30 hover:opacity-100"
-          onClick={() => {
-            onRemove?.(index)
-          }}
-        >
-          REMOVE 🗑️
-        </button>
+        {!hasSomeSigned && (
+          <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
+            CLONE 📋
+          </button>
+        )}
+
+        {!hasSomeSigned && (
+          <button
+            className=" opacity-30 hover:opacity-100"
+            onClick={() => {
+              onRemove?.(index)
+            }}
+          >
+            REMOVE 🗑️
+          </button>
+        )}
       </div>
       {rune && (
         <>
@@ -667,6 +703,7 @@ export const CardOutput = ({
       )}
       <div className="text-center text-white font-medium whitespace-nowrap flex flex-col justify-center items-center ">
         <input
+          disabled={hasSomeSigned}
           type="number"
           value={
             rune

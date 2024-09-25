@@ -29,8 +29,6 @@ export const Optimizations = () => {
   const account = accounts?.[0]
   const onClose = () => setIsOpen(false)
 
-  console.log("✌️ordinals --->", ordinals)
-
   useEffect(() => {
     const ordinalsOptimizationsFiltered = ordinals
       ?.flatMap((o) => o.inscription) // Flatten all inscriptions from Ordinals[]
@@ -40,7 +38,7 @@ export const Optimizations = () => {
       setOrdinalsOptimizations(ordinalsOptimizationsFiltered as OrdinalData[])
     }
 
-    const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5)
+    const runesOptimizations = runes?.filter((r) => r.utxos?.length >= 5)
 
     if (runesOptimizations) {
       const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations")

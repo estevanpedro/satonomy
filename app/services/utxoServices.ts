@@ -1,13 +1,13 @@
-import { RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom";
-import { MempoolUTXO } from "@/app/recoil/utxoAtom";
-import { networks, Psbt, Transaction } from "bitcoinjs-lib";
+import { RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
+import { MempoolUTXO } from "@/app/recoil/utxoAtom"
+import { networks, Psbt, Transaction } from "bitcoinjs-lib"
 
-const mempoolURL = "https://mempool.space/api";
-const unisatURL = "https://open-api.unisat.io/v1/indexer/address";
-const meURL = "https://api-mainnet.magiceden.dev/v2/ord/btc/runes/utxos/wallet";
-const ordURL = "https://www.ord.io/api/trpc";
+const mempoolURL = "https://mempool.space/api"
+const unisatURL = "https://open-api.unisat.io/v1/indexer/address"
+const meURL = "https://api-mainnet.magiceden.dev/v2/ord/btc/runes/utxos/wallet"
+const ordURL = "https://www.ord.io/api/trpc"
 
-const nextRevalidate = { next: { revalidate: 3600 } };
+const nextRevalidate = { next: { revalidate: 3600 } }
 
 export const utxoServices = {
   getOrdInfoByWallet: async (wallet: string) => {
@@ -25,8 +25,8 @@ export const utxoServices = {
           },
           meta: { values: { cursor: ["undefined"] } },
         },
-      };
-      const inputStr = JSON.stringify(input);
+      }
+      const inputStr = JSON.stringify(input)
       const res = await fetch(
         `${ordURL}/inscription.getFeed?batch=1&input=${inputStr}`,
         {
@@ -35,14 +35,14 @@ export const utxoServices = {
             "Content-Type": "application/json",
           },
         }
-      );
+      )
 
-      const result = await res.json();
+      const result = await res.json()
 
-      return result?.[0]?.result?.data;
+      return result?.[0]?.result?.data
     } catch (error) {
-      console.error(error);
-      return null;
+      console.error(error)
+      return null
     }
   },
   getOrdInfo: async (inscriptionId: string) => {
@@ -53,8 +53,8 @@ export const utxoServices = {
             inscriptionId: inscriptionId,
           },
         },
-      };
-      const inputStr = JSON.stringify(input);
+      }
+      const inputStr = JSON.stringify(input)
 
       const res = await fetch(
         `${ordURL}/inscription.getSmallCardInfo?batch=1&input=${inputStr}`,
@@ -64,56 +64,116 @@ export const utxoServices = {
             "Content-Type": "application/json",
           },
         }
-      );
+      )
 
-      const result = await res.json();
+      const result = await res.json()
 
-      return result?.[0]?.result?.data;
+      return result?.[0]?.result?.data
     } catch (error) {
-      console.error(error);
-      return null;
+      console.error(error)
+      return null
     }
   },
   broadcast: async (psbtHexSigned: string) => {
     try {
       const userPSBT = Psbt.fromHex(psbtHexSigned, {
         network: networks.bitcoin,
-      });
+      })
 
-      const tx = userPSBT.extractTransaction();
-      const txHex = tx.toHex();
-      const btcTx = Transaction.fromHex(txHex);
+      userPSBT.data.inputs.forEach((input, index) => {
+        if (input.finalScriptSig || input.finalScriptWitness) {
+          console.log(`Input ${index} is fully signed and finalized`)
+        } else if (input.partialSig && input.partialSig.length > 0) {
+          console.log(`Input ${index} is partially signed`)
+        } else {
+          console.log(`Input ${index} is not signed`)
+        }
+      })
 
-      const btcTxHex = btcTx.toHex();
-      const res = await fetch(`${mempoolURL}/tx`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: btcTxHex,
-      });
-      const txid = await res.text();
+      console.log("✌️userPSBT --->", userPSBT)
+      const tx = userPSBT.extractTransaction()
+      console.log("✌️tx --->", tx)
+      const txHex = tx.toHex()
+      const btcTx = Transaction.fromHex(txHex)
+      console.log("✌️btcTx --->", btcTx)
 
-      return txid as string;
+      const btcTxHex = btcTx.toHex()
+      console.log("✌️btcTxHex --->", btcTxHex)
+      // const res = await fetch(`${mempoolURL}/tx`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: btcTxHex,
+      // });
+      // const txid = await res.text();
+
+      // return txid as string;
     } catch (error) {
-      console.error(error);
-      return null;
+      console.error(error)
+      return null
+    }
+  },
+  psbtHexSigned: async (psbtHexSigned: string) => {
+    try {
+      const userPSBT = Psbt.fromHex(psbtHexSigned, {
+        network: networks.bitcoin,
+      })
+
+      let signedIndexes: number[] = []
+      let hasIndexesNotSigned = false
+
+      for (let index = 0; index < userPSBT.data.inputs.length; index++) {
+        const input = userPSBT.data.inputs[index]
+
+        if (input.finalScriptSig || input.finalScriptWitness) {
+          signedIndexes = [...signedIndexes, index]
+        } else if (input.partialSig && input.partialSig.length > 0) {
+          signedIndexes = [...signedIndexes, index]
+        } else {
+          hasIndexesNotSigned = true
+        }
+      }
+      console.log("✌️signedIndexes --->", signedIndexes)
+      console.log("✌️hasIndexesNotSigned --->", hasIndexesNotSigned)
+
+      if (signedIndexes.length > 0 && hasIndexesNotSigned) {
+        return {
+          signedIndexes,
+          btcTxHex: undefined,
+        }
+      }
+
+      const tx = userPSBT.extractTransaction()
+
+      const txHex = tx.toHex()
+      const btcTx = Transaction.fromHex(txHex)
+
+      const btcTxHex = btcTx.toHex()
+
+      return {
+        signedIndexes,
+        btcTxHex,
+      }
+    } catch (error) {
+      console.error(error)
+      return null
     }
   },
   fetchTransactionHex: async (txId: string): Promise<string> => {
     try {
-      const res = await fetch(`${mempoolURL}/tx/${txId}/hex`, nextRevalidate);
-      const data = await res.text();
-      return data;
+      const res = await fetch(`${mempoolURL}/tx/${txId}/hex`, nextRevalidate)
+      const data = await res.text()
+      return data
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error(error)
+      throw error
     }
   },
   getUtxos: async (address: string, notConfirmed?: boolean) => {
-    const mempool = await fetch(`${mempoolURL}/address/${address}/utxo`);
-    const utxos: MempoolUTXO[] = await mempool.json();
-    return utxos.filter((utxo) => utxo.status.confirmed || notConfirmed);
+    const mempool = await fetch(`${mempoolURL}/address/${address}/utxo`)
+    const utxos: MempoolUTXO[] = await mempool.json()
+    return utxos.filter((utxo) => utxo.status.confirmed || notConfirmed)
   },
   getRunesBalances: async (wallet: string): Promise<RunesUtxo[]> => {
     const response = await fetch(`${unisatURL}/${wallet}/runes/balance-list`, {
@@ -122,9 +182,9 @@ export const utxoServices = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
       },
-    });
-    const balances = await response.json();
-    return (balances?.data?.detail as RunesUtxo[]) || [];
+    })
+    const balances = await response.json()
+    return (balances?.data?.detail as RunesUtxo[]) || []
   },
   getInscriptions: async (wallet: string): Promise<RunesUtxo[]> => {
     const response = await fetch(
@@ -136,9 +196,9 @@ export const utxoServices = {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
         },
       }
-    );
-    const data = await response.json();
-    return data.data;
+    )
+    const data = await response.json()
+    return data.data
   },
   getRunesUTXOs: async (address: string, rune: string) => {
     const res = await fetch(
@@ -150,17 +210,17 @@ export const utxoServices = {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_MAGIC_EDEN_API_KEY}`,
         },
       }
-    );
-    const result = await res.json();
-    const items = result?.utxos || [];
-    return items as RuneTransaction[];
+    )
+    const result = await res.json()
+    const items = result?.utxos || []
+    return items as RuneTransaction[]
   },
   getEstimatedFeeRate: async () => {
     const feeRate = await fetch(
       `${mempoolURL}/v1/fees/recommended`,
       nextRevalidate
-    );
-    const feeRateJson = await feeRate.json();
-    return feeRateJson;
+    )
+    const feeRateJson = await feeRate.json()
+    return feeRateJson
   },
-};
+}

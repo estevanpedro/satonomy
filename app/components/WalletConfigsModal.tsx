@@ -1,7 +1,7 @@
 import { Modal } from "@/app/components/Modal"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil"
 
 const WalletInput = ({
@@ -16,15 +16,16 @@ const WalletInput = ({
   isConnected?: boolean
 }) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center justify-center">
       <input
         placeholder="Enter wallet address"
-        className="w-full py-2 border rounded px-2 placeholder-zinc-600"
+        className="w-full py-2 border rounded px-2 placeholder-zinc-600 "
         value={wallet}
         onChange={onChange}
+        disabled={isConnected}
       />
       {isConnected ? (
-        <div>Connected</div>
+        <div>✅</div>
       ) : (
         <button onClick={() => onRemove?.(wallet)}>🗑️</button>
       )}
@@ -36,6 +37,20 @@ export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const accountsIncluded = walletConfigs.wallets.filter((w) =>
+      accounts.includes(w)
+    )
+
+    if (!accountsIncluded.length && accounts.length) {
+      setWalletConfigs((prev) => ({
+        ...prev,
+        wallets: [...prev.wallets, ...accounts],
+      }))
+    }
+  }, [walletConfigs, setWalletConfigs, accounts])
+
   const onClose = () => setIsOpen(false)
 
   const onChange = (e: any, index: number) => {
@@ -64,7 +79,7 @@ export const WalletConfigsModal = () => {
     <>
       <div
         onClick={() => setIsOpen(true)}
-        className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer"
+        className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px]"
       >
         ⚙️
       </div>
@@ -73,11 +88,11 @@ export const WalletConfigsModal = () => {
           <div className="mb-2">Configurations</div>
           <div className="mb-6 text-zinc-500">Manage multiples wallet</div>
           <div className="flex flex-col gap-2">
-            {accounts.map((account, index) => (
+            {/* {accounts.map((account, index) => (
               <div key={index}>
-                <WalletInput wallet={account} isConnected={true} />
+                <WalletInput wallet={account}  />
               </div>
-            ))}
+            ))} */}
 
             {walletConfigs.wallets.map((wallet, index) => (
               <div key={index}>
@@ -85,6 +100,7 @@ export const WalletConfigsModal = () => {
                   wallet={wallet}
                   onChange={(e) => onChange(e, index)}
                   onRemove={onRemove}
+                  isConnected={accounts.includes(wallet)}
                 />
               </div>
             ))}

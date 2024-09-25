@@ -1,8 +1,8 @@
-import { generateBowtiePath } from "@/app/components/Card";
-import { Butterfly } from "@/app/recoil/butterflyAtom";
-import { runesAtom } from "@/app/recoil/runesAtom";
-import { use } from "react";
-import { useRecoilValue } from "recoil";
+import { generateBowtiePath } from "@/app/components/Card"
+import { Butterfly } from "@/app/recoil/butterflyAtom"
+import { runesAtom } from "@/app/recoil/runesAtom"
+import { use } from "react"
+import { useRecoilValue } from "recoil"
 
 export const useInputs = ({
   butterfly,
@@ -10,40 +10,40 @@ export const useInputs = ({
   inputsCount,
   height,
 }: {
-  butterfly: Butterfly;
-  totalHeight: number;
-  inputsCount: number;
-  height: number;
+  butterfly: Butterfly
+  totalHeight: number
+  inputsCount: number
+  height: number
 }) => {
-  const runes = useRecoilValue(runesAtom);
-  const paths = [];
+  const runes = useRecoilValue(runesAtom)
+  const paths = []
 
-  const inputX = 10;
-  const outputX = 371.5;
-  const outputY = totalHeight / 2;
+  const inputX = 10
+  const outputX = 371.5
+  const outputY = totalHeight / 2
 
   for (let i = 0; i < inputsCount; i++) {
-    let inputY = height / 2 + height * i;
+    let inputY = height / 2 + height * i
 
-    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY);
+    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY)
 
-    const strangeness = butterfly.inputs[i].value / 1000;
+    const strangeness = butterfly.inputs[i].value / 1000
     const strangenessAdjusted =
-      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness;
+      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness
 
-    const isEven = inputsCount % 2 !== 0;
-    const mode = Math.floor(inputsCount / 2);
+    const isEven = inputsCount % 2 !== 0
+    const mode = Math.floor(inputsCount / 2)
 
-    const txid = butterfly.inputs[i].txid;
+    const txid = butterfly.inputs[i].txid
     const utxo = runes?.find((r) =>
-      r.utxos.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
-    );
-    const isRune = utxo ? true : false;
+      r.utxos?.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
+    )
+    const isRune = utxo ? true : false
 
-    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f";
-    const stop2Color = isRune ? "#FAF22E" : "#feb47b";
+    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f"
+    const stop2Color = isRune ? "#FAF22E" : "#feb47b"
 
-    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`;
+    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 
     paths.push(
       <svg
@@ -79,7 +79,7 @@ export const useInputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
     paths.push(
       <svg
         key={i}
@@ -113,8 +113,8 @@ export const useInputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
   }
 
-  return paths;
-};
+  return paths
+}

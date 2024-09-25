@@ -1,4 +1,4 @@
-import { runesAtom } from "@/app/recoil/runesAtom"
+import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { filterBitcoinWallets } from "@/app/utils/filters"
 import { useEffect, useRef, useState } from "react"
@@ -36,10 +36,24 @@ export const useRunes = () => {
       }
 
       if (allRuneStates.length) {
-        setRuneStates((prevRuneStates) => [
-          ...(prevRuneStates || []),
-          ...allRuneStates,
-        ])
+        setRuneStates((prevRuneStates) => {
+          const existingLocations = new Set(
+            (prevRuneStates || []).flatMap((rune: RunesUtxo) =>
+              rune.utxos.map((utxo: RuneTransaction) => utxo.location)
+            )
+          )
+
+          const filteredNewRunes = allRuneStates
+            .map((rune: RunesUtxo) => ({
+              ...rune,
+              utxos: rune.utxos.filter(
+                (utxo: RuneTransaction) => !existingLocations.has(utxo.location)
+              ),
+            }))
+            .filter((rune: RunesUtxo) => rune.utxos.length > 0) // Only include runes with remaining UTXOs
+
+          return [...(prevRuneStates || []), ...filteredNewRunes]
+        })
       }
 
       // Mark fetched wallets as processed

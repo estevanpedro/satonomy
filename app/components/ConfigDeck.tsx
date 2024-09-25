@@ -1,7 +1,7 @@
 import { useMempool } from "@/app/hooks/useMempool"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import Image from "next/image"
-import { useRecoilState, useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { Tooltip } from "react-tooltip"
 import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
@@ -13,10 +13,12 @@ import Link from "next/link"
 import { psbtService } from "@/app/services/psbtService"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { encodeData } from "@/app/utils/encodeButterfly"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export const ConfigDeck = () => {
   useMempool()
 
+  const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
@@ -38,7 +40,7 @@ export const ConfigDeck = () => {
 
   const difference = inputValues - outputValues
   const rune = runes?.find((r) =>
-    r.utxos.find((u) =>
+    r.utxos?.find((u) =>
       butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
     )
   )
@@ -83,19 +85,39 @@ export const ConfigDeck = () => {
 
       if (result?.psbtHex) {
         const psbtHexSigned = await provider.signPsbt(result.psbtHex)
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        if (txidRes) {
-          track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
 
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-        } else {
-          track("error-psbt-sign", { wallet: account })
+        const shouldNotBroadcast =
+          butterfly.inputs.filter((i) => accounts.find((a) => a !== i?.wallet))
+            .length > 0
+
+        const inputsSigned = butterfly.inputs.filter(
+          (i) => i.wallet === account
+        )
+
+        if (psbtHexSigned) {
+          setPsbtSigned({
+            psbtHexSigned,
+            inputsSigned,
+          })
         }
+
+        if (shouldNotBroadcast) {
+          return
+        }
+
+        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        // if (txidRes) {
+        //   track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
+
+        //   setConfigs((prev) => ({
+        //     ...prev,
+        //     txid: txidRes,
+        //     isOpenModalTxId: true,
+        //     isConfirmedModalTxId: true,
+        //   }))
+        // } else {
+        //   track("error-psbt-sign", { wallet: account })
+        // }
       }
     } catch (error) {
       console.log(error)
@@ -145,9 +167,16 @@ export const ConfigDeck = () => {
     const runeObj = runes?.find((r) => r.runeid === runeFound?.rune?.runeid)
     const runesUrl = encodeData(runeObj ? [runeObj] : undefined)
 
-    const stringToCopy = `https://${
+    const stringToCopy = `http://${
       window.location.hostname
-    }/?b=${butterflyUrl}&c=${configsUrl}${runesUrl ? `&r=${runesUrl}` : ""}`
+    }:3000/?b=${butterflyUrl}&c=${configsUrl}${
+      runesUrl ? `&r=${runesUrl}` : ""
+    }${
+      psbtSigned.psbtHexSigned
+        ? `&psbtHexSigned=${psbtSigned.psbtHexSigned}`
+        : ""
+    }`
+
     if (navigator.clipboard) {
       navigator.clipboard.writeText(stringToCopy).then(
         () => console.log("Text copied to clipboard"),
