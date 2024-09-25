@@ -219,25 +219,7 @@ export const ConfigDeck = () => {
         </div>
       </Modal>
 
-      {Boolean(utxos?.length) && isDeckOpen && (
-        <div
-          onClick={() =>
-            setConfigs((prev) => ({
-              ...prev,
-              isInputDeckOpen: false,
-              isOutputDeckOpen: false,
-            }))
-          }
-          className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
-        >
-          <div className="text-[12px] flex items-center justify-center opacity-50">
-            Action
-          </div>
-          <div className="flex justify-center items-center">Close</div>
-        </div>
-      )}
-
-      {!isConfirmDisabled && (
+      {!isConfirmDisabled && Boolean(configs.feeCost) && (
         <div
           onClick={copyToClipboard}
           className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
@@ -248,6 +230,26 @@ export const ConfigDeck = () => {
           <div className="flex justify-center items-center">Share</div>
         </div>
       )}
+
+      {Boolean(utxos?.length) &&
+        (isDeckOpen || configs.isInputFullDeckOpen) && (
+          <div
+            onClick={() =>
+              setConfigs((prev) => ({
+                ...prev,
+                isInputDeckOpen: false,
+                isOutputDeckOpen: false,
+                isInputFullDeckOpen: false,
+              }))
+            }
+            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Action
+            </div>
+            <div className="flex justify-center items-center">Close</div>
+          </div>
+        )}
 
       {Boolean(utxos?.length) && (
         <div

@@ -1,5 +1,6 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configAtom } from "@/app/recoil/confgsAtom"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { track } from "@vercel/analytics"
 import Image from "next/image"
@@ -7,6 +8,7 @@ import React, { useState, useRef } from "react"
 import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil"
 
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
+  const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const setConfigs = useSetRecoilState(configAtom)
   const { proMode, isInputFullDeckOpen } = useRecoilValue(configAtom) // Get proMode value from the config
@@ -78,6 +80,9 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       isOutputDeckOpen: false,
       feeCost: 0,
     }))
+    setPsbtSigned({ inputsSigned: [], psbtHexSigned: "" })
+    // remove params from url
+    window.history.replaceState({}, "", "/")
 
     track("resetButterfly", {}, { flags: ["resetButterfly"] })
   }

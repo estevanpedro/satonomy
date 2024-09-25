@@ -4,7 +4,7 @@ import {
   butterflyAtom,
   butterflyUrlAtom,
 } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configAtom, DEFAULT_CONFIGS } from "@/app/recoil/confgsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { decompressFromUrlParam } from "@/app/utils/encodeButterfly"
@@ -36,7 +36,14 @@ export const useUrlButterfly = () => {
 
     if (urlConfigs) {
       const decodedConfigs = decompressFromUrlParam(urlConfigs)
-      if (decodedConfigs) setConfigs(decodedConfigs)
+      if (decodedConfigs)
+        setConfigs({
+          ...DEFAULT_CONFIGS,
+          feeCost: decodedConfigs.feeCost,
+          feeRate: decodedConfigs.feeRate,
+          feeType: decodedConfigs.feeType,
+          feeRateEstimated: decodedConfigs.feeRateEstimated,
+        })
     }
 
     if (urlRunes) {
