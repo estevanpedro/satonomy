@@ -1,44 +1,62 @@
-import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
-import { useAccounts } from "@particle-network/btc-connectkit";
-import { useEffect, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
+import { Ordinals, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
+import { filterBitcoinWallets } from "@/app/utils/filters"
+import { useEffect, useRef, useState } from "react"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 
 export const useOrdinals = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [ordinals, setOrdinals] = useRecoilState(ordinalsAtom);
-  const { accounts } = useAccounts();
-  const account = accounts?.[0];
+  const [isLoading, setIsLoading] = useState(false)
+  const setOrdinals = useSetRecoilState(ordinalsAtom)
+  const walletConfigs = useRecoilValue(walletConfigsAtom)
 
-  const previousWallet = useRef<string | undefined>(undefined);
+  // Ref to store previously fetched wallets
+  const fetchedWalletsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
-    const fetchOrdinals = async () => {
-      try {
-        setIsLoading(true);
-        const url = `/api/ordinals?account=${account}`;
-        const response = await fetch(url);
-        const data = await response.json();
+    const fetchOrdinals = async (walletsToFetch: string[]) => {
+      const allOrdinals: Ordinals[] = []
 
-        if (data) {
-          setOrdinals(data);
-          setIsLoading(false);
+      for (const wallet of walletsToFetch) {
+        try {
+          setIsLoading(true)
+          const url = `/api/ordinals?account=${wallet}`
+          const response = await fetch(url)
+          const data: Ordinals = await response.json()
+
+          if (data) {
+            allOrdinals.push(data)
+          }
+        } catch (error) {
+          console.error(`Error fetching ordinals for wallet ${wallet}:`, error)
         }
-      } catch (error) {
-        setOrdinals(null);
-        console.error(error);
       }
-    };
 
-    if (!isLoading && account && previousWallet.current !== account) {
-      fetchOrdinals();
-      previousWallet.current = account;
+      if (allOrdinals.length) {
+        setOrdinals((prevOrdinals) => [...(prevOrdinals || []), ...allOrdinals])
+      }
+
+      // Mark the fetched wallets as processed
+      for (const wallet of walletsToFetch) {
+        fetchedWalletsRef.current.add(wallet)
+      }
+
+      setIsLoading(false)
     }
 
-    if (!account) {
-      previousWallet.current = undefined;
-      setOrdinals(null);
-    }
-  }, [ordinals, isLoading, setOrdinals, account]);
+    const walletsFiltered = filterBitcoinWallets(walletConfigs.wallets)
+    const walletsToFetch = walletsFiltered.filter(
+      (wallet) => !fetchedWalletsRef.current.has(wallet)
+    )
 
-  return { ordinals };
-};
+    if (walletsToFetch.length > 0 && !isLoading) {
+      fetchOrdinals(walletsToFetch)
+    }
+
+    if (walletsFiltered.length === 0) {
+      setOrdinals(null) // Clear ordinals if no wallets are present
+      fetchedWalletsRef.current.clear() // Reset fetched wallets
+    }
+  }, [walletConfigs.wallets, setOrdinals])
+
+  return { isLoading, ordinals: useRecoilValue(ordinalsAtom) }
+}

@@ -198,7 +198,6 @@ export const Card = ({
     </div>
   )
 }
-
 export const CardOption = ({
   onClick,
   utxo,
@@ -214,11 +213,16 @@ export const CardOption = ({
   const account = accounts[0]
 
   const ordinals = useRecoilValue(ordinalsAtom)
+  console.log("✌️ordinals --->", ordinals)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const { inputs } = useRecoilValue(butterflyAtom)
   const runesStates = useRecoilValue(runesAtom)
   const ord = useRecoilValue(ordByWalletAtom)
   const { isInputFullDeckOpen } = useRecoilValue(configAtom)
+
+  // Flatten ordinals to access inscriptions
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
+
   const ordUtxoAsset = ord?.json?.inscriptions.find(
     (o) => o?.id?.replace("i0", "") === utxo?.txid
   )
@@ -231,13 +235,16 @@ export const CardOption = ({
     ? rune?.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
     : undefined
 
+  // Find the ordinal using the flattened inscriptions array
   let ordinal = !utxoFound
-    ? ordinals?.inscription.find(
+    ? allInscriptions.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
     : undefined
 
-  const hasSatributes = Boolean(ordUtxoAsset?.satributes.length)
+  console.log("✌️ordinal --->", ordinal)
+
+  const hasSatributes = Boolean(ordUtxoAsset?.satributes?.length)
 
   const runeSelected = runesStates?.find((rune) =>
     inputs.find((i) =>

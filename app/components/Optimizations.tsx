@@ -1,92 +1,95 @@
-import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useEffect, useState } from "react"
+import { useRecoilValue } from "recoil"
 
-import { Modal } from "@/app/components/Modal";
-import { OptimizationCard } from "@/app/components/OptimizationCard";
-import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom";
-import { useAccounts } from "@particle-network/btc-connectkit";
-import { formatAddress } from "@/app/utils/format";
-import Image from "next/image";
-import { track } from "@vercel/analytics";
-import { Tooltip } from "react-tooltip";
-import { ConnectButton } from "@/app/components/Connect";
-import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom";
-import { OptimizationOrdinals } from "@/app/components/OptimizationOrdinals";
+import { Modal } from "@/app/components/Modal"
+import { OptimizationCard } from "@/app/components/OptimizationCard"
+import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom"
+import { useAccounts } from "@particle-network/btc-connectkit"
+import { formatAddress } from "@/app/utils/format"
+import Image from "next/image"
+import { track } from "@vercel/analytics"
+import { Tooltip } from "react-tooltip"
+import { ConnectButton } from "@/app/components/Connect"
+import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { OptimizationOrdinals } from "@/app/components/OptimizationOrdinals"
 
 export const Optimizations = () => {
-  const { accounts } = useAccounts();
-  const ordinals = useRecoilValue(ordinalsAtom);
-  const runes = useRecoilValue(runesAtom);
+  const { accounts } = useAccounts()
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const runes = useRecoilValue(runesAtom)
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   const [runesOptimizations, setRunesOptimizations] = useState<
     RunesUtxo[] | []
-  >([]);
+  >([])
   const [ordinalsOptimizations, setOrdinalsOptimizations] = useState<
     OrdinalData[] | []
-  >([]);
+  >([])
 
-  const account = accounts?.[0];
-  const onClose = () => setIsOpen(false);
+  const account = accounts?.[0]
+  const onClose = () => setIsOpen(false)
+
+  console.log("✌️ordinals --->", ordinals)
 
   useEffect(() => {
-    const ordinalsOptimizationsFiltered = ordinals?.inscription?.filter(
-      (o) => o.utxo.satoshi > 546
-    );
+    const ordinalsOptimizationsFiltered = ordinals
+      ?.flatMap((o) => o.inscription) // Flatten all inscriptions from Ordinals[]
+      .filter((inscription) => inscription.utxo.satoshi > 546) // Filter based on UTXO's satoshi value
 
     if (ordinalsOptimizationsFiltered?.length) {
-      setOrdinalsOptimizations(ordinalsOptimizationsFiltered);
+      setOrdinalsOptimizations(ordinalsOptimizationsFiltered as OrdinalData[])
     }
-    const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5);
+
+    const runesOptimizations = runes?.filter((r) => r.utxos.length >= 5)
 
     if (runesOptimizations) {
-      const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations");
+      const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations")
       if (!hasSavedOnLocalStorage) {
-        localStorage.setItem("runesOptimizations", "saved");
-        setIsOpen(true);
+        localStorage.setItem("runesOptimizations", "saved")
+        setIsOpen(true)
       }
-      setRunesOptimizations(runesOptimizations);
+      setRunesOptimizations(runesOptimizations)
     }
-  }, [runes, ordinals?.inscription]);
+  }, [runes, ordinals]) // Dependencies
 
-  const [optimizationSelected, setOptimizationSelected] = useState(false);
+  const [optimizationSelected, setOptimizationSelected] = useState(false)
   const onOptimizeSelection = () => {
-    setOptimizationSelected(true);
-  };
+    setOptimizationSelected(true)
+  }
 
-  const [referralUrl, setReferralUrl] = useState("");
+  const [referralUrl, setReferralUrl] = useState("")
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setReferralUrl(`https://${window.location.hostname}/${account}`);
+      setReferralUrl(`https://${window.location.hostname}/${account}`)
     }
-  }, [account]);
+  }, [account])
 
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false)
 
   const copyToClipboard = () => {
-    setIsCopied(true);
-    track("referrer-copied", { wallet: account }, { flags: ["copy"] });
+    setIsCopied(true)
+    track("referrer-copied", { wallet: account }, { flags: ["copy"] })
     if (navigator.clipboard) {
       navigator.clipboard.writeText(referralUrl).then(
         () => console.log("Text copied to clipboard"),
         (err) => console.error("Could not copy text: ", err)
-      );
+      )
     } else {
-      const textArea = document.createElement("textarea");
-      textArea.value = referralUrl;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
+      const textArea = document.createElement("textarea")
+      textArea.value = referralUrl
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
       try {
-        document.execCommand("copy");
-        console.log("Text copied to clipboard");
+        document.execCommand("copy")
+        console.log("Text copied to clipboard")
       } catch (err) {
-        console.error("Could not copy text: ", err);
+        console.error("Could not copy text: ", err)
       }
-      document.body.removeChild(textArea);
+      document.body.removeChild(textArea)
     }
-  };
+  }
 
   return (
     <>
@@ -112,7 +115,7 @@ export const Optimizations = () => {
       }
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="max-h-[600px] overflow-y-auto no-scrollbar">
+        <div className="max-h-[600px] overflow-y-auto no-scrollbar sm:w-[420px]">
           <Tooltip
             id={"Optimizations"}
             className="max-w-[300px] bg-gray-600"
@@ -168,7 +171,7 @@ export const Optimizations = () => {
                   onOptimizeSelection={onOptimizeSelection}
                 />
               </div>
-            );
+            )
           })}
 
           {ordinalsOptimizations.length > 0 && (
@@ -183,7 +186,7 @@ export const Optimizations = () => {
                       onOptimizeSelection={onOptimizeSelection}
                     />
                   </div>
-                );
+                )
               })}
             </>
           )}
@@ -231,5 +234,5 @@ export const Optimizations = () => {
         </div>
       </Modal>
     </>
-  );
-};
+  )
+}

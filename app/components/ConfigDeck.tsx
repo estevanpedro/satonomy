@@ -139,19 +139,21 @@ export const ConfigDeck = () => {
   return (
     <div className={`fixed flex gap-2 ${position}`}>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <h2 className="text-[20px] font-bold mb-8">🎉 Success</h2>
-        <p className="mt-4">Transaction signed and broadcasted</p>
+        <div className="w-full flex h-full sm:w-[420px]">
+          <h2 className="text-[20px] font-bold mb-8">🎉 Success</h2>
+          <p className="mt-4">Transaction signed and broadcasted</p>
 
-        <div className="mt-4 flex  w-full overflow-hidden gap-2">
-          <p>Txid: </p>
-          <Link
-            href={`https://mempool.space/tx/${txid}`}
-            className="] font-normal text-orange-400 hover:text-orange-300 flex  text-start"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {formatAddress(txid)}
-          </Link>
+          <div className="mt-4 flex  w-full overflow-hidden gap-2">
+            <p>Txid: </p>
+            <Link
+              href={`https://mempool.space/tx/${txid}`}
+              className="] font-normal text-orange-400 hover:text-orange-300 flex  text-start"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {formatAddress(txid)}
+            </Link>
+          </div>
         </div>
       </Modal>
 

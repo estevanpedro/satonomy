@@ -1,25 +1,26 @@
-import { ConnectButton } from "@/app/components/Connect";
-import { Optimizations } from "@/app/components/Optimizations";
-import { configAtom } from "@/app/recoil/confgsAtom";
-import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom";
-import Image from "next/image";
-import { useState } from "react";
-import { Tooltip } from "react-tooltip";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { ConnectButton } from "@/app/components/Connect"
+import { Optimizations } from "@/app/components/Optimizations"
+import { WalletConfigsModal } from "@/app/components/WalletConfigsModal"
+import { configAtom } from "@/app/recoil/confgsAtom"
+import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
+import Image from "next/image"
+import { useState } from "react"
+import { Tooltip } from "react-tooltip"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 
 export const NavBar = () => {
-  const recommendedFees = useRecoilValue(recommendedFeesAtom);
-  const [clicked, setClicked] = useState(0);
-  const setConfig = useSetRecoilState(configAtom);
-  const hourFee = recommendedFees?.halfHourFee;
+  const recommendedFees = useRecoilValue(recommendedFeesAtom)
+  const [clicked, setClicked] = useState(0)
+  const setConfig = useSetRecoilState(configAtom)
+  const hourFee = recommendedFees?.halfHourFee
 
   const onGasClick = () => {
-    setClicked(clicked + 1);
+    setClicked(clicked + 1)
     if (clicked > 5) {
-      setConfig((old) => ({ ...old, notConfirmed: true }));
-      alert("UTXO Unconfirmed Activated");
+      setConfig((old) => ({ ...old, notConfirmed: true }))
+      alert("UTXO Unconfirmed Activated")
     }
-  };
+  }
 
   return (
     <div className="my-8 z-10 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
@@ -72,13 +73,15 @@ export const NavBar = () => {
         <Optimizations />
 
         <ConnectButton />
+
+        <WalletConfigsModal />
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const SubNavBar = () => {
-  const showOptimizations = true;
+  const showOptimizations = true
 
   return (
     <>
@@ -104,5 +107,5 @@ export const SubNavBar = () => {
         </div>
       )} */}
     </>
-  );
-};
+  )
+}
