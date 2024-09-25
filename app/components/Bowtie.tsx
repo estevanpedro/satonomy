@@ -25,6 +25,7 @@ import { track } from "@vercel/analytics"
 import { NetworkFee } from "@/app/components/NetworkFee"
 import { useFeeRate } from "@/app/hooks/useFeeRate"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
+import { useUrlButterfly } from "@/app/hooks/useUrlButterfly"
 
 export const Bowtie = () => {
   useRunes()
@@ -34,6 +35,7 @@ export const Bowtie = () => {
   useRecommendedFees()
   usePlatformFee()
   useFeeRate()
+  useUrlButterfly()
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
@@ -491,6 +493,7 @@ export const Bowtie = () => {
                   utxo={utxo}
                   onRemove={onRemoveInput}
                   isSelected={true}
+                  onSignClick={onSignWithWallet}
                 />
               </div>
             ))}

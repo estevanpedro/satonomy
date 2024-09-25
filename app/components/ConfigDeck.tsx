@@ -12,7 +12,7 @@ import { Modal } from "@/app/components/Modal"
 import Link from "next/link"
 import { psbtService } from "@/app/services/psbtService"
 import { runesAtom } from "@/app/recoil/runesAtom"
-import { config } from "process"
+import { encodeData } from "@/app/utils/encodeButterfly"
 
 export const ConfigDeck = () => {
   useMempool()
@@ -136,6 +136,39 @@ export const ConfigDeck = () => {
     }))
   }
 
+  const copyToClipboard = () => {
+    const butterflyUrl = encodeData(butterfly)
+    const configsUrl = encodeData(configs)
+    const runeFound = butterfly.outputs.find(
+      (o) => o.type === "runes" && o.rune?.runeid
+    )
+    const runeObj = runes?.find((r) => r.runeid === runeFound?.rune?.runeid)
+    const runesUrl = encodeData(runeObj ? [runeObj] : undefined)
+
+    const stringToCopy = `https://${
+      window.location.hostname
+    }/?b=${butterflyUrl}&c=${configsUrl}${runesUrl ? `&r=${runesUrl}` : ""}`
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(stringToCopy).then(
+        () => console.log("Text copied to clipboard"),
+        (err) => console.error("Could not copy text: ", err)
+      )
+    } else {
+      const textArea = document.createElement("textarea")
+      textArea.value = stringToCopy
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+      try {
+        document.execCommand("copy")
+        console.log("Text copied to clipboard")
+      } catch (err) {
+        console.error("Could not copy text: ", err)
+      }
+      document.body.removeChild(textArea)
+    }
+  }
+
   return (
     <div className={`fixed flex gap-2 ${position}`}>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -172,6 +205,18 @@ export const ConfigDeck = () => {
             Action
           </div>
           <div className="flex justify-center items-center">Close</div>
+        </div>
+      )}
+
+      {!isConfirmDisabled && (
+        <div
+          onClick={copyToClipboard}
+          className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
+        >
+          <div className="text-[12px] flex items-center justify-center opacity-50">
+            Copy
+          </div>
+          <div className="flex justify-center items-center">Share</div>
         </div>
       )}
 

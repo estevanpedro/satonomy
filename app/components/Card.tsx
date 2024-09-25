@@ -153,67 +153,23 @@ export const CardMobile = ({
   )
 }
 
-export const Card = ({
-  onRemove,
-  utxo,
-}: {
-  onRemove?: (output: MempoolUTXO) => void
-  utxo: MempoolUTXO
-}) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom)
-  const { accounts } = useAccounts()
-  const account = accounts?.[0]
-  return (
-    <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
-      <div className="absolute top-4 left-[-120px] opacity-30">
-        <div>INPUT #{utxo?.vout}</div>
-      </div>
-      <div className="opacity-30 absolute top-14 left-[-120px]">
-        {account ? formatAddress(account) : ""}
-      </div>
-      <button
-        className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
-        onClick={() => {
-          onRemove?.(utxo)
-        }}
-      >
-        REMOVE 🗑️
-      </button>
-      <div className="absolute top-[-3px] right-[-3px]">
-        <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
-      </div>
-      <Image
-        className="w-14 h-14 pointer-events-none"
-        src="/bitcoin.png"
-        alt="Bitcoin"
-        width={54}
-        height={54}
-        loading="lazy"
-      />
-      Bitcoin
-      <div className="w-32 h-12  text-center text-white text-xl font-medium">
-        {formatNumber(utxo?.value, 0, 0, false, false)} sats
-      </div>
-      <div>${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}</div>
-    </div>
-  )
-}
 export const CardOption = ({
   onClick,
   utxo,
   onRemove,
   isSelected,
+  onSignClick,
 }: {
   onClick?: (utxo: MempoolUTXO) => void
   utxo: MempoolUTXO
   onRemove?: (utxo: MempoolUTXO) => void
   isSelected?: boolean
+  onSignClick?: (e: any) => void
 }) => {
   const { accounts } = useAccounts()
   const account = accounts[0]
 
   const ordinals = useRecoilValue(ordinalsAtom)
-  console.log("✌️ordinals --->", ordinals)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const { inputs } = useRecoilValue(butterflyAtom)
   const runesStates = useRecoilValue(runesAtom)
@@ -241,8 +197,6 @@ export const CardOption = ({
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
     : undefined
-
-  console.log("✌️ordinal --->", ordinal)
 
   const hasSatributes = Boolean(ordUtxoAsset?.satributes?.length)
 
@@ -300,22 +254,29 @@ export const CardOption = ({
       </div>
 
       {isSelected ? (
-        <>
-          <div className="absolute top-4 left-[-120px] opacity-30">
+        <div className="absolute flex flex-col gap-4 top-0 left-[-120px] items-end">
+          <div className="opacity-30">
             <div>INPUT #{utxo?.vout}</div>
           </div>
-          <div className="opacity-30 absolute top-14 left-[-120px]">
-            {account ? formatAddress(account) : ""}
+          <div className="opacity-30">
+            {utxo?.wallet ? formatAddress(utxo.wallet) : ""}
           </div>
           <button
-            className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
+            className="opacity-30 hover:opacity-100"
             onClick={() => {
               onRemove?.(utxo)
             }}
           >
             REMOVE 🗑️
           </button>
-        </>
+
+          <button
+            className="opacity-30 hover:opacity-100"
+            onClick={onSignClick}
+          >
+            Sign ✍️
+          </button>
+        </div>
       ) : null}
 
       <div className="absolute top-1 left-2 text-[8px] capitalize">

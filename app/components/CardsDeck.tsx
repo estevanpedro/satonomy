@@ -133,6 +133,9 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
 
   const ordinals = useRecoilValue(ordinalsAtom)
 
+  // Flatten the inscriptions from all Ordinals
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
+
   return (
     <>
       <Portfolio onClick={onClick} />
@@ -176,8 +179,9 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
                     )
                   : undefined
 
+                // Find the ordinal in the flattened inscriptions
                 const ordinal = !utxoFound
-                  ? ordinals?.inscription.find(
+                  ? allInscriptions.find(
                       (i) =>
                         i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
                     )
