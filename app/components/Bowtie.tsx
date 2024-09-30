@@ -40,7 +40,7 @@ export const Bowtie = () => {
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
-  const psbtSigned = useRecoilValue(psbtSignedAtom)
+  const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const { accounts } = useAccounts()
 
   const account = accounts[0]
@@ -121,7 +121,6 @@ export const Bowtie = () => {
   }
 
   const onRemoveInput = (utxo: MempoolUTXO) => {
-    const hasOpReturn = butterfly.outputs.find((o) => o.type === "OP RETURN")
     const isThisRune = runes?.find((r) =>
       r.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
     )
@@ -215,32 +214,6 @@ export const Bowtie = () => {
 
   const difference = inputValues - outputValues
 
-  const usersOutputs = butterfly.outputs.filter((o) => o.address === account)
-  const isTransfer = usersOutputs.length < butterfly.outputs.length
-  const isSplit = usersOutputs.length === butterfly.outputs.length
-
-  // const confirmTooltip = utxos?.length
-  //   ? isConfirmDisabled
-  //     ? difference > 0 || outputValues < 0
-  //       ? `Adjust the fee or outputs. UTXO balance is ${formatNumber(
-  //           inputValues - outputValues,
-  //           0,
-  //           0,
-  //           false,
-  //           false
-  //         )} sats; it should be 0.`
-  //       : `Add more inputs ${
-  //           outputValues ? "or adjust the output" : ""
-  //         }. UTXO balance is ${formatNumber(
-  //           inputValues - outputValues,
-  //           0,
-  //           0,
-  //           false,
-  //           false
-  //         )} sats; it should be 0.`
-  //     : "Create PSBT and sign"
-  //   : "No UTXOs";
-
   const rune = runes?.find((r) =>
     r.utxos?.find((u) =>
       butterfly.inputs.find((i) => u.location === `${i.txid}:${i.vout}`)
@@ -276,6 +249,37 @@ export const Bowtie = () => {
   const onSignWithWallet = async (e: any) => {
     e.preventDefault()
     try {
+      if (psbtSigned.psbtHexSigned) {
+        const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
+        const psbtHexSigned = await provider.signPsbt(alreadyPsbtHexSigned)
+        console.log("✌️psbtHexSigned --->", psbtHexSigned)
+
+        const inputsSigned = butterfly.inputs.filter(
+          (i) => i.wallet === account
+        )
+
+        setPsbtSigned({
+          psbtHexSigned,
+          inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+        })
+
+        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        console.log("✌️txidRes --->", txidRes)
+        if (txidRes) {
+          track("psbt-sign", { wallet: account })
+          setConfigs((prev) => ({
+            ...prev,
+            txid: txidRes,
+            isOpenModalTxId: true,
+            isConfirmedModalTxId: true,
+          }))
+        } else {
+          track("error-psbt-sign", { wallet: account })
+        }
+
+        return
+      }
+
       const res = await fetch("/api/psbt", {
         method: "POST",
         body: JSON.stringify({ butterfly, account }),
@@ -284,7 +288,9 @@ export const Bowtie = () => {
 
       if (result?.psbtHex) {
         track("psbt-created", { wallet: account })
+
         const psbtHexSigned = await provider.signPsbt(result.psbtHex)
+
         const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
         if (txidRes) {
           track("psbt-sign", { wallet: account })

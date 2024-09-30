@@ -99,6 +99,7 @@ export const utxoServices = {
 
       const btcTxHex = btcTx.toHex()
       console.log("✌️btcTxHex --->", btcTxHex)
+      return btcTxHex
       // const res = await fetch(`${mempoolURL}/tx`, {
       //   method: "POST",
       //   headers: {
