@@ -140,7 +140,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               Mode
             </div>
             <div className="flex justify-center items-center gap-2">
-              {proMode ? "Pro" : "Simple"}{" "}
+              {proMode ? "Simple" : "Pro"}{" "}
               {proMode ? (
                 <Image
                   src="/zoom-out.png"

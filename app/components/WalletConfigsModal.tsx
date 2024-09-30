@@ -1,8 +1,9 @@
 import { Modal } from "@/app/components/Modal"
+import { configAtom } from "@/app/recoil/confgsAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
-import { useEffect, useState } from "react"
-import { useRecoilState } from "recoil"
+import { useEffect, useRef, useState } from "react"
+import { useRecoilState, useRecoilValue } from "recoil"
 
 const WalletInput = ({
   wallet,
@@ -37,19 +38,51 @@ export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
   const [isOpen, setIsOpen] = useState(false)
+  const configs = useRecoilValue(configAtom)
+  const previousProModeRef = useRef(configs.proMode) // To store the previous mode
 
   useEffect(() => {
     const accountsIncluded = walletConfigs.wallets.filter((w) =>
       accounts.includes(w)
     )
 
-    if (!accountsIncluded.length && accounts.length) {
+    // If proMode has changed from true to false (Pro -> Simple)
+    if (previousProModeRef.current && !configs.proMode) {
       setWalletConfigs((prev) => ({
         ...prev,
-        wallets: [...prev.wallets, ...accounts],
+        prevWallets: prev.wallets, // Save previous wallets to prevWallets
+        wallets: accounts, // In simple mode, only use current accounts
       }))
     }
-  }, [walletConfigs, setWalletConfigs, accounts])
+    // If proMode has changed from false to true (Simple -> Pro), restore prevWallets
+    else if (!previousProModeRef.current && configs.proMode) {
+      setWalletConfigs((prev) => {
+        const restoredWallets = Array.from(
+          new Set([...(prev.prevWallets || []), ...accounts])
+        )
+        return {
+          ...prev,
+          wallets: restoredWallets, // Restore wallets from prevWallets and current accounts
+        }
+      })
+    }
+    // Normal pro mode behavior: Add new accounts if not already included
+    else if (configs.proMode && accountsIncluded.length === 0) {
+      setWalletConfigs((prev) => {
+        const newWallets = Array.from(new Set([...prev.wallets, ...accounts]))
+        if (newWallets.length !== prev.wallets.length) {
+          return {
+            ...prev,
+            wallets: newWallets,
+          }
+        }
+        return prev // No change, prevent unnecessary update
+      })
+    }
+
+    // Update the previous mode to the current one
+    previousProModeRef.current = configs.proMode
+  }, [configs.proMode, accounts, setWalletConfigs])
 
   const onClose = () => setIsOpen(false)
 
@@ -77,12 +110,15 @@ export const WalletConfigsModal = () => {
 
   return (
     <>
-      <div
-        onClick={() => setIsOpen(true)}
-        className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px]"
-      >
-        ⚙️
-      </div>
+      {configs.proMode && (
+        <div
+          onClick={() => setIsOpen(true)}
+          className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px]"
+        >
+          ⚙️
+        </div>
+      )}
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="w-full h-full flex flex-col sm:min-w-[500px]">
           <div className="mb-2">Configurations</div>

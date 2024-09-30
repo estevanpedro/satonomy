@@ -183,6 +183,7 @@ export const utxoServices = {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
       },
     })
+    console.log("✌️response --->", response)
     const balances = await response.json()
     return (balances?.data?.detail as RunesUtxo[]) || []
   },
