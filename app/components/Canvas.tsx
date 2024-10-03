@@ -97,12 +97,12 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       onWheel={handleWheel}
       style={{
         width: "100%",
-        height: "calc(100vh - 113.4px)",
+        height: "calc(100vh - 79px)",
         overflow: proMode ? "hidden" : "auto", // Use normal scroll when not in proMode
         cursor: proMode && isPanning ? "grabbing" : proMode ? "grab" : "auto", // No custom cursor when not in proMode
         position: "relative",
       }}
-      className="hidden sm:block"
+      className="hidden sm:block scrollbar"
     >
       <div
         className="flex  justify-center"

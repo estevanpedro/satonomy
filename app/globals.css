@@ -140,3 +140,28 @@ body {
   transform-origin: center center; /* Ensures scaling is centered */
   opacity: 0;
 }
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 16px;
+    height: 20px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    /* background: #6839b6; */
+    border-radius: 100vh;
+    border: 1px solid #2c2930;
+    /* bg gradient */
+    background: linear-gradient(45deg, #6839b6, #3478f7);
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, rgb(109, 68, 177) #4f88f0);
+    background: #6839b6;
+  }
+}

@@ -14,6 +14,8 @@ import { psbtService } from "@/app/services/psbtService"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { encodeData } from "@/app/utils/encodeButterfly"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
+import { toast } from "react-toastify"
+import { toastOptions } from "@/app/components/Toast"
 
 export const ConfigDeck = () => {
   useMempool()
@@ -196,6 +198,8 @@ export const ConfigDeck = () => {
       }
       document.body.removeChild(textArea)
     }
+
+    toast("Copied to clipboard", toastOptions)
   }
 
   return (
@@ -219,18 +223,6 @@ export const ConfigDeck = () => {
         </div>
       </Modal>
 
-      {!isConfirmDisabled && Boolean(configs.feeCost) && (
-        <div
-          onClick={copyToClipboard}
-          className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
-        >
-          <div className="text-[12px] flex items-center justify-center opacity-50">
-            Copy
-          </div>
-          <div className="flex justify-center items-center">Share</div>
-        </div>
-      )}
-
       {Boolean(utxos?.length) &&
         (isDeckOpen || configs.isInputFullDeckOpen) && (
           <div
@@ -242,7 +234,7 @@ export const ConfigDeck = () => {
                 isInputFullDeckOpen: false,
               }))
             }
-            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
+            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
               Action
@@ -363,6 +355,27 @@ export const ConfigDeck = () => {
               </span>
             </div>
           </button>
+
+          {!isConfirmDisabled && Boolean(configs.feeCost) && (
+            <div
+              onClick={copyToClipboard}
+              className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
+            >
+              <div className="text-[12px] flex items-center justify-center opacity-50">
+                Share
+              </div>
+              <div className="flex justify-center items-center">
+                Copy{" "}
+                <Image
+                  src="/share.png"
+                  alt="Copy"
+                  width={16}
+                  height={16}
+                  className="ml-2"
+                />
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

@@ -1,6 +1,6 @@
-import { generateBowtiePath } from "@/app/components/Card";
-import { runesAtom } from "@/app/recoil/runesAtom";
-import { useRecoilValue } from "recoil";
+import { generateBowtiePath } from "@/app/components/Card"
+import { runesAtom } from "@/app/recoil/runesAtom"
+import { useRecoilValue } from "recoil"
 
 export const useOutputs = ({
   butterfly,
@@ -10,41 +10,41 @@ export const useOutputs = ({
   inputHeight,
   inputsCount,
 }: {
-  butterfly: any;
-  totalHeight: number;
-  outputsCount: number;
-  height: number;
-  inputHeight: number;
-  inputsCount: number;
+  butterfly: any
+  totalHeight: number
+  outputsCount: number
+  height: number
+  inputHeight: number
+  inputsCount: number
 }) => {
-  const runes = useRecoilValue(runesAtom);
+  const runes = useRecoilValue(runesAtom)
 
-  const paths = [];
+  const paths = []
 
-  const inputX = 184;
-  const outputX = -174;
-  const outputY = inputHeight / 2;
+  const inputX = 184
+  const outputX = -174
+  const outputY = inputHeight / 2
 
   for (let i = 0; i < outputsCount; i++) {
-    const isOpReturn = butterfly.outputs[i].type === "OP RETURN";
+    const isOpReturn = butterfly.outputs[i].type === "OP RETURN"
     if (isOpReturn) {
-      continue;
+      continue
     }
-    let inputY = height / 2 + height * i;
+    let inputY = height / 2 + height * i
 
-    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY);
+    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY)
 
-    const strangeness = butterfly.outputs[i].value / 1000;
+    const strangeness = butterfly.outputs[i].value / 1000
     const strangenessAdjusted =
-      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness;
+      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness
 
-    const isEven = inputsCount % 2 !== 0;
-    const mode = Math.floor(inputsCount / 2);
+    const isEven = inputsCount % 2 !== 0
+    const mode = Math.floor(inputsCount / 2)
 
-    const isRune = butterfly.outputs[i]?.type === "runes";
-    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f";
-    const stop2Color = isRune ? "#FAF22E" : "#feb47b";
-    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-2-${i})`;
+    const isRune = butterfly.outputs[i]?.type === "runes"
+    const stop1Color = isRune ? "#FF8A00" : "#6839B6"
+    const stop2Color = isRune ? "#FAF22E" : "#3478F7"
+    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-2-${i})`
 
     // <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
     paths.push(
@@ -81,7 +81,7 @@ export const useOutputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
     paths.push(
       <svg
         key={i}
@@ -115,17 +115,17 @@ export const useOutputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
   }
 
-  const feePathDataYnputY = -130;
+  const feePathDataYnputY = -130
 
   const feePathData = generateBowtiePath(
     inputX,
     feePathDataYnputY,
     outputX,
     outputY
-  );
+  )
 
   paths.unshift(
     <svg
@@ -138,10 +138,10 @@ export const useOutputs = ({
     >
       <defs>
         <linearGradient id={`gradient-2-000`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "#feb47b", stopOpacity: 1 }} />
+          <stop offset="0%" style={{ stopColor: "#3478F7", stopOpacity: 1 }} />
           <stop
             offset="100%"
-            style={{ stopColor: "#ff7e5f", stopOpacity: 1 }}
+            style={{ stopColor: "#6839B6", stopOpacity: 1 }}
           />
         </linearGradient>
       </defs>
@@ -152,7 +152,7 @@ export const useOutputs = ({
         fill="none"
       />
     </svg>
-  );
+  )
   paths.unshift(
     <svg
       key="fee"
@@ -163,10 +163,10 @@ export const useOutputs = ({
     >
       <defs>
         <linearGradient id={`gradient-2-000`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "#feb47b", stopOpacity: 1 }} />
+          <stop offset="0%" style={{ stopColor: "#3478F7", stopOpacity: 1 }} />
           <stop
             offset="100%"
-            style={{ stopColor: "#ff7e5f", stopOpacity: 1 }}
+            style={{ stopColor: "#6839B6", stopOpacity: 1 }}
           />
         </linearGradient>
       </defs>
@@ -177,7 +177,7 @@ export const useOutputs = ({
         fill="none"
       />
     </svg>
-  );
+  )
 
-  return paths;
-};
+  return paths
+}

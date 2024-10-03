@@ -40,8 +40,8 @@ export const useInputs = ({
     )
     const isRune = utxo ? true : false
 
-    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f"
-    const stop2Color = isRune ? "#FAF22E" : "#feb47b"
+    const stop1Color = isRune ? "#FF8A00" : "#6839B6"
+    const stop2Color = isRune ? "#FAF22E" : "#3478F7"
 
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 
