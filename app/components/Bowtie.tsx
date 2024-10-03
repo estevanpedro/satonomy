@@ -256,7 +256,6 @@ export const Bowtie = () => {
       if (psbtSigned.psbtHexSigned) {
         const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
         const psbtHexSigned = await provider.signPsbt(alreadyPsbtHexSigned)
-        console.log("✌️psbtHexSigned --->", psbtHexSigned)
 
         const inputsSigned = butterfly.inputs.filter(
           (i) => i.wallet === account
