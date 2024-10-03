@@ -165,3 +165,118 @@ body {
     background: #6839b6;
   }
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 42.5px;
+  height: 25px;
+  --g1: conic-gradient(from 90deg at left 1.5px top 1.5px, #0000 90deg, #fff 0);
+  --g2: conic-gradient(
+    from -90deg at bottom 1.5px right 1.5px,
+    #0000 90deg,
+    #fff 0
+  );
+  background: var(--g1), var(--g1), var(--g1), var(--g2), var(--g2), var(--g2);
+  background-position: left, center, right;
+  background-repeat: no-repeat;
+  animation: l9 1s infinite;
+}
+@keyframes l9 {
+  0% {
+    background-size: 12.5px 25%, 12.5px 25%, 12.5px 25%;
+  }
+  25% {
+    background-size: 12.5px 50%, 12.5px 25%, 12.5px 25%;
+  }
+  50% {
+    background-size: 12.5px 25%, 12.5px 50%, 12.5px 25%;
+  }
+  75% {
+    background-size: 12.5px 25%, 12.5px 25%, 12.5px 50%;
+  }
+  100% {
+    background-size: 12.5px 25%, 12.5px 25%, 12.5px 25%;
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader-2 {
+  width: 60px;
+  aspect-ratio: 1;
+  background: linear-gradient(45deg, #3478f7 50%, #0000 0),
+    linear-gradient(45deg, #0000 50%, #3478f7 0),
+    linear-gradient(-45deg, #6839b6 50%, #0000 0),
+    linear-gradient(-45deg, #0000 50%, #6839b6 0), linear-gradient(#554236 0 0);
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  animation: l18 1.5s infinite;
+}
+@keyframes l18 {
+  0% {
+    background-position: 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%;
+  }
+  25% {
+    background-position: 0 100%, 100% 0, 50% 50%, 50% 50%, 50% 50%;
+  }
+  50% {
+    background-position: 0 100%, 100% 0, 100% 100%, 0 0, 50% 50%;
+  }
+  75% {
+    background-position: 50% 50%, 50% 50%, 100% 100%, 0 0, 50% 50%;
+  }
+  100% {
+    background-position: 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%;
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader-3 {
+  --s: 20px;
+
+  --_d: calc(0.353 * var(--s));
+  width: calc(var(--s) + var(--_d));
+  aspect-ratio: 1;
+  display: grid;
+  margin-left: -28px;
+  margin-bottom: 54px;
+}
+.loader-3:before,
+.loader-3:after {
+  content: "";
+  grid-area: 1/1;
+  clip-path: polygon(
+    var(--_d) 0,
+    100% 0,
+    100% calc(100% - var(--_d)),
+    calc(100% - var(--_d)) 100%,
+    0 100%,
+    0 var(--_d)
+  );
+  background: conic-gradient(
+    from -90deg at calc(100% - var(--_d)) var(--_d),
+    #7751b4 135deg,
+    #7943cf 0 270deg,
+    #6839b6 0
+  );
+  animation: l6 2s infinite;
+}
+.loader-3:after {
+  animation-delay: -1s;
+}
+@keyframes l6 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(30px, 0);
+  }
+  50% {
+    transform: translate(30px, 30px);
+  }
+  75% {
+    transform: translate(0, 30px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}

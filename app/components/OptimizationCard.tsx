@@ -2,6 +2,7 @@
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configAtom } from "@/app/recoil/confgsAtom"
+import { DEFAULT_PSBT_SIGNED, psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { RunesUtxo } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
@@ -25,7 +26,7 @@ export const OptimizationCard = ({
   onOptimizeSelection?: () => void
 }) => {
   const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
-
+  const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const setButterfly = useSetRecoilState(butterflyAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
@@ -165,11 +166,7 @@ export const OptimizationCard = ({
   const onSelect = (rune: RunesUtxo) => {
     onOptimizeSelection?.()
     onClose()
-
-    const utxosSorted = (
-      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value)
-
+    setPsbtSigned(DEFAULT_PSBT_SIGNED)
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>
         acc +

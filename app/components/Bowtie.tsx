@@ -31,8 +31,10 @@ import Image from "next/image"
 import { toastOptions } from "@/app/components/Toast"
 import { toast } from "react-toastify"
 import Link from "next/link"
+import { loadingAtom } from "@/app/recoil/loading"
 
 export const Bowtie = () => {
+  debugger
   useRunes()
   useOrdinals()
   useBitcoinPrice()
@@ -145,11 +147,6 @@ export const Bowtie = () => {
           : prev.outputs,
     }))
   }
-
-  const inputTotalBtc = butterfly.inputs.reduce(
-    (acc, cur) => acc + cur.value / 100000000,
-    0
-  )
 
   const bestUtxo = JSON.parse(JSON.stringify(utxos))?.sort(
     (a: MempoolUTXO, b: MempoolUTXO) => b.value - a.value
@@ -368,26 +365,32 @@ export const Bowtie = () => {
       toastOptions
     )
   }
+  const loading = useRecoilValue(loadingAtom)
+
   return (
     <>
       <div className="mt-16 mb-2 text-[12px] justify-end relative hidden sm:flex">
         <div className="h-60 min-w-52 max-w-52 p-3 pt-8 rounded-xl flex flex-col gap-3 items-center justify-center  font-medium border bg-zinc-950 text-center text-zinc-300 relative">
           <div className="absolute -top-6 left-0 opacity-50">Inputs</div>
-          <div className=" text-[16px] flex gap-2 -mr-4 items-center">
-            <span className="font-bold">Tutorial</span> <Tutorial />
-          </div>
-          {!Boolean(psbtSigned.txid) ? (
-            <div>
-              {!account && isConfirmDisabled && (
-                <span>
-                  1. Connect your bitcoin wallet to start building a
-                  transaction.{" "}
-                </span>
+          {!loading.signIsLoading && (
+            <div className=" text-[16px] flex gap-2 -mr-4 items-center">
+              <span className="font-bold">Help</span> <Tutorial />
+            </div>
+          )}
+
+          {loading.signIsLoading && <div className="loader-3" />}
+          {!loading.signIsLoading && !Boolean(psbtSigned.txid) && (
+            <div className="px-2">
+              {!account && !isConfirmDisabled && (
+                <p className="mb-2 w-full text-start">
+                  <strong>1.</strong> Connect your bitcoin wallet.
+                </p>
               )}
 
               {inputsCount === 0 && !configs.isInputDeckOpen && account && (
                 <span>
-                  2. Add inputs to start building your transaction{" "}
+                  <strong>2.</strong> Add inputs to start building your
+                  transaction{" "}
                   <span onClick={onAddInput} className="cursor-pointer">
                     [+]
                   </span>
@@ -422,7 +425,8 @@ export const Bowtie = () => {
                     <p className="mb-2">
                       {!allTxIsSigned ? (
                         <>
-                          6. PSBT is <strong>ready</strong> to be signed.
+                          <strong>6.</strong> PSBT is <strong>ready</strong> to
+                          be signed.
                         </>
                       ) : (
                         <>
@@ -433,10 +437,7 @@ export const Bowtie = () => {
                     </p>
                     <p>Inputs: {inputsCount}</p>
                     <p>Outputs: {outputsCount}</p>
-                    <p>
-                      Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)}{" "}
-                      BTC
-                    </p>
+
                     {rune?.rune ? (
                       <p>
                         Runes: {formatNumber(runesInputSum, 0, 8, false, true)}{" "}
@@ -544,7 +545,8 @@ export const Bowtie = () => {
               <br />
               <br />
             </div>
-          ) : (
+          )}
+          {!loading.signIsLoading && Boolean(psbtSigned.txid) && (
             <div>
               <p className="w-full text-center text-green-400">
                 Transaction broadcasted

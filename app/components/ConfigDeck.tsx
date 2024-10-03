@@ -22,7 +22,7 @@ export const ConfigDeck = () => {
 
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)
-  const utxos = useRecoilValue(utxoAtom)
+  const [utxos, setUtxos] = useRecoilState(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const butterfly = useRecoilValue(butterflyAtom)
   const { accounts } = useAccounts()
@@ -293,8 +293,20 @@ export const ConfigDeck = () => {
           if (runesUrl) searchParams.set("r", `${runesUrl}`)
           searchParams.set("psbtHexSigned", `${psbtSigned?.psbtHexSigned}`)
           searchParams.set("txid", txidRes)
-          window.location.search = searchParams.toString()
+          const newURL = `${window.location.href}/?${searchParams.toString()}`
+          history.pushState({}, "", newURL)
+          setUtxos(
+            (prev) =>
+              prev?.filter(
+                (utxo) =>
+                  !butterfly.inputs.find(
+                    (i) => i.txid === utxo.txid && i.vout === utxo.vout
+                  )
+              ) || []
+          )
         }
+
+        // update utxos used
 
         toast.success("Broadcast Successfully", toastOptions)
       } else {
@@ -304,7 +316,7 @@ export const ConfigDeck = () => {
       console.log
     }
   }
-
+  console.log("✌️window.location.search --->", window.location.search)
   return (
     <div className={`fixed flex gap-2 ${position}`}>
       {/* <Modal isOpen={isOpen} onClose={onClose}>
@@ -477,7 +489,7 @@ export const ConfigDeck = () => {
               }
               data-tooltip-place="top"
               onClick={!psbtSigned.txid ? onBroadcast : () => {}}
-              className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
+              className={`relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
                 psbtSigned.txid ? "opacity-50" : ""
               }`}
             >

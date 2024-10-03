@@ -72,7 +72,7 @@ export const Portfolio = ({
     })
 
     setUtxosFiltered(newUtxosFiltered)
-  }, [filterSelected, configs.fullDeckPage])
+  }, [filterSelected, configs.fullDeckPage, utxos])
 
   return (
     <div

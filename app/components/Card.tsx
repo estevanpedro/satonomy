@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import {
   CARD_TYPES,
   CARD_TYPES_COLOR,
@@ -8,7 +9,7 @@ import { MempoolUTXO } from "@/app/recoil/utxoAtom"
 import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { OrdinalRendering } from "@/app/components/Ordinals"
 import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom"
@@ -19,6 +20,7 @@ import { Tooltip } from "react-tooltip"
 import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
 import { configAtom } from "@/app/recoil/confgsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
+import { loadingAtom } from "@/app/recoil/loading"
 
 export function generateBowtiePath(
   inputX: number,
@@ -53,21 +55,6 @@ export const EmptyCard = ({
       <div
         className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative mb-8`}
       >
-        {/* {!text && className && (
-          <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
-            <select className="outline-none w-[110px]" defaultValue="Transfer">
-              <option>Transfer</option>
-
-              <option disabled>Bridge</option>
-              <option disabled>Recursive</option>
-              <option disabled>OP Return</option>
-              <option disabled>Add redeemScript</option>
-              <option disabled>Swap with Saturn</option>
-              <option disabled>Stake with Arch</option>
-            </select>
-          </div>
-        )} */}
-
         <Tooltip
           id={`emptyCard-${className}-${text}`}
           className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
@@ -177,6 +164,7 @@ export const CardOption = ({
   const runesStates = useRecoilValue(runesAtom)
   const ord = useRecoilValue(ordByWalletAtom)
   const { isInputFullDeckOpen } = useRecoilValue(configAtom)
+  const loading = useRecoilValue(loadingAtom)
 
   // Flatten ordinals to access inscriptions
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
@@ -212,9 +200,29 @@ export const CardOption = ({
     (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
   )
 
-  const isSigned = psbtSigned.inputsSigned.find(
-    (i) => i.txid === utxo.txid && i.vout === utxo.vout
-  )
+  const [isSigned, setIsSigned] = useState<MempoolUTXO | undefined>(undefined)
+  const setLoading = useSetRecoilState(loadingAtom)
+  const prevPsbtHexSignedRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (
+      !psbtSigned.psbtHexSigned &&
+      !(
+        prevPsbtHexSignedRef.current &&
+        prevPsbtHexSignedRef.current !== psbtSigned.psbtHexSigned
+      )
+    )
+      return
+    const isSigned = psbtSigned.inputsSigned.find(
+      (i) => i.txid === utxo.txid && i.vout === utxo.vout
+    )
+    setIsSigned(isSigned)
+    setLoading((prev) => ({
+      ...prev,
+      signIsLoading: false,
+    }))
+    prevPsbtHexSignedRef.current = psbtSigned.psbtHexSigned
+  }, [psbtSigned.inputsSigned])
 
   const hasSomeSigned = psbtSigned.inputsSigned.find((i) =>
     inputs.find((input) => input.txid === i.txid && input.vout === i.vout)
@@ -276,7 +284,9 @@ export const CardOption = ({
           <div className="opacity-30">
             {utxo?.wallet ? formatAddress(utxo.wallet) : ""}
           </div>
-          {Boolean(isSigned) || Boolean(hasSomeSigned) ? null : (
+          {loading.signIsLoading ||
+          Boolean(isSigned) ||
+          Boolean(hasSomeSigned) ? null : (
             <button
               className="opacity-30 hover:opacity-100"
               onClick={() => {
@@ -300,9 +310,17 @@ export const CardOption = ({
               Boolean(isSigned) ? "" : "opacity-30"
             }`}
             onClick={onSignClick}
-            disabled={Boolean(isSigned)}
+            disabled={Boolean(isSigned) || loading.signIsLoading}
           >
-            {Boolean(isSigned) ? "Signed ✅" : "Sign ✍️"}
+            {!loading.signIsLoading ? (
+              Boolean(isSigned) ? (
+                "Signed ✅"
+              ) : (
+                "Sign ✍️"
+              )
+            ) : (
+              <div className="loader" />
+            )}
           </button>
         </div>
       ) : null}

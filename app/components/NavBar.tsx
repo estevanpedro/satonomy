@@ -25,7 +25,7 @@ export const NavBar = () => {
 
   return (
     <>
-      <div className="z-10 pt-4 pb-3 w-full max-w-[1200px] items-center justify-around font-mono text-sm flex  sm:justify-between">
+      <div className="z-10 pt-4 pb-3 w-full max-w-[1200px] items-center justify-around  text-sm flex  sm:justify-between">
         <div className="flex items-center justify-center gap-2 font-bold text-[24px] ">
           <Image
             src="/satonomy-logo.png"
@@ -34,14 +34,14 @@ export const NavBar = () => {
             height={40}
           />
           <div className="flex flex-col mt-1">
-            <div className="flex gap-1">
+            <div className="flex gap-1 ">
               SATONOMY
               <span className="text-[12px] opacity-50 hidden sm:flex">
                 {" "}
-                (Alpha)
+                (Beta)
               </span>
             </div>
-            <span className="ml-1 text-[12px] opacity-70 font-normal hidden sm:flex">
+            <span className=" text-[12px] opacity-70 font-normal hidden sm:flex">
               {" "}
               Manage Bitcoin Transactions
             </span>

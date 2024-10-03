@@ -7,12 +7,13 @@ interface PsbtSigned {
   broadcasted?: boolean
   txid?: string
 }
+export const DEFAULT_PSBT_SIGNED: PsbtSigned = {
+  psbtHexSigned: undefined,
+  inputsSigned: [],
+  broadcasted: false,
+  txid: "",
+}
 export const psbtSignedAtom = atom<PsbtSigned>({
   key: "psbtSignedAtom",
-  default: {
-    psbtHexSigned: undefined,
-    inputsSigned: [],
-    broadcasted: false,
-    txid: "",
-  },
+  default: DEFAULT_PSBT_SIGNED,
 })

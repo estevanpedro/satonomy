@@ -5,6 +5,7 @@ import {
   butterflyUrlAtom,
 } from "@/app/recoil/butterflyAtom"
 import { configAtom, DEFAULT_CONFIGS } from "@/app/recoil/confgsAtom"
+import { loadingAtom } from "@/app/recoil/loading"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { decompressFromUrlParam } from "@/app/utils/encodeButterfly"
@@ -17,9 +18,19 @@ export const useUrlButterfly = () => {
   const setConfigs = useSetRecoilState(configAtom)
   const setRunes = useSetRecoilState(runesAtom)
   const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
+  const setLoading = useSetRecoilState(loadingAtom)
 
   useEffect(() => {
     if (butterflyUrl) return
+
+    setLoading({
+      mempoolUtxoIsLoading: true,
+      runesIsLoading: true,
+      ordinalsIsLoading: true,
+      recommendedFeesIsLoading: true,
+      broadcastIsLoading: true,
+      signIsLoading: true,
+    })
 
     const urlParams = new URLSearchParams(window.location.search)
     const urlButterfly = urlParams.get("b")
@@ -101,6 +112,15 @@ export const useUrlButterfly = () => {
 
       fetchedPsbtSigned()
     }
+
+    console.log("DJKOPSADJKPOSADJKOPSA")
+    setLoading((prev) => ({
+      ...prev,
+      mempoolUtxoIsLoading: false,
+      runesIsLoading: false,
+      ordinalsIsLoading: false,
+      recommendedFeesIsLoading: false,
+    }))
   }, [
     setButterflyUrl,
     setButterfly,
