@@ -107,7 +107,7 @@ export const ConfigDeck = () => {
           return
         }
 
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
         // if (txidRes) {
         //   track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
 
@@ -177,7 +177,7 @@ export const ConfigDeck = () => {
       psbtSigned.psbtHexSigned
         ? `&psbtHexSigned=${psbtSigned.psbtHexSigned}`
         : ""
-    }`
+    }${psbtSigned.txid ? `&txid=${psbtSigned.txid}` : ""}`
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(stringToCopy).then(
@@ -199,29 +199,104 @@ export const ConfigDeck = () => {
       document.body.removeChild(textArea)
     }
 
-    toast("Copied to clipboard", toastOptions)
+    toast("Link copied to clipboard", toastOptions)
+  }
+
+  const inputsSigned = psbtSigned.inputsSigned.filter((i) =>
+    butterfly.inputs.find((b) => b.txid === i.txid && b.vout === i.vout)
+  )
+
+  const allTxIsSigned =
+    butterfly.inputs.find((i) => i.wallet === account && i.wallet) &&
+    inputsSigned.length === butterfly.inputs.length
+
+  const userCanSign = butterfly.inputs.find(
+    (i) => i.wallet === account && i.wallet
+  )
+
+  const onBroadcast = async () => {
+    try {
+      if (!psbtSigned?.psbtHexSigned) return
+      if (!userCanSign) {
+        toast("You don't have permission to broadcast", toastOptions)
+      }
+
+      const txidRes = await psbtService.broadcastUserPSBT(
+        psbtSigned?.psbtHexSigned
+      )
+
+      if (txidRes) {
+        track("broadcast", { wallet: account }, { flags: ["broadcast"] })
+
+        setConfigs((prev) => ({
+          ...prev,
+          txid: txidRes,
+          isOpenModalTxId: true,
+          isConfirmedModalTxId: true,
+        }))
+
+        setPsbtSigned((prev) => ({
+          psbtHexSigned: psbtSigned?.psbtHexSigned,
+          inputsSigned: prev.inputsSigned,
+          txid: txidRes,
+        }))
+
+        if ("URLSearchParams" in window) {
+          var searchParams = new URLSearchParams(window.location.search)
+
+          const butterflyUrl = encodeData(butterfly)
+          const configsUrl = encodeData(configs)
+          const runeFound = butterfly.outputs.find(
+            (o) => o.type === "runes" && o.rune?.runeid
+          )
+          const runeObj = runes?.find(
+            (r) => r.runeid === runeFound?.rune?.runeid
+          )
+          const runesUrl = encodeData(runeObj ? [runeObj] : undefined)
+
+          searchParams.set("b", `${butterflyUrl}`)
+          searchParams.set("c", `${configsUrl}`)
+          if (runesUrl) searchParams.set("r", `${runesUrl}`)
+          searchParams.set("psbtHexSigned", `${psbtSigned?.psbtHexSigned}`)
+          searchParams.set("txid", txidRes)
+          window.location.search = searchParams.toString()
+        }
+
+        toast.success("Broadcast Successfully", toastOptions)
+      } else {
+        track("error-broadcast", { wallet: account })
+      }
+    } catch (error) {
+      console.log
+    }
   }
 
   return (
     <div className={`fixed flex gap-2 ${position}`}>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="w-full flex h-full sm:w-[420px]">
-          <h2 className="text-[20px] font-bold mb-8">🎉 Success</h2>
-          <p className="mt-4">Transaction signed and broadcasted</p>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
+        <div className="w-full flex flex-col h-full sm:w-[370px]">
+          <h2 className="text-[20px] font-bold mb-2">✅ Success</h2>
+          <p className="mt-4">Transaction has been broadcasted successfully</p>
 
           <div className="mt-4 flex  w-full overflow-hidden gap-2">
-            <p>Txid: </p>
             <Link
               href={`https://mempool.space/tx/${txid}`}
-              className="] font-normal text-orange-400 hover:text-orange-300 flex  text-start"
+              className="] font-normal text-[#6839B6] hover:text-[#3478F7] flex  text-start"
               target="_blank"
               rel="noopener noreferrer"
             >
               {formatAddress(txid)}
+              <Image
+                src="/external-link-2.png"
+                alt="External Link"
+                width={14}
+                height={14}
+                className="ml-2 w-[14px] h-[14px] mt-[4px]"
+              />
             </Link>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
 
       {Boolean(utxos?.length) &&
         (isDeckOpen || configs.isInputFullDeckOpen) && (
@@ -324,37 +399,88 @@ export const ConfigDeck = () => {
             className="max-w-[250px] bg-gray-600"
             style={{ backgroundColor: "#292929", color: "white" }}
           />
-          <button
-            data-tooltip-id={"confirm"}
-            data-tooltip-content={confirmTooltip}
-            data-tooltip-place="top"
-            onClick={onConfirm}
-            disabled={isConfirmDisabled || confirmed}
-            className={`max-w-[170px] min-w-[170px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center ${
-              isConfirmDisabled
-                ? "opacity-50 cursor-not-allowed"
-                : "opacity-100 cursor-pointer"
-            }`}
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
-              Sign Transaction
-            </div>
-            <div className="flex gap-2 justify-center items-center relative">
-              <div className="absolute right-[-40px] top-[-28px]">
-                <span className="relative flex h-3 w-3">
-                  {!isConfirmDisabled && !confirmed && (
-                    <>
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </>
-                  )}
+          {!allTxIsSigned && userCanSign && (
+            <button
+              data-tooltip-id={"confirm"}
+              data-tooltip-content={confirmTooltip}
+              data-tooltip-place="top"
+              onClick={onConfirm}
+              disabled={isConfirmDisabled || confirmed}
+              className={`max-w-[170px] min-w-[170px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center ${
+                isConfirmDisabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "opacity-100 cursor-pointer"
+              }`}
+            >
+              <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
+                Sign Transaction
+              </div>
+              <div className="flex gap-2 justify-center items-center relative">
+                <div className="absolute right-[-40px] top-[-28px]">
+                  <span className="relative flex h-3 w-3">
+                    {!isConfirmDisabled && !confirmed && (
+                      <>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                      </>
+                    )}
+                  </span>
+                </div>
+                <span className="whitespace-nowrap bold font-bold text-[16px] flex justify-center items-center">
+                  Confirm <div className="mb-[-5px] ml-2">↳</div>
                 </span>
               </div>
-              <span className="whitespace-nowrap bold font-bold text-[16px] flex justify-center items-center">
-                Confirm <div className="mb-[-5px] ml-2">↳</div>
-              </span>
+            </button>
+          )}
+
+          {!isConfirmDisabled && Boolean(configs.feeCost) && allTxIsSigned && (
+            <div
+              data-tooltip-id={"confirm"}
+              data-tooltip-content={
+                !psbtSigned.txid
+                  ? "Click to broadcast. Transaction is signed, but was not sent to the network yet."
+                  : "Transaction broadcasted"
+              }
+              data-tooltip-place="top"
+              onClick={!psbtSigned.txid ? onBroadcast : () => {}}
+              className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
+                psbtSigned.txid ? "opacity-50" : ""
+              }`}
+            >
+              <div className="text-[12px] flex items-center justify-center opacity-50">
+                Action
+              </div>
+              {!psbtSigned.txid && (
+                <div className="absolute right-[0px] top-[0px]">
+                  <span className="relative flex h-3 w-3">
+                    {!isConfirmDisabled && !confirmed && (
+                      <>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                      </>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-center items-center">
+                {!psbtSigned.txid ? (
+                  <>
+                    Broadcast
+                    <Image
+                      src="/signal.png"
+                      alt="Broadcast"
+                      width={16}
+                      height={16}
+                      className="ml-2"
+                    />
+                  </>
+                ) : (
+                  <div className="flex text-nowrap">Broadcasted ✅</div>
+                )}
+              </div>
             </div>
-          </button>
+          )}
 
           {!isConfirmDisabled && Boolean(configs.feeCost) && (
             <div

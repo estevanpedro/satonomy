@@ -26,6 +26,7 @@ export const useUrlButterfly = () => {
     const urlConfigs = urlParams.get("c")
     const urlRunes = urlParams.get("r")
     const psbtHexSigned = urlParams.get("psbtHexSigned")
+    const txid = urlParams.get("txid")
 
     if (!urlButterfly) return
 
@@ -84,10 +85,18 @@ export const useUrlButterfly = () => {
           if (data?.signedIndexes?.includes(index)) return true
         })
 
-        setPsbtSigned({
-          inputsSigned,
-          psbtHexSigned,
-        })
+        if (txid) {
+          setPsbtSigned({
+            inputsSigned,
+            psbtHexSigned,
+            txid,
+          })
+        } else {
+          setPsbtSigned({
+            inputsSigned,
+            psbtHexSigned,
+          })
+        }
       }
 
       fetchedPsbtSigned()

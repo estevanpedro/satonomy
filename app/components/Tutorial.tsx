@@ -1,11 +1,11 @@
-import { Modal } from "@/app/components/Modal";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+import { Modal } from "@/app/components/Modal"
+import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
 
 export const Tutorial = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const onClose = () => setIsOpen(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = () => setIsOpen(false)
 
   return (
     <>
@@ -13,14 +13,15 @@ export const Tutorial = () => {
         <Image src="/info.svg" alt="Help" width={14} height={14} />
       </div>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="w-full flex flex-col items-start justify-start text-start text-sm">
+        <div className="w-full flex flex-col items-start justify-start text-start text-sm max-w-[348px]">
           <h2 className="text-[20px] font-bold mb-4">How to use </h2>
           <p className="mt-4">1. Connect your wallet</p>
           <p className="mt-4">2. Add inputs [+]</p>
           <p className="mt-4">3. Select the best UTXO for your case</p>
           <p className="mt-4">4. Add outputs [+] </p>
           <p className="mt-4">5. Adjust fee</p>
-          <p className="mt-4">6. Confirm the transaction</p>
+          <p className="mt-4">6. Sign the transaction</p>
+          <p className="mt-4">7. Broadcast to the network</p>
 
           <p className="mt-4 text-zinc-500 text-[12px]">
             Notes: some UTXO assets may not be supported yet. Always
@@ -40,5 +41,5 @@ export const Tutorial = () => {
         </div>
       </Modal>
     </>
-  );
-};
+  )
+}

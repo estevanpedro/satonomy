@@ -289,6 +289,13 @@ export const CardOption = ({
           )}
 
           <button
+            data-tooltip-id={"confirm"}
+            data-tooltip-content={
+              Boolean(isSigned)
+                ? "Input is already signed"
+                : `Sign with ${formatAddress(utxo?.wallet || "")} wallet`
+            }
+            data-tooltip-place="bottom"
             className={`hover:opacity-100 ${
               Boolean(isSigned) ? "" : "opacity-30"
             }`}
@@ -388,10 +395,10 @@ export const CardOption = ({
               : ""
           }
           data-tooltip-place="top"
-          disabled={isDisabled}
+          disabled={isDisabled || Boolean(hasSomeSigned)}
           onClick={() => onClick?.(utxo)}
           className={`${
-            isDisabled ? "opacity-50" : ""
+            isDisabled || Boolean(hasSomeSigned) ? "opacity-50" : ""
           } text-bold absolute bottom-4 text-[16px] rounded px-8 py-1 from-[#ffa750] to-[#e8c03f] bg-gradient-to-r hover:from-[#ffa750] hover:to-[#e8c03f] text-white`}
         >
           SELECT

@@ -5,7 +5,7 @@ import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 import { useRunes } from "@/app/hooks/useRunes"
 import { useInputs } from "@/app/hooks/useInputs"
 
-import { formatNumber } from "@/app/utils/format"
+import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useOutputs } from "@/app/hooks/useOutputs"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card"
@@ -27,6 +27,10 @@ import { useFeeRate } from "@/app/hooks/useFeeRate"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { useUrlButterfly } from "@/app/hooks/useUrlButterfly"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
+import Image from "next/image"
+import { toastOptions } from "@/app/components/Toast"
+import { toast } from "react-toastify"
+import Link from "next/link"
 
 export const Bowtie = () => {
   useRunes()
@@ -264,7 +268,6 @@ export const Bowtie = () => {
         })
 
         const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        console.log("✌️txidRes --->", txidRes)
         if (txidRes) {
           track("psbt-sign", { wallet: account })
           setConfigs((prev) => ({
@@ -317,6 +320,55 @@ export const Bowtie = () => {
     )
   )
 
+  const inputsSigned = psbtSigned.inputsSigned.filter((i) =>
+    butterfly.inputs.find((b) => b.txid === i.txid && b.vout === i.vout)
+  )
+
+  const allTxIsSigned = inputsSigned.length === butterfly.inputs.length
+
+  const userCanSign = butterfly.inputs.find(
+    (i) => i.wallet === account && i.wallet
+  )
+
+  const copyTxId = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${psbtSigned.txid}`).then(
+        () => console.log("Text copied to clipboard"),
+        (err) => console.error("Could not copy text: ", err)
+      )
+    } else {
+      const textArea = document.createElement("textarea")
+      textArea.value = `${psbtSigned.txid}`
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+      try {
+        document.execCommand("copy")
+        console.log("Text copied to clipboard")
+      } catch (err) {
+        console.error("Could not copy text: ", err)
+      }
+      document.body.removeChild(textArea)
+    }
+
+    toast(
+      <div>
+        Txid copied to clipboard.{" "}
+        <div className="flex gap-1">
+          Check
+          <Link
+            href={`https://mempool.space/tx/${psbtSigned.txid}`}
+            className="] font-normal text-[#6839B6] hover:text-[#3478F7] flex  text-start"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            mempool.space
+          </Link>
+        </div>
+      </div>,
+      toastOptions
+    )
+  }
   return (
     <>
       <div className="mt-16 mb-2 text-[12px] justify-end relative hidden sm:flex">
@@ -325,166 +377,217 @@ export const Bowtie = () => {
           <div className=" text-[16px] flex gap-2 -mr-4 items-center">
             <span className="font-bold">Tutorial</span> <Tutorial />
           </div>
-          <div>
-            {!account && (
-              <span>
-                1. Connect your bitcoin wallet to start building a transaction.{" "}
-              </span>
-            )}
-            {inputsCount === 0 && !configs.isInputDeckOpen && account && (
-              <span>
-                2. Add inputs to start building your transaction{" "}
-                <span onClick={onAddInput} className="cursor-pointer">
-                  [+]
+          {!Boolean(psbtSigned.txid) ? (
+            <div>
+              {!account && isConfirmDisabled && (
+                <span>
+                  1. Connect your bitcoin wallet to start building a
+                  transaction.{" "}
                 </span>
-              </span>
-            )}
-            {inputsCount === 0 && configs.isInputDeckOpen && account && (
-              <span>
-                3. Choose the UTXO you wish to split or transfer. The most
-                valuable one is{" "}
-                <span
-                  onClick={() => selectNewUtxoInput(bestUtxo)}
-                  className="cursor-pointer mb-[-4px] font-bold text-white opacity-100"
-                >
-                  {formatNumber(bestUtxo?.value)} sats [+]
+              )}
+
+              {inputsCount === 0 && !configs.isInputDeckOpen && account && (
+                <span>
+                  2. Add inputs to start building your transaction{" "}
+                  <span onClick={onAddInput} className="cursor-pointer">
+                    [+]
+                  </span>
                 </span>
-              </span>
-            )}
-            {inputsCount > 0 && outputsCount === 0 && (
-              <span>
-                4. Add a new output to your transaction{" "}
-                <span
-                  onClick={onAddOutput}
-                  className="cursor-pointer font-bold"
-                >
-                  [+]
-                </span>
-              </span>
-            )}
-            {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
-              <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
-                <p className="mb-2">
-                  6. PSBT is <strong>ready</strong> to be signed.
-                </p>
-                <p>Inputs: {inputsCount}</p>
-                <p>Outputs: {outputsCount}</p>
-                {/* <p>
-                  Type:{" "}
-                  {!isSplit &&
-                    (outputsCount > 1 && isTransfer
-                      ? "Multi Transfer"
-                      : "Transfer")}
-                  {!isTransfer &&
-                    (outputsCount > 1 && isSplit
-                      ? "Split UTXOs"
-                      : "Self Transfer")}
-                </p> */}
-                <p>
-                  Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)} BTC
-                </p>
-                {rune?.rune ? (
-                  <p>
-                    Runes: {formatNumber(runesInputSum, 0, 8, false, true)}{" "}
-                    {rune.symbol}
-                  </p>
-                ) : null}
-                {
-                  <button
-                    className="font-bold mt-2 w-full items-center justify-center text-center hover:opacity-80"
-                    onClick={onSignWithWallet}
+              )}
+              {inputsCount === 0 && configs.isInputDeckOpen && account && (
+                <span>
+                  3. Choose the UTXO you wish to split or transfer. The most
+                  valuable one is{" "}
+                  <span
+                    onClick={() => selectNewUtxoInput(bestUtxo)}
+                    className="cursor-pointer mb-[-4px] font-bold text-white opacity-100"
                   >
-                    Sign with wallet
-                  </button>
-                }
-              </div>
-            )}
-            {inputsCount !== 0 &&
-              isConfirmDisabled &&
-              outputsCount !== 0 &&
-              inputValues - outputValues !== 0 && (
-                <div>
-                  {utxos?.length ? (
-                    isConfirmDisabled ? (
-                      difference > 0 || outputValues < 0 ? (
-                        <p>
-                          Adjust the fee or outputs. UTXO balance is{" "}
-                          <span
-                            className={`${
-                              inputValues - outputValues > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {formatNumber(
-                              inputValues - outputValues,
-                              0,
-                              0,
-                              false,
-                              false
-                            )}{" "}
-                            sats
-                          </span>
-                          ; it should be 0.
-                        </p>
+                    {formatNumber(bestUtxo?.value)} sats [+]
+                  </span>
+                </span>
+              )}
+              {inputsCount > 0 && outputsCount === 0 && (
+                <span>
+                  4. Add a new output to your transaction{" "}
+                  <span
+                    onClick={onAddOutput}
+                    className="cursor-pointer font-bold"
+                  >
+                    [+]
+                  </span>
+                </span>
+              )}
+              {inputsCount > 0 && outputsCount > 0 && !isConfirmDisabled && (
+                <>
+                  <div className="gap-1 flex flex-col items-start text-start mb-[-24px]">
+                    <p className="mb-2">
+                      {!allTxIsSigned ? (
+                        <>
+                          6. PSBT is <strong>ready</strong> to be signed.
+                        </>
                       ) : (
-                        <p>
-                          Add more inputs{" "}
-                          {outputValues ? "or adjust the output" : ""}. UTXO
-                          balance is{" "}
-                          <span
-                            className={`${
-                              inputValues - outputValues > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {formatNumber(
-                              inputValues - outputValues,
-                              0,
-                              0,
-                              false,
-                              false
-                            )}{" "}
-                            sats
-                          </span>
-                          ; it should be 0.
-                        </p>
+                        <>
+                          7. All inputs are <strong>signed</strong> and it is
+                          ready to broadcast.
+                        </>
+                      )}
+                    </p>
+                    <p>Inputs: {inputsCount}</p>
+                    <p>Outputs: {outputsCount}</p>
+                    <p>
+                      Cost: {formatNumber(inputTotalBtc, 0, 8, false, false)}{" "}
+                      BTC
+                    </p>
+                    {rune?.rune ? (
+                      <p>
+                        Runes: {formatNumber(runesInputSum, 0, 8, false, true)}{" "}
+                        {rune.symbol}
+                      </p>
+                    ) : null}
+                    {!allTxIsSigned ? (
+                      <button
+                        className="font-bold mt-2 w-full items-center justify-center text-center hover:opacity-80"
+                        onClick={onSignWithWallet}
+                      >
+                        Sign with wallet
+                      </button>
+                    ) : userCanSign ? null : (
+                      <p className="text-center pt-2 w-full">
+                        Connect the same wallet to broadcast
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+              {inputsCount !== 0 &&
+                isConfirmDisabled &&
+                outputsCount !== 0 &&
+                inputValues - outputValues !== 0 && (
+                  <div>
+                    {utxos?.length ? (
+                      isConfirmDisabled ? (
+                        difference > 0 || outputValues < 0 ? (
+                          <p>
+                            Adjust the fee or outputs. UTXO balance is{" "}
+                            <span
+                              className={`${
+                                inputValues - outputValues > 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {formatNumber(
+                                inputValues - outputValues,
+                                0,
+                                0,
+                                false,
+                                false
+                              )}{" "}
+                              sats
+                            </span>
+                            ; it should be 0.
+                          </p>
+                        ) : (
+                          <p>
+                            Add more inputs{" "}
+                            {outputValues ? "or adjust the output" : ""}. UTXO
+                            balance is{" "}
+                            <span
+                              className={`${
+                                inputValues - outputValues > 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {formatNumber(
+                                inputValues - outputValues,
+                                0,
+                                0,
+                                false,
+                                false
+                              )}{" "}
+                              sats
+                            </span>
+                            ; it should be 0.
+                          </p>
+                        )
+                      ) : (
+                        "Create PSBT and sign"
                       )
                     ) : (
-                      "Create PSBT and sign"
-                    )
-                  ) : (
-                    "No UTXOs"
-                  )}
+                      "No UTXOs"
+                    )}
+                  </div>
+                )}
+              <br />
+              {runesButterflyBalance !== 0 && (
+                <>
+                  <p className="mt-2">
+                    {runesButterflyBalance > 0 ? (
+                      <span>Add outputs for runes. </span>
+                    ) : (
+                      <span>Add more inputs or update outputs. </span>
+                    )}
+                    Balance of {rune?.spacedRune} is{" "}
+                    <span
+                      className={`${
+                        runesButterflyBalance > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {formatNumber(runesButterflyBalance)} {rune?.symbol}
+                    </span>{" "}
+                  </p>
+                </>
+              )}
+
+              <br />
+              <br />
+            </div>
+          ) : (
+            <div>
+              <p className="w-full text-center text-green-400">
+                Transaction broadcasted
+              </p>
+              {psbtSigned.txid && (
+                <div
+                  onClick={copyTxId}
+                  className="flex gap-1 mt-4 hover:text-zinc-400 cursor-pointer"
+                >
+                  Txid:
+                  <p className="font-bold">{formatAddress(psbtSigned.txid)}</p>
+                  <Image
+                    src="/copy.png"
+                    width={16}
+                    height={16}
+                    alt="Copy"
+                    className="w-3 h-3 mt-[2px]"
+                  />
                 </div>
               )}
-            <br />
-            {runesButterflyBalance !== 0 && (
-              <>
-                <p className="mt-2">
-                  {runesButterflyBalance > 0 ? (
-                    <span>Add outputs for runes. </span>
-                  ) : (
-                    <span>Add more inputs or update outputs. </span>
-                  )}
-                  Balance of {rune?.spacedRune} is{" "}
-                  <span
-                    className={`${
-                      runesButterflyBalance > 0
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {formatNumber(runesButterflyBalance)} {rune?.symbol}
-                  </span>{" "}
-                </p>
-              </>
-            )}
-
-            <br />
-            <br />
-          </div>
+              {psbtSigned.psbtHexSigned && (
+                <div className="flex gap-1 mt-1">
+                  Psbt Hex:
+                  <p className="font-bold">
+                    {formatAddress(psbtSigned.psbtHexSigned)}
+                  </p>
+                </div>
+              )}
+              {psbtSigned.inputsSigned.length && (
+                <div className="flex gap-1 mt-1">
+                  Inputs:
+                  <p className="font-bold">{psbtSigned.inputsSigned.length}</p>
+                </div>
+              )}
+              {butterfly.outputs.length && (
+                <div className="flex gap-1 mt-1">
+                  Outputs:
+                  <p className="font-bold">{butterfly.outputs.length}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="h-60 w-full flex mb-2 text-[12px] justify-end relative">
