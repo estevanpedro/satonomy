@@ -316,7 +316,7 @@ export const ConfigDeck = () => {
       console.log
     }
   }
-  console.log("✌️window.location.search --->", window.location.search)
+
   return (
     <div className={`fixed flex gap-2 ${position}`}>
       {/* <Modal isOpen={isOpen} onClose={onClose}>

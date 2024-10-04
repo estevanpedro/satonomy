@@ -43,13 +43,16 @@ export const Bowtie = () => {
   usePlatformFee()
   useFeeRate()
   useUrlButterfly()
+
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
+  const runes = useRecoilValue(runesAtom)
+
   const { accounts } = useAccounts()
 
-  const account = accounts[0]
+  const account = accounts.length > 1 ? accounts[1] : accounts[0]
   const inputsCount = butterfly.inputs.length
   const outputsCount = butterfly.outputs.length
 
@@ -81,13 +84,14 @@ export const Bowtie = () => {
     }))
   }
 
-  const runes = useRecoilValue(runesAtom)
   const onAddOutput = () => {
     const runeIndex = runes?.findIndex((r) =>
       butterfly.inputs.find((i) =>
         r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
       )
     )
+    const walletForOutput =
+      account || butterfly.inputs.find((i) => i.wallet)?.wallet || ""
 
     const rune = runes?.[runeIndex!]
 
@@ -113,7 +117,7 @@ export const Bowtie = () => {
                 configs.feeCost
               : 1,
           vout: prev.outputs.length,
-          address: account,
+          address: walletForOutput,
         },
       ],
     }))
@@ -380,10 +384,11 @@ export const Bowtie = () => {
 
           {loading.signIsLoading && <div className="loader-3" />}
           {!loading.signIsLoading && !Boolean(psbtSigned.txid) && (
-            <div className="px-2">
+            <div className="px-1">
               {!account && !isConfirmDisabled && (
-                <p className="mb-2 w-full text-start">
-                  <strong>1.</strong> Connect your bitcoin wallet.
+                <p className="mb-2 w-full text-center">
+                  <strong>1.</strong> Connect your bitcoin wallet
+                  {!configs.feeCost ? " to start building a transaction." : "."}
                 </p>
               )}
 

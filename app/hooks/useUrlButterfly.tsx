@@ -39,7 +39,18 @@ export const useUrlButterfly = () => {
     const psbtHexSigned = urlParams.get("psbtHexSigned")
     const txid = urlParams.get("txid")
 
-    if (!urlButterfly) return
+    if (!urlButterfly) {
+      setLoading((prev) => ({
+        ...prev,
+        mempoolUtxoIsLoading: false,
+        runesIsLoading: false,
+        ordinalsIsLoading: false,
+        recommendedFeesIsLoading: false,
+        broadcastIsLoading: false,
+        signIsLoading: false,
+      }))
+      return
+    }
 
     setButterflyUrl(urlButterfly)
 
@@ -111,6 +122,12 @@ export const useUrlButterfly = () => {
       }
 
       fetchedPsbtSigned()
+    } else {
+      setLoading((prev) => ({
+        ...prev,
+        broadcastIsLoading: false,
+        signIsLoading: false,
+      }))
     }
 
     console.log("DJKOPSADJKPOSADJKOPSA")

@@ -154,9 +154,6 @@ export const CardOption = ({
   isSelected?: boolean
   onSignClick?: (e: any) => void
 }) => {
-  const { accounts } = useAccounts()
-  const account = accounts[0]
-
   const psbtSigned = useRecoilValue(psbtSignedAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
@@ -166,7 +163,6 @@ export const CardOption = ({
   const { isInputFullDeckOpen } = useRecoilValue(configAtom)
   const loading = useRecoilValue(loadingAtom)
 
-  // Flatten ordinals to access inscriptions
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
   const ordUtxoAsset = ord?.json?.inscriptions.find(
@@ -933,7 +929,7 @@ export const CardOutputOption = ({
   action: RunesUtxo | undefined | null
 }) => {
   const { accounts } = useAccounts()
-  const account = accounts?.[0]
+  const account = accounts?.length > 1 ? accounts[1] : accounts[0]
 
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
@@ -982,9 +978,12 @@ export const CardOutputOption = ({
         0
       )
 
+      const walletForOutput =
+        account || butterfly.inputs.find((i) => i.wallet)?.wallet || ""
+
       if (rune && action) {
         outputs.push({
-          address: account,
+          address: walletForOutput,
           value: 546,
           type: "runes",
           rune: rune,
@@ -1002,7 +1001,7 @@ export const CardOutputOption = ({
                 configs.feeCost
               : 1,
           vout: prev.outputs.length,
-          address: account,
+          address: walletForOutput,
         })
       }
 

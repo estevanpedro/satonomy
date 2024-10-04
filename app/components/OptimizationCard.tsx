@@ -32,8 +32,8 @@ export const OptimizationCard = ({
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
   const utxos = useRecoilValue(utxoAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
-  const { accounts } = useAccounts()
-  const address = accounts[0]
+  // const { accounts } = useAccounts()
+  // const address = accounts[0]
   const length = rune?.utxos.length
   const [feeCost, setFeeCost] = useState<number>(500)
   const { referrer } = useParams()
@@ -66,6 +66,8 @@ export const OptimizationCard = ({
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
+
+    const address = inputUtxos[0]?.wallet
 
     const charge = allBtcInputsValue - 546 - feeCost
 
@@ -161,7 +163,7 @@ export const OptimizationCard = ({
     }
 
     if (!feeCost || feeCost === 500) fetchFees()
-  }, [feeCost, address, rune, utxos, selectedFeeRate])
+  }, [feeCost, rune, utxos, selectedFeeRate])
 
   const onSelect = (rune: RunesUtxo) => {
     onOptimizeSelection?.()
@@ -180,6 +182,8 @@ export const OptimizationCard = ({
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
+
+    const address = `${inputUtxos[0]?.wallet}`
 
     setConfigs((prev) => ({
       ...prev,

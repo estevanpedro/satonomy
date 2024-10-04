@@ -1,16 +1,23 @@
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { filterBitcoinWallets } from "@/app/utils/filters"
 import { useEffect, useRef, useState } from "react"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 export const useRunes = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const setRuneStates = useSetRecoilState(runesAtom)
+  const [runesStates, setRuneStates] = useRecoilState(runesAtom)
   const walletConfigs = useRecoilValue(walletConfigsAtom)
-
+  const butterfly = useRecoilValue(butterflyAtom)
   // Ref to store previously fetched wallets
   const fetchedWalletsRef = useRef<Set<string>>(new Set())
+
+  const hasRunesSelected = butterfly?.inputs?.some((input) =>
+    runesStates?.some((rune) =>
+      rune.utxos.some((utxo) => utxo.location === `${input.txid}:${input.vout}`)
+    )
+  )
 
   useEffect(() => {
     const fetchRunesUtxos = async (walletsToFetch: string[]) => {
@@ -73,11 +80,11 @@ export const useRunes = () => {
       fetchRunesUtxos(walletsToFetch)
     }
 
-    if (walletsFiltered.length === 0) {
+    if (walletsFiltered.length === 0 && !hasRunesSelected) {
       setRuneStates(null) // Clear rune states if no wallets are present
       fetchedWalletsRef.current.clear() // Reset fetched wallets
     }
-  }, [walletConfigs.wallets, setRuneStates])
+  }, [walletConfigs.wallets, setRuneStates, hasRunesSelected])
 
   return { isLoading, runeStates: useRecoilValue(runesAtom) }
 }

@@ -8,10 +8,9 @@ import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { useParams } from "next/navigation" // Import the useParams hook
 import { track } from "@vercel/analytics"
 import { useAccounts } from "@particle-network/btc-connectkit"
+import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 
 export const usePlatformFee = () => {
-  const { accounts } = useAccounts()
-  const account = accounts?.[0]
   const { referrer } = useParams() // Get the referrer from the URL
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom) // Rune UTXOs
@@ -146,12 +145,17 @@ export const usePlatformFee = () => {
               )
               ?.sort((a, b) => a.value - b.value)
 
-            const usersOutputLength = butterflyOutput.filter(
-              (o) => o.address === account
-            )?.length
+            // const usersOutputLength = butterflyOutput.filter(
+            //   (o) => o.address === account
+            // )?.length
 
             const usersOutput = butterflyOutput.find(
-              (o) => o.address === account
+              (o) =>
+                !o.rune &&
+                o.type !== "platformFee" &&
+                o.type !== "referrer" &&
+                o.type !== "OP RETURN" &&
+                o.type !== "runes"
             )
 
             if (usersOutput) {
@@ -205,7 +209,12 @@ export const usePlatformFee = () => {
               ?.sort((a, b) => b.value - a.value)
 
             const usersOutput = butterflyOutput.find(
-              (o) => o.address === account
+              (o) =>
+                !o.rune &&
+                o.type !== "platformFee" &&
+                o.type !== "referrer" &&
+                o.type !== "OP RETURN" &&
+                o.type !== "runes"
             )
 
             if (usersOutput) {
