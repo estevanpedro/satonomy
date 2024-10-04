@@ -1,5 +1,5 @@
 import { CardOption, EmptyCard } from "@/app/components/Card"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
@@ -12,7 +12,7 @@ export const Portfolio = ({
   onClick: (utxo: MempoolUTXO) => void
 }) => {
   const utxos = useRecoilValue(utxoAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
   const runesStates = useRecoilValue(runesAtom)

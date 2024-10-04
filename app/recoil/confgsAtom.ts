@@ -16,7 +16,7 @@ export const DEFAULT_CONFIGS = {
   feeType: "custom",
 }
 
-export const configAtom = atom({
-  key: "configAtom",
+export const configsAtom = atom({
+  key: "configsAtom",
   default: DEFAULT_CONFIGS,
 })

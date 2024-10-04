@@ -1,4 +1,4 @@
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 import { utxoServices } from "@/app/services/utxoServices"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
@@ -11,7 +11,7 @@ import { useAccounts } from "@particle-network/btc-connectkit"
 export const useMempool = () => {
   const setUtxo = useSetRecoilState(utxoAtom)
   const walletConfigs = useRecoilValue(walletConfigsAtom)
-  const configs = useRecoilValue(configAtom)
+  const configs = useRecoilValue(configsAtom)
   const notConfirmed = configs.notConfirmed
   const { accounts } = useAccounts()
   const previousAccountsRef = useRef<string[]>([])

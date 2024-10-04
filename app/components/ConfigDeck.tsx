@@ -7,7 +7,7 @@ import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 import { track } from "@vercel/analytics"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { Modal } from "@/app/components/Modal"
 import Link from "next/link"
 import { psbtService } from "@/app/services/psbtService"
@@ -23,7 +23,7 @@ export const ConfigDeck = () => {
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)
   const [utxos, setUtxos] = useRecoilState(utxoAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const butterfly = useRecoilValue(butterflyAtom)
   const { accounts } = useAccounts()
   const account = accounts[0]
@@ -212,6 +212,8 @@ export const ConfigDeck = () => {
         ? `&psbtHexSigned=${psbtSigned.psbtHexSigned}`
         : ""
     }${psbtSigned.txid ? `&txid=${psbtSigned.txid}` : ""}`
+
+    history.pushState({}, "", stringToCopy)
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(stringToCopy).then(

@@ -2,7 +2,7 @@ import { ConnectButton } from "@/app/components/Connect"
 import { Optimizations } from "@/app/components/Optimizations"
 import { WalletConfigsModal } from "@/app/components/WalletConfigsModal"
 
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
@@ -12,7 +12,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil"
 export const NavBar = () => {
   const recommendedFees = useRecoilValue(recommendedFeesAtom)
   const [clicked, setClicked] = useState(0)
-  const setConfig = useSetRecoilState(configAtom)
+  const setConfig = useSetRecoilState(configsAtom)
   const hourFee = recommendedFees?.halfHourFee
 
   const onGasClick = () => {

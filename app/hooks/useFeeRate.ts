@@ -1,5 +1,5 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { formatNumber } from "@/app/utils/format"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import { useEffect, useRef, useState, useCallback } from "react"
@@ -7,7 +7,7 @@ import { useRecoilState, useRecoilValue } from "recoil"
 
 export const useFeeRate = () => {
   const butterfly = useRecoilValue(butterflyAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const { accounts } = useAccounts()
   const account = accounts?.[0]
   const requestCounter = useRef(0)
@@ -36,6 +36,11 @@ export const useFeeRate = () => {
 
     if (noZerosValue.length > 0) return
 
+    const feePayer =
+      butterfly.inputs.find((input) => input.wallet && input.value > 10000) ||
+      butterfly.inputs.find((input) => input.wallet && input.value > 546) ||
+      butterfly.inputs.find((input) => input.wallet)
+
     try {
       const res = await fetch("/api/estimateFeeRate", {
         next: { revalidate: 3600 },
@@ -45,7 +50,7 @@ export const useFeeRate = () => {
         },
         body: JSON.stringify({
           butterfly: editedButterfly,
-          address: account,
+          address: feePayer?.wallet || account,
           feeCost: configs?.feeCost,
         }),
       })

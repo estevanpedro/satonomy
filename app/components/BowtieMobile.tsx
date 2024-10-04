@@ -13,7 +13,7 @@ import {
 } from "@/app/components/Card"
 
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { useInputsMobile } from "@/app/hooks/useInputsMobile"
 import { useOutputsMobile } from "@/app/hooks/useOutputsMobile"
 import Image from "next/image"
@@ -21,7 +21,7 @@ import { AddOutput } from "@/app/components/AddOutput"
 
 export const BowtieMobile = () => {
   const utxos = useRecoilValue(utxoAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const { accounts } = useAccounts()
 

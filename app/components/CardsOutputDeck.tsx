@@ -7,7 +7,7 @@ import { useDrag } from "@use-gesture/react"
 import { CardOutputOption } from "@/app/components/Card"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 
 export const OutputDeck = () => {
@@ -25,7 +25,7 @@ export const OutputDeck = () => {
 }
 
 export const CardOutputCarousel = () => {
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
   const containerRef = useRef<HTMLDivElement>(null)

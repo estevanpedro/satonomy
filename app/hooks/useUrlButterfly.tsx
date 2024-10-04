@@ -4,7 +4,7 @@ import {
   butterflyAtom,
   butterflyUrlAtom,
 } from "@/app/recoil/butterflyAtom"
-import { configAtom, DEFAULT_CONFIGS } from "@/app/recoil/confgsAtom"
+import { configsAtom, DEFAULT_CONFIGS } from "@/app/recoil/confgsAtom"
 import { loadingAtom } from "@/app/recoil/loading"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
@@ -15,7 +15,7 @@ import { useRecoilState, useSetRecoilState } from "recoil"
 export const useUrlButterfly = () => {
   const [butterflyUrl, setButterflyUrl] = useRecoilState(butterflyUrlAtom)
   const setButterfly = useSetRecoilState(butterflyAtom)
-  const setConfigs = useSetRecoilState(configAtom)
+  const setConfigs = useSetRecoilState(configsAtom)
   const setRunes = useSetRecoilState(runesAtom)
   const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const setLoading = useSetRecoilState(loadingAtom)

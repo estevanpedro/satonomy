@@ -12,7 +12,7 @@ import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card"
 
 import { useOrdinals } from "@/app/hooks/useOrdinals"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { useBitcoinPrice } from "@/app/hooks/useBitcoinPrice"
 
 import { useOrdByWallet } from "@/app/hooks/useOrdByWallet"
@@ -32,6 +32,7 @@ import { toastOptions } from "@/app/components/Toast"
 import { toast } from "react-toastify"
 import Link from "next/link"
 import { loadingAtom } from "@/app/recoil/loading"
+import { useLocalSettings } from "@/app/hooks/useLocalSettings"
 
 export const Bowtie = () => {
   debugger
@@ -43,9 +44,10 @@ export const Bowtie = () => {
   usePlatformFee()
   useFeeRate()
   useUrlButterfly()
+  useLocalSettings()
 
   const utxos = useRecoilValue(utxoAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)

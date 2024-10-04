@@ -1,7 +1,7 @@
 "use client"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { DEFAULT_PSBT_SIGNED, psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { RunesUtxo } from "@/app/recoil/runesAtom"
@@ -28,7 +28,7 @@ export const OptimizationCard = ({
   const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
   const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const setButterfly = useSetRecoilState(butterflyAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
   const utxos = useRecoilValue(utxoAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)

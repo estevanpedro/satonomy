@@ -1,5 +1,5 @@
 import { Modal } from "@/app/components/Modal"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import { useEffect, useRef, useState } from "react"
@@ -38,7 +38,7 @@ export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
   const [isOpen, setIsOpen] = useState(false)
-  const configs = useRecoilValue(configAtom)
+  const configs = useRecoilValue(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode
 
   useEffect(() => {

@@ -2,7 +2,7 @@
 import { OrdinalRendering } from "@/app/components/Ordinals"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { OrdinalData } from "@/app/recoil/ordinalsAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
@@ -28,7 +28,7 @@ export const OptimizationOrdinals = ({
   const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
 
   const setButterfly = useSetRecoilState(butterflyAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
   const utxos = useRecoilValue(utxoAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)

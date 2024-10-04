@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import { Tooltip } from "react-tooltip"
@@ -12,7 +12,7 @@ import { formatNumber } from "@/app/utils/format"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export const NetworkFee = () => {
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFees = useRecoilValue(recommendedFeesAtom)
 
   const getSelectedFeeRate = (feeType: string) => {
@@ -143,9 +143,14 @@ export const NetworkFee = () => {
         }
       }
 
+      const feePayer =
+        butterfly.inputs.find((input) => input.wallet && input.value > 10000) ||
+        butterfly.inputs.find((input) => input.wallet && input.value > 546) ||
+        butterfly.inputs.find((input) => input.wallet)
+
       const body = JSON.stringify({
         newButterfly: newButterfly,
-        address: account,
+        address: feePayer?.wallet || account,
         feeRate: selectedFeeRate,
       })
 

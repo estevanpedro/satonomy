@@ -18,7 +18,7 @@ import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { Tooltip } from "react-tooltip"
 import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { loadingAtom } from "@/app/recoil/loading"
 
@@ -160,7 +160,7 @@ export const CardOption = ({
   const { inputs } = useRecoilValue(butterflyAtom)
   const runesStates = useRecoilValue(runesAtom)
   const ord = useRecoilValue(ordByWalletAtom)
-  const { isInputFullDeckOpen } = useRecoilValue(configAtom)
+  const { isInputFullDeckOpen } = useRecoilValue(configsAtom)
   const loading = useRecoilValue(loadingAtom)
 
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
@@ -933,7 +933,7 @@ export const CardOutputOption = ({
 
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
-  const setConfig = useSetRecoilState(configAtom)
+  const setConfig = useSetRecoilState(configsAtom)
 
   const runeIndex = runes?.findIndex((r) =>
     butterfly.inputs.find((i) =>
@@ -951,7 +951,7 @@ export const CardOutputOption = ({
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
-  const configs = useRecoilValue(configAtom)
+  const configs = useRecoilValue(configsAtom)
 
   const onSelectOutput = () => {
     setButterfly((prev) => {

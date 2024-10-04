@@ -1,5 +1,5 @@
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { track } from "@vercel/analytics"
@@ -10,8 +10,8 @@ import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil"
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
-  const setConfigs = useSetRecoilState(configAtom)
-  const { proMode, isInputFullDeckOpen } = useRecoilValue(configAtom) // Get proMode value from the config
+  const setConfigs = useSetRecoilState(configsAtom)
+  const { proMode, isInputFullDeckOpen } = useRecoilValue(configsAtom) // Get proMode value from the config
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
   const [scale, setScale] = useState(1)
@@ -132,6 +132,12 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
                 isOutputDeckOpen: false,
                 proMode: !prev.proMode,
               }))
+
+              localStorage.setItem(
+                "configs",
+                JSON.stringify({ proMode: !proMode })
+              )
+
               track("mode", {}, { flags: ["mode"] })
             }}
             className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"

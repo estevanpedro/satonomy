@@ -2,20 +2,18 @@ import { useEffect, useRef } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 
 import { runesAtom } from "@/app/recoil/runesAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom" // BTC UTXOs
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { useParams } from "next/navigation" // Import the useParams hook
 import { track } from "@vercel/analytics"
-import { useAccounts } from "@particle-network/btc-connectkit"
-import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 
 export const usePlatformFee = () => {
   const { referrer } = useParams() // Get the referrer from the URL
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom) // Rune UTXOs
   const btcUtxos = useRecoilValue(utxoAtom) // BTC UTXOs
-  const config = useRecoilValue(configAtom) // Config containing feeCost
+  const config = useRecoilValue(configsAtom) // Config containing feeCost
   const prevFeeCost = useRef<number | null>(config.feeCost)
 
   useEffect(() => {
