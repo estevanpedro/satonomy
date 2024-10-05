@@ -1,5 +1,6 @@
 import { generateBowtiePath } from "@/app/components/Card"
 import { Butterfly } from "@/app/recoil/butterflyAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { use } from "react"
 import { useRecoilValue } from "recoil"
@@ -16,6 +17,14 @@ export const useInputs = ({
   height: number
 }) => {
   const runes = useRecoilValue(runesAtom)
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
+
+  const ordinal = butterfly.inputs.find((input) =>
+    allOrdinals?.find(
+      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
   const paths = []
 
   const inputX = 10
@@ -40,8 +49,10 @@ export const useInputs = ({
     )
     const isRune = utxo ? true : false
 
-    const stop1Color = isRune ? "#FF8A00" : "#6839B6"
-    const stop2Color = isRune ? "#FAF22E" : "#3478F7"
+    const stop1Color =
+      isRune && !ordinal ? "#FF61F6" : ordinal ? "#6839B6" : "#FF8A00"
+    const stop2Color =
+      isRune && !ordinal ? "#FF95F9" : ordinal ? "#3478F7" : "#FAF22E"
 
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 

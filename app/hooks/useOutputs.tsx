@@ -1,5 +1,7 @@
 import { generateBowtiePath } from "@/app/components/Card"
+import { Butterfly } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { useRecoilValue } from "recoil"
 
@@ -11,7 +13,7 @@ export const useOutputs = ({
   inputHeight,
   inputsCount,
 }: {
-  butterfly: any
+  butterfly: Butterfly
   totalHeight: number
   outputsCount: number
   height: number
@@ -19,7 +21,14 @@ export const useOutputs = ({
   inputsCount: number
 }) => {
   const configs = useRecoilValue(configsAtom)
+  // const ordinals = useRecoilValue(ordinalsAtom)
+  // const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
 
+  // const ordinal = butterfly.inputs.find((input) =>
+  //   allOrdinals?.find(
+  //     (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+  //   )
+  // )
   const paths = []
 
   const inputX = 184
@@ -44,8 +53,20 @@ export const useOutputs = ({
     const mode = Math.floor(inputsCount / 2)
 
     const isRune = butterfly.outputs[i]?.type === "runes"
-    const stop1Color = isRune ? "#FF8A00" : "#6839B6"
-    const stop2Color = isRune ? "#FAF22E" : "#3478F7"
+    const isInscription = butterfly.outputs[i]?.type === "inscription"
+
+    const stop1Color =
+      isRune && !isInscription
+        ? "#FF61F6"
+        : isInscription
+        ? "#6839B6"
+        : "#FF8A00"
+    const stop2Color =
+      isRune && !isInscription
+        ? "#FF95F9"
+        : isInscription
+        ? "#3478F7"
+        : "#FAF22E"
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-2-${i})`
 
     // <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -140,10 +161,10 @@ export const useOutputs = ({
     >
       <defs>
         <linearGradient id={`gradient-2-000`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "#3478F7", stopOpacity: 1 }} />
+          <stop offset="0%" style={{ stopColor: "#FAF22E", stopOpacity: 1 }} />
           <stop
             offset="100%"
-            style={{ stopColor: "#6839B6", stopOpacity: 1 }}
+            style={{ stopColor: "#FF8A00", stopOpacity: 1 }}
           />
         </linearGradient>
       </defs>

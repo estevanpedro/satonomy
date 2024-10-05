@@ -34,6 +34,7 @@ import Link from "next/link"
 import { loadingAtom } from "@/app/recoil/loading"
 import { useLocalSettings } from "@/app/hooks/useLocalSettings"
 import { useMempool } from "@/app/hooks/useMempool"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 
 export const Bowtie = () => {
   useMempool()
@@ -52,6 +53,7 @@ export const Bowtie = () => {
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)
+  const ordinals = useRecoilValue(ordinalsAtom)
 
   const { accounts } = useAccounts()
 
@@ -99,8 +101,15 @@ export const Bowtie = () => {
       account || butterfly.inputs.find((i) => i.wallet)?.wallet || ""
 
     const rune = runes?.[runeIndex!]
+    const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-    if (rune) {
+    const ordinal = butterfly.inputs.find((input) =>
+      allInscriptions?.find(
+        (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+      )
+    )
+
+    if (rune || ordinal) {
       setConfigs((prev) => ({
         ...prev,
         isOutputDeckOpen: !prev.isOutputDeckOpen,

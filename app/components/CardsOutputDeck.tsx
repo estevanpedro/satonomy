@@ -9,10 +9,12 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 
 export const OutputDeck = () => {
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
+  const ordinals = useRecoilValue(ordinalsAtom)
   const runeIndex = runes?.findIndex((r) =>
     butterfly.inputs.find((i) =>
       r.utxos?.find((u) => u.location === `${i.txid}:${i.vout}`)
@@ -20,13 +22,23 @@ export const OutputDeck = () => {
   )
 
   const rune = runes?.[runeIndex!]
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-  return Boolean(rune) ? <CardOutputCarousel /> : null
+  const ordinal = butterfly.inputs.find((input) =>
+    allInscriptions?.find(
+      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
+
+  return Boolean(rune || ordinal) ? <CardOutputCarousel /> : null
 }
 
 export const CardOutputCarousel = () => {
   const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const ordinals = useRecoilValue(ordinalsAtom)
+  console.log("✌️ordinals --->", ordinals)
+
   const runes = useRecoilValue(runesAtom)
   const containerRef = useRef<HTMLDivElement>(null)
   const [{ x }, api] = useSpring(() => ({ x: 0 }))
@@ -74,11 +86,24 @@ export const CardOutputCarousel = () => {
 
   const rune = runes?.[runeIndex!]
 
-  const outputOptions = [rune, null]
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-  // if (runeIndex === -1) {
-  //   return null;
-  // }
+  const ordinal = butterfly.inputs.find((input) =>
+    allInscriptions?.find(
+      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
+  const ordinalFound = allInscriptions?.find((o) =>
+    butterfly.inputs.find(
+      (input) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
+
+  const options = [
+    ...(rune ? [rune] : []),
+    ...(ordinalFound ? [ordinalFound] : []),
+  ]
+  const outputOptions = [...options, null]
 
   return (
     <div

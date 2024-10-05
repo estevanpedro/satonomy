@@ -16,10 +16,8 @@ export const Portfolio = ({
   const ordinals = useRecoilValue(ordinalsAtom)
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
   const runesStates = useRecoilValue(runesAtom)
-  const [utxosPage, setUtxosPage] = useState(0)
 
   const onExpand = () => {
-    console.log("✌️configs.fullDeckPage --->", configs.fullDeckPage)
     setConfigs((configs) => ({
       ...configs,
       fullDeckPage: configs.fullDeckPage + 1,
@@ -96,7 +94,7 @@ export const Portfolio = ({
           </div>
           <div
             className={`border-2  px-2 rounded text-zinc-200 cursor-pointer ${
-              filterSelected === "ordinals" ? "border-b-[#FF61F6]" : ""
+              filterSelected === "ordinals" ? "border-b-[#3478F7]" : ""
             } hover:text-zinc-50  hover:scale-105`}
             onClick={() => {
               setFilterSelected("ordinals")
@@ -106,7 +104,7 @@ export const Portfolio = ({
           </div>
           <div
             className={`border-2  ${
-              filterSelected === "runes" ? "border-b-[#FF8A00]" : ""
+              filterSelected === "runes" ? "border-b-[#FF61F6]" : ""
             }  px-2 rounded text-zinc-200 cursor-pointer hover:text-zinc-50  hover:scale-105`}
             onClick={() => {
               setFilterSelected("runes")
@@ -117,7 +115,7 @@ export const Portfolio = ({
 
           <div
             className={`border-2 px-2 rounded text-zinc-200 cursor-pointer ${
-              filterSelected === "bitcoin" ? "border-b-[#5858f5]" : ""
+              filterSelected === "bitcoin" ? "border-b-[#FF8A00]" : ""
             } hover:text-zinc-50  hover:scale-105`}
             onClick={() => {
               setFilterSelected("bitcoin")
