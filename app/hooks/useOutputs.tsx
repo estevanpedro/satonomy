@@ -1,4 +1,5 @@
 import { generateBowtiePath } from "@/app/components/Card"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { useRecoilValue } from "recoil"
 
@@ -17,7 +18,7 @@ export const useOutputs = ({
   inputHeight: number
   inputsCount: number
 }) => {
-  const runes = useRecoilValue(runesAtom)
+  const configs = useRecoilValue(configsAtom)
 
   const paths = []
 
@@ -27,6 +28,7 @@ export const useOutputs = ({
 
   for (let i = 0; i < outputsCount; i++) {
     const isOpReturn = butterfly.outputs[i].type === "OP RETURN"
+
     if (isOpReturn) {
       continue
     }
@@ -51,7 +53,7 @@ export const useOutputs = ({
       <svg
         key={`i-${i}`}
         style={{ animationDelay: `${i * 2}s` }}
-        className="absolute top-0 left-0 w-full h-full z-[-1] animate-ping-2"
+        className={`absolute top-0 left-0 w-full h-full z-[-1] animate-ping-2`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 200 ${totalHeight}`}
         overflow={"visible"}
@@ -85,7 +87,7 @@ export const useOutputs = ({
     paths.push(
       <svg
         key={i}
-        className="absolute top-0 left-0 w-full h-full z-[-1]"
+        className="absolute top-0 left-0 w-full h-full z-[-1] "
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 200 ${totalHeight}`}
         overflow={"visible"}
@@ -126,7 +128,7 @@ export const useOutputs = ({
     outputX,
     outputY
   )
-
+  const feeRateLessThan2 = Boolean(configs.feeRateEstimated < 2)
   paths.unshift(
     <svg
       style={{ animationDelay: `${paths.length}s` }}
@@ -153,6 +155,7 @@ export const useOutputs = ({
       />
     </svg>
   )
+
   paths.unshift(
     <svg
       key="fee"
@@ -163,10 +166,19 @@ export const useOutputs = ({
     >
       <defs>
         <linearGradient id={`gradient-2-000`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style={{ stopColor: "#3478F7", stopOpacity: 1 }} />
+          <stop
+            offset="0%"
+            style={{
+              stopColor: feeRateLessThan2 ? "#EF4444" : "#3478F7",
+              stopOpacity: 1,
+            }}
+          />
           <stop
             offset="100%"
-            style={{ stopColor: "#6839B6", stopOpacity: 1 }}
+            style={{
+              stopColor: feeRateLessThan2 ? "#EF4444" : "#6839B6",
+              stopOpacity: 1,
+            }}
           />
         </linearGradient>
       </defs>

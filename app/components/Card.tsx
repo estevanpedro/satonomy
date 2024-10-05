@@ -493,7 +493,7 @@ export const CardOutput = ({
     return (
       <div className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
         <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
-          <Category color={CARD_TYPES_COLOR.BTC} type={"OP R"} />
+          <Category color={CARD_TYPES_COLOR.OP_RETURN} type={"OP R"} />
         </div>
 
         <div
@@ -501,7 +501,7 @@ export const CardOutput = ({
           style={{
             margin: "-3px", // Adjust to match the border thickness
             padding: "4px", // Adjust to match the border thickness
-            background: `linear-gradient(180deg, ${CARD_TYPES_COLOR.BTC} 0%, ${CARD_TYPES_COLOR.BTC} 50%, ${CARD_TYPES_COLOR_SECONDARY.BTC} 95%, ${CARD_TYPES_COLOR_SECONDARY.BTC} 115%)`,
+            background: `linear-gradient(180deg, ${CARD_TYPES_COLOR.OP_RETURN} 0%, ${CARD_TYPES_COLOR.OP_RETURN} 50%, ${CARD_TYPES_COLOR_SECONDARY.OP_RETURN} 95%, ${CARD_TYPES_COLOR_SECONDARY.OP_RETURN} 115%)`,
             borderRadius: "inherit", // Ensure the radius matches the card's radius
           }}
         >

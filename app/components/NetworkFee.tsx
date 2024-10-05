@@ -183,9 +183,19 @@ export const NetworkFee = () => {
       )
     )
   )
+  const feeRateLessThan2 = Boolean(configs.feeRateEstimated < 2)
 
   return (
-    <div className="pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ">
+    <div
+      data-tooltip-id={"fee-tool"}
+      data-tooltip-content={
+        feeRateLessThan2 ? "Fee must be higher than 2 sats/vb 🚨" : ""
+      }
+      data-tooltip-place="left"
+      className={`pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ${
+        feeRateLessThan2 ? "border-red-500 " : ""
+      }`}
+    >
       <Image
         className="w-14 h-14"
         src="/bitcoin.png"
@@ -196,7 +206,7 @@ export const NetworkFee = () => {
       <div>Network Fee</div>
 
       <div
-        className="text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center"
+        className={`text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center`}
         data-tooltip-id={"fee-tool"}
         data-tooltip-content={"Type the total fee cost in sats"}
         data-tooltip-place="left"
@@ -218,7 +228,11 @@ export const NetworkFee = () => {
       </div>
       {Boolean(configs.feeRateEstimated || configs.feeRate) &&
         Boolean(typeof configs.feeRateEstimated === "number") && (
-          <div className="mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]">
+          <div
+            className={`mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]  ${
+              feeRateLessThan2 ? "text-red-500 " : ""
+            }`}
+          >
             {formatNumber(
               configs.feeRateEstimated || configs.feeRate,
               0,

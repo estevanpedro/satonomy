@@ -8,6 +8,7 @@ export const CARD_TYPES_COLOR: Record<string, string> = {
   RUNES: "#FF8A00",
   BTC: "#6839B6",
   INSCRIPTIONS: "#FF61F6",
+  OP_RETURN: "#52525b",
 }
 
 export const CARD_TYPES_COLOR_SECONDARY: Record<string, string> = {
@@ -15,6 +16,7 @@ export const CARD_TYPES_COLOR_SECONDARY: Record<string, string> = {
   RUNES: "#FAF22E",
   BTC: "#3478F7",
   INSCRIPTIONS: "#FF95F9",
+  OP_RETURN: "#D1D5DB",
 }
 
 export const Category = ({ color, type }: { color: string; type: string }) => {
