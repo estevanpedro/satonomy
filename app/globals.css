@@ -295,3 +295,14 @@ body {
 .animate-fade-slide {
   animation: fade-slide 0.2s ease-out forwards;
 }
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.animate-ping-3 {
+  animation: ping 5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

@@ -21,14 +21,7 @@ export const useOutputs = ({
   inputsCount: number
 }) => {
   const configs = useRecoilValue(configsAtom)
-  // const ordinals = useRecoilValue(ordinalsAtom)
-  // const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
 
-  // const ordinal = butterfly.inputs.find((input) =>
-  //   allOrdinals?.find(
-  //     (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
-  //   )
-  // )
   const paths = []
 
   const inputX = 184
@@ -190,14 +183,14 @@ export const useOutputs = ({
           <stop
             offset="0%"
             style={{
-              stopColor: feeRateLessThan2 ? "#EF4444" : "#3478F7",
+              stopColor: feeRateLessThan2 ? "#EF4444" : "#FAF22E",
               stopOpacity: 1,
             }}
           />
           <stop
             offset="100%"
             style={{
-              stopColor: feeRateLessThan2 ? "#EF4444" : "#6839B6",
+              stopColor: feeRateLessThan2 ? "#EF4444" : "#FF8A00",
               stopOpacity: 1,
             }}
           />

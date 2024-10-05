@@ -2,6 +2,7 @@ import { generateBowtiePath } from "@/app/components/Card"
 import { Butterfly } from "@/app/recoil/butterflyAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
+import Image from "next/image"
 import { use } from "react"
 import { useRecoilValue } from "recoil"
 
@@ -10,11 +11,15 @@ export const useInputs = ({
   totalHeight,
   inputsCount,
   height,
+  isConfirmDisabled,
+  isNotReady,
 }: {
   butterfly: Butterfly
   totalHeight: number
   inputsCount: number
   height: number
+  isConfirmDisabled: boolean
+  isNotReady: boolean
 }) => {
   const runes = useRecoilValue(runesAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
@@ -30,6 +35,8 @@ export const useInputs = ({
   const inputX = 10
   const outputX = 371.5
   const outputY = totalHeight / 2
+
+  const butterflyIsOk = !isNotReady && !isConfirmDisabled
 
   for (let i = 0; i < inputsCount; i++) {
     let inputY = height / 2 + height * i
@@ -134,6 +141,94 @@ export const useInputs = ({
           fill="none"
         />
       </svg>
+    )
+    paths.push(
+      <div
+        className="absolute right-[-12px] transform translate-y-[-50%]"
+        style={{ top: "calc(50% + 40px)" }}
+      >
+        {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
+          <div
+            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            style={{ width: "36px", height: "36px" }}
+          >
+            <Image
+              src="/satonomy-logo.png"
+              alt="Satonomy"
+              width={36}
+              height={36}
+              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+            />
+          </div>
+        )}
+
+        {butterflyIsOk && !isConfirmDisabled && (
+          <div
+            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            style={{ width: "36px", height: "36px" }}
+          >
+            <Image
+              src="/satonomy-green.png"
+              alt="Satonomy"
+              width={36}
+              height={36}
+              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+            />
+          </div>
+        )}
+        {isConfirmDisabled && !butterflyIsOk && isNotReady && (
+          <div
+            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            style={{ width: "36px", height: "36px" }}
+          >
+            <Image
+              src="/satonomy-red.png"
+              alt="Satonomy"
+              width={36}
+              height={36}
+              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+            />
+          </div>
+        )}
+      </div>
+      // <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+      // <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+    )
+
+    paths.push(
+      <div
+        className="absolute right-[-12px] transform translate-y-[-50%]"
+        style={{ top: "calc(50% + 40px)" }}
+      >
+        {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
+          <Image
+            src="/satonomy-logo.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 duration-10000"
+          />
+        )}
+
+        {butterflyIsOk && !isConfirmDisabled && (
+          <Image
+            src="/satonomy-green.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 duration-10000"
+          />
+        )}
+        {isConfirmDisabled && !butterflyIsOk && isNotReady && (
+          <Image
+            src="/satonomy-red.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 opacity-75 duration-10000"
+          />
+        )}
+      </div>
     )
   }
 

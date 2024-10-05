@@ -66,22 +66,6 @@ export const Bowtie = () => {
   const outputHeight = 320 * outputsCount
   const totalHeight = Math.max(inputHeight, outputHeight)
 
-  const inputPaths = useInputs({
-    butterfly,
-    totalHeight: inputHeight,
-    inputsCount,
-    height,
-  })
-
-  const outputPaths = useOutputs({
-    butterfly,
-    totalHeight: outputHeight,
-    outputsCount,
-    height,
-    inputHeight,
-    inputsCount,
-  })
-
   const onAddInput = () => {
     const isConnected = Boolean(account)
     setConfigs((prev: any) => ({
@@ -262,6 +246,30 @@ export const Bowtie = () => {
     difference !== 0 ||
     outputValues - configs.feeCost < 0 ||
     runesButterflyBalance !== 0
+
+  const isNotReady =
+    inputsCount !== 0 &&
+    isConfirmDisabled &&
+    outputsCount !== 0 &&
+    inputValues - outputValues !== 0
+
+  const inputPaths = useInputs({
+    butterfly,
+    totalHeight: inputHeight,
+    inputsCount,
+    height,
+    isConfirmDisabled,
+    isNotReady,
+  })
+
+  const outputPaths = useOutputs({
+    butterfly,
+    totalHeight: outputHeight,
+    outputsCount,
+    height,
+    inputHeight,
+    inputsCount,
+  })
 
   const { provider } = useBTCProvider()
 
@@ -478,66 +486,63 @@ export const Bowtie = () => {
                   </div>
                 </>
               )}
-              {inputsCount !== 0 &&
-                isConfirmDisabled &&
-                outputsCount !== 0 &&
-                inputValues - outputValues !== 0 && (
-                  <div>
-                    {utxos?.length ? (
-                      isConfirmDisabled ? (
-                        difference > 0 || outputValues < 0 ? (
-                          <p>
-                            Adjust the fee or outputs. UTXO balance is{" "}
-                            <span
-                              className={`${
-                                inputValues - outputValues > 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {formatNumber(
-                                inputValues - outputValues,
-                                0,
-                                0,
-                                false,
-                                false
-                              )}{" "}
-                              sats
-                            </span>
-                            ; it should be 0.
-                          </p>
-                        ) : (
-                          <p>
-                            Add more inputs{" "}
-                            {outputValues ? "or adjust the output" : ""}. UTXO
-                            balance is{" "}
-                            <span
-                              className={`${
-                                inputValues - outputValues > 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {formatNumber(
-                                inputValues - outputValues,
-                                0,
-                                0,
-                                false,
-                                false
-                              )}{" "}
-                              sats
-                            </span>
-                            ; it should be 0.
-                          </p>
-                        )
+              {isNotReady && (
+                <div>
+                  {utxos?.length ? (
+                    isConfirmDisabled ? (
+                      difference > 0 || outputValues < 0 ? (
+                        <p>
+                          Adjust the fee or outputs. UTXO balance is{" "}
+                          <span
+                            className={`${
+                              inputValues - outputValues > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {formatNumber(
+                              inputValues - outputValues,
+                              0,
+                              0,
+                              false,
+                              false
+                            )}{" "}
+                            sats
+                          </span>
+                          ; it should be 0.
+                        </p>
                       ) : (
-                        "Create PSBT and sign"
+                        <p>
+                          Add more inputs{" "}
+                          {outputValues ? "or adjust the output" : ""}. UTXO
+                          balance is{" "}
+                          <span
+                            className={`${
+                              inputValues - outputValues > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {formatNumber(
+                              inputValues - outputValues,
+                              0,
+                              0,
+                              false,
+                              false
+                            )}{" "}
+                            sats
+                          </span>
+                          ; it should be 0.
+                        </p>
                       )
                     ) : (
-                      "No UTXOs"
-                    )}
-                  </div>
-                )}
+                      "Create PSBT and sign"
+                    )
+                  ) : (
+                    "No UTXOs"
+                  )}
+                </div>
+              )}
               <br />
               {runesButterflyBalance !== 0 && (
                 <>
