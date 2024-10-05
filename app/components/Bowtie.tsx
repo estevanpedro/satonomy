@@ -81,9 +81,11 @@ export const Bowtie = () => {
   })
 
   const onAddInput = () => {
+    const isConnected = Boolean(account)
     setConfigs((prev: any) => ({
       ...prev,
-      isInputDeckOpen: !prev.isInputDeckOpen,
+      isInputDeckOpen: isConnected ? !prev.isInputDeckOpen : false,
+      isInputFullDeckOpen: isConnected ? false : true,
     }))
   }
 

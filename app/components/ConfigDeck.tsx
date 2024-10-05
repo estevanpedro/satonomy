@@ -321,7 +321,7 @@ export const ConfigDeck = () => {
   const hasWalletLoading = loading?.walletLoadingList?.length > 0
 
   return (
-    <div className={`fixed flex gap-2 ${position}`}>
+    <div className={`fixed flex gap-2 ${position} `}>
       {/* <Modal isOpen={isOpen} onClose={onClose}>
         <div className="w-full flex flex-col h-full sm:w-[370px]">
           <h2 className="text-[20px] font-bold mb-2">✅ Success</h2>
@@ -346,7 +346,6 @@ export const ConfigDeck = () => {
           </div>
         </div>
       </Modal> */}
-
       {Boolean(utxos?.length) &&
         (isDeckOpen || configs.isInputFullDeckOpen) && (
           <div
@@ -358,7 +357,7 @@ export const ConfigDeck = () => {
                 isInputFullDeckOpen: false,
               }))
             }
-            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
+            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
               Action
@@ -369,7 +368,7 @@ export const ConfigDeck = () => {
 
       {Boolean(utxos?.length) && (
         <div
-          className={`w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
+          className={`transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
           onClick={() => {
             track("portfolio", {}, { flags: ["portfolio"] })
             setConfigs((prev) => ({
@@ -506,7 +505,7 @@ export const ConfigDeck = () => {
               }
               data-tooltip-place="top"
               onClick={!psbtSigned.txid ? onBroadcast : () => {}}
-              className={`relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
+              className={`transition-transform duration-300 relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
                 psbtSigned.txid ? "opacity-50" : ""
               }`}
             >
@@ -545,26 +544,30 @@ export const ConfigDeck = () => {
             </div>
           )}
 
-          {!isConfirmDisabled && Boolean(configs.feeCost) && (
-            <div
-              onClick={copyToClipboard}
-              className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
-            >
-              <div className="text-[12px] flex items-center justify-center opacity-50">
-                Share
+          {!isConfirmDisabled &&
+            Boolean(configs.feeCost) &&
+            !configs.isInputFullDeckOpen &&
+            !configs.isOutputDeckOpen &&
+            !configs.isInputDeckOpen && (
+              <div
+                onClick={copyToClipboard}
+                className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
+              >
+                <div className="text-[12px] flex items-center justify-center opacity-50">
+                  Share
+                </div>
+                <div className="flex justify-center items-center">
+                  Copy{" "}
+                  <Image
+                    src="/share.png"
+                    alt="Copy"
+                    width={16}
+                    height={16}
+                    className="ml-2"
+                  />
+                </div>
               </div>
-              <div className="flex justify-center items-center">
-                Copy{" "}
-                <Image
-                  src="/share.png"
-                  alt="Copy"
-                  width={16}
-                  height={16}
-                  className="ml-2"
-                />
-              </div>
-            </div>
-          )}
+            )}
         </>
       )}
     </div>

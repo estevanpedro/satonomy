@@ -280,3 +280,18 @@ body {
     transform: translate(0, 0);
   }
 }
+
+@keyframes fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide {
+  animation: fade-slide 0.2s ease-out forwards;
+}

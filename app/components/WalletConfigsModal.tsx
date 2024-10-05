@@ -2,10 +2,12 @@ import { Modal } from "@/app/components/Modal"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { errorsAtom } from "@/app/recoil/errors"
 import { loadingAtom } from "@/app/recoil/loading"
+import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+import { Tooltip } from "react-tooltip"
 import { useRecoilState, useRecoilValue } from "recoil"
 
 const WalletInput = ({
@@ -19,17 +21,38 @@ const WalletInput = ({
   onRemove?: (wallet: any) => void
   isConnected?: boolean
 }) => {
+  const utxos = useRecoilValue(utxoAtom)
   const loading = useRecoilValue(loadingAtom)
   const errors = useRecoilValue(errorsAtom)
   const hasError = errors.walletErrorList?.includes(wallet)
 
+  const content = () => {
+    if (isConnected) {
+      return "Connected"
+    }
+    if (loading.walletLoadingList?.includes(wallet)) {
+      return "Loading..."
+    }
+    if (hasError) {
+      return "Too many UTXOs in this wallet. >500 coming soon!"
+    }
+    return `☑️ ${
+      utxos?.filter((u) => u.wallet === wallet).length || 0
+    } UTXOs loaded`
+  }
+
   return (
-    <div className="flex gap-2 items-center justify-center">
+    <div
+      className="flex gap-2 items-center justify-center"
+      data-tooltip-id={`tooltip-wallets`}
+      data-tooltip-content={content()}
+      data-tooltip-place={"right"}
+    >
       <input
         placeholder="Enter wallet address"
         className={`w-full py-2 border rounded px-2 placeholder-zinc-600 ${
           hasError ? "border-red-500" : ""
-        }`}
+        } outline-none`}
         value={wallet}
         onChange={onChange}
         disabled={isConnected}
@@ -51,7 +74,6 @@ const WalletInput = ({
               </div>
             </div>
           )}
-          {hasError && <div>❌</div>}
 
           <button onClick={() => onRemove?.(wallet)}>🗑️</button>
         </>
@@ -147,6 +169,12 @@ export const WalletConfigsModal = () => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="w-full h-full flex flex-col max-w-[580px]">
+          <Tooltip
+            id={`tooltip-wallets`}
+            className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
+            style={{ backgroundColor: "#292929", color: "white" }}
+          />
+
           <h2 className="mb-2 text-2xl">Manage Multiple Wallets</h2>
           <div className="mb-6 text-zinc-500">
             Connect all your wallets or add them manually to track and{" "}

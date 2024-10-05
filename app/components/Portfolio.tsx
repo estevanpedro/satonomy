@@ -76,8 +76,10 @@ export const Portfolio = ({
 
   return (
     <div
-      className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex-col border-zinc-700 px-4 bg-zinc-800 rounded-t-lg ${
-        configs.isInputFullDeckOpen ? "flex" : "hidden"
+      className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex-col border-zinc-700 px-4 bg-zinc-800 rounded-t-lg  transition-transform duration-300 ${
+        configs.isInputFullDeckOpen
+          ? " translate-y-0 flex"
+          : " translate-y-full"
       }`}
     >
       <div className="mt-5 flex gap-4 items-center justify-between px-2">
@@ -115,7 +117,7 @@ export const Portfolio = ({
 
           <div
             className={`border-2 px-2 rounded text-zinc-200 cursor-pointer ${
-              filterSelected === "bitcoin" ? "border-b-[#52525B]" : ""
+              filterSelected === "bitcoin" ? "border-b-[#5858f5]" : ""
             } hover:text-zinc-50  hover:scale-105`}
             onClick={() => {
               setFilterSelected("bitcoin")
@@ -131,8 +133,8 @@ export const Portfolio = ({
             `Showing 1 to ${utxosFiltered?.length} of ${utxos?.length} UTXOs`}
         </div>
       </div>
-      <div className="w-full flex border-b-[1px] border-b-zinc-900 mt-4" />
-      <div className="pb-32 grid gap-4 justify-items-center overflow-y-scroll relative border-t-[1px] border-t-zinc-600 pt-4 pl-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 pr-4">
+      <div className="w-full flex border-b-[1px] border-b-zinc-900 mt-4 " />
+      <div className=" pb-32 grid gap-4 justify-items-center overflow-y-scroll relative border-t-[1px] border-t-zinc-600 pt-4 pl-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 pr-4">
         {configs.isInputFullDeckOpen &&
           utxosFiltered!.map((utxo, index) => {
             return (
