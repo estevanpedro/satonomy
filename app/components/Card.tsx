@@ -192,6 +192,12 @@ export const CardOption = ({
     )
   )
 
+  const ordinalSelected = allInscriptions.find((i) =>
+    inputs.find(
+      (input) => input.txid === i.utxo.txid && input.vout === i.utxo.vout
+    )
+  )
+
   const isSameRune = runeSelected?.utxos.find(
     (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
   )
@@ -228,11 +234,17 @@ export const CardOption = ({
     runeSelected?.runeid !== rune?.runeid && rune && runeSelected?.runeid
   )
 
+  // const inscriptionSelected = ordinals?.find(
+
+  // )
+
   const isDisabled =
     inputs?.includes(utxo) ||
     hasSatributes ||
     (Boolean(runeSelected) && !isSameRune && Boolean(rune)) ||
-    isDifferentRuneId
+    isDifferentRuneId ||
+    ((Boolean(ordinalSelected) || Boolean(runeSelected)) &&
+      (Boolean(ordinal) || Boolean(rune)))
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 

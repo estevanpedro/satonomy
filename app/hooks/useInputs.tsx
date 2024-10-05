@@ -144,12 +144,12 @@ export const useInputs = ({
     )
     paths.push(
       <div
-        className="absolute right-[-12px] transform translate-y-[-50%]"
+        className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
         style={{ top: "calc(50% + 40px)" }}
       >
         {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
           <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
           >
             <Image
@@ -157,14 +157,14 @@ export const useInputs = ({
               alt="Satonomy"
               width={36}
               height={36}
-              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
             />
           </div>
         )}
 
         {butterflyIsOk && !isConfirmDisabled && (
           <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
           >
             <Image
@@ -172,13 +172,13 @@ export const useInputs = ({
               alt="Satonomy"
               width={36}
               height={36}
-              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
             />
           </div>
         )}
         {isConfirmDisabled && !butterflyIsOk && isNotReady && (
           <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden"
+            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
           >
             <Image
@@ -186,18 +186,16 @@ export const useInputs = ({
               alt="Satonomy"
               width={36}
               height={36}
-              className="object-cover scale-110 mt-[-4px]" // Slightly scale the image up
+              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
             />
           </div>
         )}
       </div>
-      // <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-      // <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
     )
 
     paths.push(
       <div
-        className="absolute right-[-12px] transform translate-y-[-50%]"
+        className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
         style={{ top: "calc(50% + 40px)" }}
       >
         {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
@@ -206,7 +204,7 @@ export const useInputs = ({
             alt="Satonomy"
             width={36}
             height={36}
-            className="mb-[80px] animate-ping-3 duration-10000"
+            className="mb-[80px] animate-ping-3 duration-10000 pointer-events-none"
           />
         )}
 
@@ -216,7 +214,7 @@ export const useInputs = ({
             alt="Satonomy"
             width={36}
             height={36}
-            className="mb-[80px] animate-ping-3 duration-10000"
+            className="mb-[80px] animate-ping-3 duration-10000 pointer-events-none"
           />
         )}
         {isConfirmDisabled && !butterflyIsOk && isNotReady && (
@@ -225,7 +223,7 @@ export const useInputs = ({
             alt="Satonomy"
             width={36}
             height={36}
-            className="mb-[80px] animate-ping-3 opacity-75 duration-10000"
+            className="mb-[80px] animate-ping-3 opacity-75 duration-10000 pointer-events-none"
           />
         )}
       </div>
