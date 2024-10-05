@@ -1,3 +1,4 @@
+import { OrdinalData } from "@/app/recoil/ordinalsAtom"
 import { RunesUtxo } from "@/app/recoil/runesAtom"
 import { MempoolUTXO } from "@/app/recoil/utxoAtom"
 import { atom } from "recoil"
@@ -9,6 +10,7 @@ export interface Output {
   type?: string
   rune?: RunesUtxo
   runesValue?: number
+  inscription?: OrdinalData
 }
 
 export interface Butterfly {

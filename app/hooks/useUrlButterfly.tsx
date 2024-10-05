@@ -6,6 +6,7 @@ import {
 } from "@/app/recoil/butterflyAtom"
 import { configsAtom, DEFAULT_CONFIGS } from "@/app/recoil/confgsAtom"
 import { loadingAtom } from "@/app/recoil/loading"
+import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { decompressFromUrlParam } from "@/app/utils/encodeButterfly"
@@ -19,6 +20,7 @@ export const useUrlButterfly = () => {
   const setRunes = useSetRecoilState(runesAtom)
   const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const setLoading = useSetRecoilState(loadingAtom)
+  const setOrdinals = useSetRecoilState(ordinalsAtom)
 
   useEffect(() => {
     if (butterflyUrl) return
@@ -37,6 +39,8 @@ export const useUrlButterfly = () => {
     const urlButterfly = urlParams.get("b")
     const urlConfigs = urlParams.get("c")
     const urlRunes = urlParams.get("r")
+    const urlOrdinals = urlParams.get("o")
+    console.log("✌️urlOrdinals --->", urlOrdinals)
     const psbtHexSigned = urlParams.get("psbtHexSigned")
     const txid = urlParams.get("txid")
 
@@ -91,6 +95,23 @@ export const useUrlButterfly = () => {
 
           return [...(prevRunes || []), ...filteredNewRunes]
         })
+    }
+
+    if (urlOrdinals) {
+      const decodedInscription: OrdinalData[] =
+        decompressFromUrlParam(urlOrdinals)
+      if (decodedInscription?.length) {
+        setOrdinals([
+          {
+            total: 1,
+            totalConfirmed: 1,
+            cursor: 1,
+            totalUnconfirmedSpend: 0,
+            totalUnconfirmed: 0,
+            inscription: decodedInscription,
+          },
+        ])
+      }
     }
 
     if (psbtHexSigned) {

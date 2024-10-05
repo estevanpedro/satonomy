@@ -88,11 +88,6 @@ export const CardOutputCarousel = () => {
 
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-  const ordinal = butterfly.inputs.find((input) =>
-    allInscriptions?.find(
-      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
-    )
-  )
   const ordinalFound = allInscriptions?.find((o) =>
     butterfly.inputs.find(
       (input) => o.utxo.txid === input.txid && o.utxo.vout === input.vout

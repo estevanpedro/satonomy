@@ -48,11 +48,21 @@ export const useInputs = ({
       r.utxos?.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
     )
     const isRune = utxo ? true : false
-
+    const isInscription =
+      butterfly.inputs[i]?.txid === ordinal?.txid &&
+      butterfly.inputs[i]?.vout === ordinal?.vout
     const stop1Color =
-      isRune && !ordinal ? "#FF61F6" : ordinal ? "#6839B6" : "#FF8A00"
+      isRune && !isInscription
+        ? "#FF61F6"
+        : isInscription
+        ? "#6839B6"
+        : "#FF8A00"
     const stop2Color =
-      isRune && !ordinal ? "#FF95F9" : ordinal ? "#3478F7" : "#FAF22E"
+      isRune && !isInscription
+        ? "#FF95F9"
+        : isInscription
+        ? "#3478F7"
+        : "#FAF22E"
 
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 

@@ -16,6 +16,7 @@ import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { toast } from "react-toastify"
 import { toastOptions } from "@/app/components/Toast"
 import { loadingAtom } from "@/app/recoil/loading"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 
 export const ConfigDeck = () => {
   const loading = useRecoilValue(loadingAtom)
@@ -26,7 +27,7 @@ export const ConfigDeck = () => {
   const butterfly = useRecoilValue(butterflyAtom)
   const { accounts } = useAccounts()
   const account = accounts[0]
-
+  const ordinals = useRecoilValue(ordinalsAtom)
   const isDeckOpen = configs?.isInputDeckOpen || configs?.isOutputDeckOpen
 
   let position = isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]"
@@ -202,6 +203,19 @@ export const ConfigDeck = () => {
     const runeObj = runes?.find((r) => r.runeid === runeFound?.rune?.runeid)
     const runesUrl = encodeData(runeObj ? [runeObj] : undefined)
 
+    console.log("✌️butterfly.outputs --->", butterfly.outputs)
+
+    const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
+
+    const ordinalsObj =
+      butterfly.outputs.filter((o) => o.type === "inscription")?.[0] ||
+      allOrdinals.find((i) =>
+        butterfly.inputs.find(
+          (b) => b.txid === i.utxo.txid && b.vout === i.utxo.vout
+        )
+      )
+
+    console.log("✌️ordinalsObj --->", ordinalsObj)
     const stringToCopy = `http://${
       window.location.hostname
     }:3000/?b=${butterflyUrl}&c=${configsUrl}${
@@ -210,7 +224,9 @@ export const ConfigDeck = () => {
       psbtSigned.psbtHexSigned
         ? `&psbtHexSigned=${psbtSigned.psbtHexSigned}`
         : ""
-    }${psbtSigned.txid ? `&txid=${psbtSigned.txid}` : ""}`
+    }${psbtSigned.txid ? `&txid=${psbtSigned.txid}` : ""}${
+      ordinalsObj ? `&o=${encodeData([ordinalsObj])}` : ""
+    }`
 
     history.pushState({}, "", stringToCopy)
 

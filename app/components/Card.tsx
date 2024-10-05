@@ -380,7 +380,7 @@ export const CardOption = ({
           <div className="w-32 h-12 text-center text-white text-xl font-medium pointer-events-none">
             {formatNumber(utxo?.value, 0, 0, false, false)} sats
           </div>
-          <div className="pointer-events-none">
+          <div className="opacity-50 text-[12px]">
             ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
           </div>
         </>
@@ -395,10 +395,13 @@ export const CardOption = ({
             <span className="text-[10px]">{ordinal.contentType}</span>
           )}
 
-          <div className="mt-4 mb-[-26px]">
+          <div className="flex flex-col justify-center items-center mb-[24px]">
             <span className="text-[16px] text-bold">
               {formatNumber(utxo.value)} sats
             </span>
+            <div className="opacity-50 text-[12px]">
+              ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
+            </div>
           </div>
         </>
       )}
@@ -804,7 +807,7 @@ export const CardOutput = ({
         <div className="mt-[-12px] text-[12px]">{rune?.symbol || "sats"} </div>
       </div>
       {Boolean(butterfly.outputs[index].value) && !rune && (
-        <div className="opacity-80 text-12">
+        <div className="opacity-50 text-[12px]">
           $
           {formatNumber(
             ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice,

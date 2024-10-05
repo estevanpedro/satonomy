@@ -71,7 +71,7 @@ export const useOrdinals = () => {
 
     // Clear ordinals and reset fetched wallets if no wallets are available
     if (walletsFiltered.length === 0) {
-      setOrdinals(null)
+      // setOrdinals(null)
       fetchedWalletsRef.current.clear()
     }
   }, [walletConfigs.wallets, setOrdinals])
