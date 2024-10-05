@@ -4,6 +4,7 @@ import { errorsAtom } from "@/app/recoil/errors"
 import { loadingAtom } from "@/app/recoil/loading"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 
@@ -138,16 +139,21 @@ export const WalletConfigsModal = () => {
       {configs.proMode && (
         <div
           onClick={() => setIsOpen(true)}
-          className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px]"
+          className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px] hover:scale-105 transition-all duration-300"
         >
-          ⚙️
+          <Image src="/wallet.png" width={20} height={20} alt="Wallets" />
         </div>
       )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="w-full h-full flex flex-col sm:min-w-[500px]">
-          <div className="mb-2">Configurations</div>
-          <div className="mb-6 text-zinc-500">Manage multiples wallet</div>
+        <div className="w-full h-full flex flex-col max-w-[580px]">
+          <h2 className="mb-2 text-2xl">Manage Multiple Wallets</h2>
+          <div className="mb-6 text-zinc-500">
+            Connect all your wallets or add them manually to track and{" "}
+            <strong>manage all UTXOs.</strong>
+            <br />
+            This feature is available in Pro mode only.
+          </div>
           <div className="flex flex-col gap-2">
             {/* {accounts.map((account, index) => (
               <div key={index}>
