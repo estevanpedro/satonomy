@@ -33,9 +33,10 @@ import { toast } from "react-toastify"
 import Link from "next/link"
 import { loadingAtom } from "@/app/recoil/loading"
 import { useLocalSettings } from "@/app/hooks/useLocalSettings"
+import { useMempool } from "@/app/hooks/useMempool"
 
 export const Bowtie = () => {
-  debugger
+  useMempool()
   useRunes()
   useOrdinals()
   useBitcoinPrice()

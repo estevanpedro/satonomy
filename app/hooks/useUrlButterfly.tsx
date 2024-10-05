@@ -23,14 +23,15 @@ export const useUrlButterfly = () => {
   useEffect(() => {
     if (butterflyUrl) return
 
-    setLoading({
+    setLoading((prev) => ({
       mempoolUtxoIsLoading: true,
       runesIsLoading: true,
       ordinalsIsLoading: true,
       recommendedFeesIsLoading: true,
       broadcastIsLoading: true,
       signIsLoading: true,
-    })
+      walletLoadingList: prev?.walletLoadingList || [],
+    }))
 
     const urlParams = new URLSearchParams(window.location.search)
     const urlButterfly = urlParams.get("b")

@@ -259,6 +259,7 @@ export const CardOption = ({
       : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
+  console.log("✌️secondaryColorType --->", secondaryColorType)
   return (
     <div
       style={{
@@ -398,7 +399,7 @@ export const CardOption = ({
         </>
       )}
 
-      {!isSelected && (
+      {!isSelected && !Boolean(ordinal) && (
         <button
           data-tooltip-id={"select"}
           data-tooltip-content={
@@ -413,7 +414,10 @@ export const CardOption = ({
           onClick={() => onClick?.(utxo)}
           className={`${
             isDisabled || Boolean(hasSomeSigned) ? "opacity-50" : ""
-          } text-bold absolute bottom-4 text-[16px] rounded px-8 py-1 from-[#ffa750] to-[#e8c03f] bg-gradient-to-r hover:from-[#ffa750] hover:to-[#e8c03f] text-white`}
+          } font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105 transition-all duration-300`}
+          style={{
+            background: `linear-gradient(45deg, ${colorType} 0%, ${colorType} 50%, ${secondaryColorType} 95%, ${secondaryColorType} 115%)`,
+          }}
         >
           SELECT
         </button>

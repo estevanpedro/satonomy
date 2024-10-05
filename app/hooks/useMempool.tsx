@@ -7,6 +7,10 @@ import { useEffect, useRef } from "react"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import { filterBitcoinWallets } from "@/app/utils/filters"
 import { useAccounts } from "@particle-network/btc-connectkit"
+import { loadingAtom } from "@/app/recoil/loading"
+import { errorsAtom } from "@/app/recoil/errors"
+import { toast } from "react-toastify"
+import { formatAddress } from "@/app/utils/format"
 
 export const useMempool = () => {
   const setUtxo = useSetRecoilState(utxoAtom)
@@ -16,6 +20,8 @@ export const useMempool = () => {
   const { accounts } = useAccounts()
   const previousAccountsRef = useRef<string[]>([])
   const previousProModeRef = useRef<boolean>(configs.proMode)
+  const setLoading = useSetRecoilState(loadingAtom)
+  const setErrors = useSetRecoilState(errorsAtom)
 
   useEffect(() => {
     const fetchUtxos = async (wallets: string[]) => {
@@ -23,21 +29,57 @@ export const useMempool = () => {
 
       const walletsFiltered = filterBitcoinWallets(wallets)
       for (const wallet of walletsFiltered) {
+        setLoading((prev) =>
+          prev.walletLoadingList
+            ? {
+                ...prev,
+                walletLoadingList: [...prev.walletLoadingList, wallet],
+              }
+            : prev
+        )
         track("utxo-fetch", { wallet })
-        const res = await utxoServices.getUtxos(wallet, notConfirmed)
+        try {
+          const res = await utxoServices.getUtxos(wallet, notConfirmed)
 
-        if (res?.length) {
-          const utxosWithWallet = res.map((utxo: MempoolUTXO) => ({
-            ...utxo,
-            wallet,
-          }))
-          allUtxos.push(...utxosWithWallet)
+          if (res?.length) {
+            const utxosWithWallet = res.map((utxo: MempoolUTXO) => ({
+              ...utxo,
+              wallet,
+            }))
+            allUtxos.push(...utxosWithWallet)
 
-          track(
-            "utxo-length",
-            { wallet, length: res.length },
-            { flags: ["utxosLengths"] }
+            track(
+              "utxo-length",
+              { wallet, length: res.length },
+              { flags: ["utxosLengths"] }
+            )
+
+            setLoading((prev) =>
+              prev.walletLoadingList
+                ? {
+                    ...prev,
+                    walletLoadingList: [
+                      ...prev.walletLoadingList.filter((w) => w !== wallet),
+                    ],
+                  }
+                : prev
+            )
+          }
+        } catch (error) {
+          console.error("Error fetching utxos", error)
+          setLoading((prev) =>
+            prev.walletLoadingList
+              ? {
+                  ...prev,
+                  walletLoadingList: [
+                    ...prev.walletLoadingList.filter((w) => w !== wallet),
+                  ],
+                }
+              : prev
           )
+          setErrors((prev) => ({
+            walletErrorList: [...prev.walletErrorList, wallet],
+          }))
         }
       }
 
@@ -45,6 +87,10 @@ export const useMempool = () => {
         setUtxo(allUtxos as [])
       } else {
         setUtxo(null)
+        setLoading((prev) => ({
+          ...prev,
+          walletLoadingList: [],
+        }))
       }
     }
 

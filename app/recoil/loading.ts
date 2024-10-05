@@ -7,6 +7,7 @@ interface ILoading {
   recommendedFeesIsLoading?: boolean
   broadcastIsLoading?: boolean
   signIsLoading?: boolean
+  walletLoadingList: string[]
 }
 
 export const loadingAtom = atom<ILoading>({
@@ -18,5 +19,6 @@ export const loadingAtom = atom<ILoading>({
     recommendedFeesIsLoading: true,
     broadcastIsLoading: true,
     signIsLoading: true,
+    walletLoadingList: [],
   },
 })

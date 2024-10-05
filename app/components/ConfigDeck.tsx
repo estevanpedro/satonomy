@@ -1,4 +1,3 @@
-import { useMempool } from "@/app/hooks/useMempool"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import Image from "next/image"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
@@ -16,10 +15,10 @@ import { encodeData } from "@/app/utils/encodeButterfly"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { toast } from "react-toastify"
 import { toastOptions } from "@/app/components/Toast"
+import { loadingAtom } from "@/app/recoil/loading"
 
 export const ConfigDeck = () => {
-  useMempool()
-
+  const loading = useRecoilValue(loadingAtom)
   const [psbtSigned, setPsbtSigned] = useRecoilState(psbtSignedAtom)
   const runes = useRecoilValue(runesAtom)
   const [utxos, setUtxos] = useRecoilState(utxoAtom)
@@ -319,6 +318,8 @@ export const ConfigDeck = () => {
     }
   }
 
+  const hasWalletLoading = loading?.walletLoadingList?.length > 0
+
   return (
     <div className={`fixed flex gap-2 ${position}`}>
       {/* <Modal isOpen={isOpen} onClose={onClose}>
@@ -392,15 +393,29 @@ export const ConfigDeck = () => {
               BTC
             </span>
 
-            <Image
-              src="/arrow.png"
-              alt="Arrow"
-              width={16}
-              height={16}
-              style={{
-                transform: configs.isInputFullDeckOpen ? "" : "rotate(180deg)",
-              }}
-            />
+            {hasWalletLoading && (
+              <div
+                className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#6839B6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                role="status"
+              >
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  Loading...
+                </span>
+              </div>
+            )}
+            {!hasWalletLoading && (
+              <Image
+                src="/arrow.png"
+                alt="Arrow"
+                width={16}
+                height={16}
+                style={{
+                  transform: configs.isInputFullDeckOpen
+                    ? ""
+                    : "rotate(180deg)",
+                }}
+              />
+            )}
           </div>
         </div>
       )}

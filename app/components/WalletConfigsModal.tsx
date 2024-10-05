@@ -1,5 +1,7 @@
 import { Modal } from "@/app/components/Modal"
 import { configsAtom } from "@/app/recoil/confgsAtom"
+import { errorsAtom } from "@/app/recoil/errors"
+import { loadingAtom } from "@/app/recoil/loading"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import { useEffect, useRef, useState } from "react"
@@ -16,11 +18,17 @@ const WalletInput = ({
   onRemove?: (wallet: any) => void
   isConnected?: boolean
 }) => {
+  const loading = useRecoilValue(loadingAtom)
+  const errors = useRecoilValue(errorsAtom)
+  const hasError = errors.walletErrorList?.includes(wallet)
+
   return (
     <div className="flex gap-2 items-center justify-center">
       <input
         placeholder="Enter wallet address"
-        className="w-full py-2 border rounded px-2 placeholder-zinc-600 "
+        className={`w-full py-2 border rounded px-2 placeholder-zinc-600 ${
+          hasError ? "border-red-500" : ""
+        }`}
         value={wallet}
         onChange={onChange}
         disabled={isConnected}
@@ -28,7 +36,24 @@ const WalletInput = ({
       {isConnected ? (
         <div>✅</div>
       ) : (
-        <button onClick={() => onRemove?.(wallet)}>🗑️</button>
+        <>
+          {loading.walletLoadingList?.includes(wallet) && (
+            <div>
+              {" "}
+              <div
+                className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#6839B6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                role="status"
+              >
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  Loading...
+                </span>
+              </div>
+            </div>
+          )}
+          {hasError && <div>❌</div>}
+
+          <button onClick={() => onRemove?.(wallet)}>🗑️</button>
+        </>
       )}
     </div>
   )
