@@ -183,7 +183,8 @@ export const NetworkFee = () => {
       )
     )
   )
-  const feeRateLessThan2 = Boolean(configs.feeRateEstimated < 2)
+  const feeRateLessThan2 =
+    Boolean(configs.feeRateEstimated < 2) && configs.feeCost
 
   return (
     <div
