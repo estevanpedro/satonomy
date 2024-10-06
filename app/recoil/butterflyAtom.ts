@@ -17,13 +17,14 @@ export interface Butterfly {
   inputs: MempoolUTXO[]
   outputs: Output[]
 }
+export const DEFAULT_BUTTERFLY: Butterfly = {
+  inputs: [],
+  outputs: [],
+}
 
 export const butterflyAtom = atom<Butterfly>({
   key: "butterflyState",
-  default: {
-    inputs: [],
-    outputs: [],
-  },
+  default: DEFAULT_BUTTERFLY,
 })
 
 export const butterflyUrlAtom = atom<string | null>({

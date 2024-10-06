@@ -85,6 +85,7 @@ const WalletInput = ({
 export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
+  console.log("✌️walletConfigs --->", walletConfigs)
   const [isOpen, setIsOpen] = useState(false)
   const configs = useRecoilValue(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode
@@ -136,10 +137,29 @@ export const WalletConfigsModal = () => {
 
   const onChange = (e: any, index: number) => {
     const wallet = e.target.value
+
+    // Update state
     setWalletConfigs((prev) => ({
       ...prev,
       wallets: prev.wallets.map((w, i) => (i === index ? wallet : w)),
     }))
+
+    // Get existing wallets from localStorage
+    const localWalletConfigs = localStorage?.getItem("localWalletConfigs")
+    let localWallets: string[] = localWalletConfigs
+      ? JSON.parse(localWalletConfigs).wallets || []
+      : []
+
+    // Add new wallet if it doesn't already exist
+    if (!localWallets.includes(wallet)) {
+      localWallets = [...localWallets, wallet]
+    }
+
+    // Update localStorage
+    localStorage.setItem(
+      "localWalletConfigs",
+      JSON.stringify({ wallets: localWallets })
+    )
   }
 
   const onAddMoreWallet = () => {
@@ -154,6 +174,21 @@ export const WalletConfigsModal = () => {
       ...prev,
       wallets: prev.wallets.filter((w) => w !== wallet),
     }))
+
+    // Get existing wallets from localStorage
+    const localWalletConfigs = localStorage?.getItem("localWalletConfigs")
+    let localWallets: string[] = localWalletConfigs
+      ? JSON.parse(localWalletConfigs).wallets || []
+      : []
+
+    // Remove wallet from localStorage
+    localWallets = localWallets.filter((w) => w !== wallet)
+
+    // Update localStorage
+    localStorage.setItem(
+      "localWalletConfigs",
+      JSON.stringify({ wallets: localWallets })
+    )
   }
 
   return (

@@ -98,12 +98,7 @@ export const usePlatformFee = () => {
 
       let userProfitValue = finalUserProfit + difference
 
-      console.log("✌️hasOrdinalPlatformFee --->", hasOrdinalPlatformFee)
-
-      if (
-        (runeUtxoCount >= 5 && userProfitValue > 0) ||
-        hasOrdinalPlatformFee
-      ) {
+      if ((runeUtxoCount && userProfitValue > 0) || hasOrdinalPlatformFee) {
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {
             // Update the existing platform fee in place
@@ -214,6 +209,7 @@ export const usePlatformFee = () => {
           (output) =>
             output.type !== "platformFee" && output.type !== "referrer"
         )
+
         console.log("✌️updatedOutputs --->", updatedOutputs)
 
         let updatedButterfly = {
@@ -236,7 +232,8 @@ export const usePlatformFee = () => {
                 (output) =>
                   output.type !== "OP RETURN" &&
                   output.type !== "runes" &&
-                  output.type !== "platformFee"
+                  output.type !== "platformFee" &&
+                  output.type !== "inscription"
               )
               ?.sort((a, b) => b.value - a.value)
 
@@ -246,7 +243,8 @@ export const usePlatformFee = () => {
                 o.type !== "platformFee" &&
                 o.type !== "referrer" &&
                 o.type !== "OP RETURN" &&
-                o.type !== "runes"
+                o.type !== "runes" &&
+                o.type !== "inscription"
             )
 
             if (usersOutput) {

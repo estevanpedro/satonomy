@@ -37,8 +37,6 @@ export const CardOutputCarousel = () => {
   const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
-  console.log("✌️ordinals --->", ordinals)
-
   const runes = useRecoilValue(runesAtom)
   const containerRef = useRef<HTMLDivElement>(null)
   const [{ x }, api] = useSpring(() => ({ x: 0 }))
@@ -117,15 +115,11 @@ export const CardOutputCarousel = () => {
           style={{ x }}
         >
           {outputOptions!.map((action, index) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const [props, api] = useSpring(() => ({ scale: 1 }))
-
             return (
               <animated.div
                 key={index}
                 className="flex items-center justify-center"
                 style={{
-                  ...props,
                   width: "200px",
                   height: "300px",
                 }}

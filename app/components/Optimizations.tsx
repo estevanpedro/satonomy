@@ -13,6 +13,7 @@ import { ConnectButton } from "@/app/components/Connect"
 import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { OptimizationOrdinals } from "@/app/components/OptimizationOrdinals"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
+import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 
 export const Optimizations = () => {
   const { accounts } = useAccounts()
@@ -30,6 +31,19 @@ export const Optimizations = () => {
   const account = accounts?.[0]
   const onClose = () => setIsOpen(false)
   const utxos = useRecoilValue(utxoAtom)
+  const walletConfigs = useRecoilValue(walletConfigsAtom)
+
+  useEffect(() => {
+    if (
+      !accounts.length &&
+      !walletConfigs.wallets.length &&
+      !walletConfigs.prevWallets?.length
+    ) {
+      setOrdinalsOptimizations([])
+      setRunesOptimizations([])
+    }
+  }, [accounts, walletConfigs])
+
   useEffect(() => {
     const ordinalsOptimizationsFiltered = ordinals
       ?.flatMap((o) => o.inscription) // Flatten all inscriptions from Ordinals[]
@@ -53,7 +67,15 @@ export const Optimizations = () => {
       setOrdinalsOptimizations(ordinalsOptimizationsFiltered as OrdinalData[])
     }
 
-    const runesOptimizations = runes?.filter((r) => r.utxos?.length >= 5)
+    const runesOptimizations = runes?.filter(
+      (r) =>
+        r.utxos?.length >= 5 ||
+        r.utxos.find(
+          (u) =>
+            utxos?.find((utxo) => u.location === `${utxo.txid}:${utxo.vout}`)
+              ?.value || 0 > 546
+        )
+    )
 
     if (runesOptimizations) {
       const hasSavedOnLocalStorage = localStorage.getItem("runesOptimizations")
@@ -63,7 +85,7 @@ export const Optimizations = () => {
       }
       setRunesOptimizations(runesOptimizations)
     }
-  }, [runes, ordinals]) // Dependencies
+  }, [runes, ordinals, utxos]) // Dependencies
 
   const [optimizationSelected, setOptimizationSelected] = useState(false)
   const onOptimizeSelection = () => {

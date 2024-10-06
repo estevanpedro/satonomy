@@ -177,8 +177,6 @@ export const CardOption = ({
     ? rune?.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
     : undefined
 
-  // Find the ordinal using the flattened inscriptions array
-  console.log("✌️allInscriptions --->", allInscriptions)
   let ordinal = !utxoFound
     ? allInscriptions?.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
@@ -399,7 +397,7 @@ export const CardOption = ({
           </div>
         </>
       )}
-      {ordinal && (
+      {ordinal && !rune && (
         <>
           <OrdinalRendering
             utxo={utxo}
@@ -435,7 +433,7 @@ export const CardOption = ({
           onClick={() => onClick?.(utxo)}
           className={`${
             isDisabled || Boolean(hasSomeSigned) ? "opacity-0" : ""
-          } font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105 transition-all duration-300 animate-accordion-up`}
+          }  font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105`}
           style={{
             background: `linear-gradient(45deg, ${colorType} 0%, ${colorType} 50%, ${secondaryColorType} 95%, ${secondaryColorType} 115%)`,
           }}
@@ -505,35 +503,48 @@ export const CardOutput = ({
     (o) => ordinal?.txid === o.utxo.txid && ordinal?.vout === o.utxo.vout
   )
 
-  // const contentType =
-  //   rune && !ordinalFound
-  //     ? CARD_TYPES.RUNES
-  //     : ordinalFound
-  //     ? CARD_TYPES.INSCRIPTIONS
-  //     : CARD_TYPES.BTC
   const isInscription = butterfly.outputs[index]?.type === "inscription"
 
-  const contentType = isBrc20
-    ? "BRC-20"
-    : rune
+  const contentType = rune
     ? CARD_TYPES.RUNES
+    : isBrc20
+    ? "BRC-20"
     : isInscription && ordinalFound?.contentType
     ? ordinalFound.contentType
     : CARD_TYPES.BTC
 
-  const colorType =
-    rune && !ordinalFound
-      ? CARD_TYPES_COLOR.RUNES
-      : ordinalFound && isInscription
-      ? CARD_TYPES_COLOR.INSCRIPTIONS
-      : CARD_TYPES_COLOR.BTC
+  console.log("✌️isInscription --->", isInscription)
+  console.log("✌️contentType --->", contentType)
 
-  const secondaryColorType =
-    rune && !ordinalFound
-      ? CARD_TYPES_COLOR_SECONDARY.RUNES
-      : ordinalFound && isInscription
-      ? CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
-      : CARD_TYPES_COLOR_SECONDARY.BTC
+  const colorType = rune
+    ? CARD_TYPES_COLOR.RUNES
+    : isInscription
+    ? isBrc20
+      ? CARD_TYPES_COLOR.BRC20
+      : CARD_TYPES_COLOR.INSCRIPTIONS
+    : CARD_TYPES_COLOR.BTC
+
+  const secondaryColorType = rune
+    ? CARD_TYPES_COLOR_SECONDARY.RUNES
+    : isInscription
+    ? isBrc20
+      ? CARD_TYPES_COLOR_SECONDARY.BRC20
+      : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
+    : CARD_TYPES_COLOR_SECONDARY.BTC
+
+  // const colorType =
+  //   rune && !ordinalFound
+  //     ? CARD_TYPES_COLOR.RUNES
+  //     : ordinalFound && isInscription
+  //     ? CARD_TYPES_COLOR.INSCRIPTIONS
+  // : CARD_TYPES_COLOR.BTC
+
+  // const secondaryColorType =
+  //   rune && !ordinalFound
+  //     ? CARD_TYPES_COLOR_SECONDARY.RUNES
+  //     : ordinalFound && isInscription
+  //     ? CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
+  //     : CARD_TYPES_COLOR_SECONDARY.BTC
 
   const type = butterfly.outputs[index]?.type
 
@@ -1028,6 +1039,7 @@ export const CardOutputOption = ({
   //   (o) => ordinal?.txid === o.utxo.txid && ordinal?.vout === o.utxo.vout
   // )
   const isOrdinal = (action as any)?.contentType
+
   const ordinalFound = isOrdinal ? (action as OrdinalData) : undefined
 
   const rune = action ? runes?.[runeIndex!] : null

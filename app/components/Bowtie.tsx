@@ -472,12 +472,7 @@ export const Bowtie = () => {
                       </p>
                     ) : null}
                     {!allTxIsSigned ? (
-                      <button
-                        className="font-bold mt-2 w-full items-center justify-center text-center hover:opacity-80"
-                        onClick={onSignWithWallet}
-                      >
-                        Sign with wallet
-                      </button>
+                      <></>
                     ) : userCanSign ? null : (
                       <p className="text-center pt-2 w-full">
                         Connect the same wallet to broadcast

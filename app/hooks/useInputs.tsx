@@ -50,26 +50,29 @@ export const useInputs = ({
     const isEven = inputsCount % 2 !== 0
     const mode = Math.floor(inputsCount / 2)
 
-    const txid = butterfly.inputs[i].txid
-    const utxo = runes?.find((r) =>
-      r.utxos?.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
+    const runesUTXO = runes?.find((r) =>
+      r.utxos?.find(
+        (u) =>
+          u.location ===
+          `${butterfly.inputs[i].txid}:${butterfly.inputs[i].vout}`
+      )
     )
-    const isRune = utxo ? true : false
+
+    const isRune = runesUTXO ? true : false
     const isInscription =
       butterfly.inputs[i]?.txid === ordinal?.txid &&
       butterfly.inputs[i]?.vout === ordinal?.vout
-    const stop1Color =
-      isRune && !isInscription
-        ? "#FF61F6"
-        : isInscription
-        ? "#6839B6"
-        : "#FF8A00"
-    const stop2Color =
-      isRune && !isInscription
-        ? "#FF95F9"
-        : isInscription
-        ? "#3478F7"
-        : "#FAF22E"
+
+    const stop1Color = isRune
+      ? "#FF61F6"
+      : isInscription
+      ? "#6839B6"
+      : "#FF8A00"
+    const stop2Color = isRune
+      ? "#FF95F9"
+      : isInscription
+      ? "#3478F7"
+      : "#FAF22E"
 
     const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 

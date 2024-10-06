@@ -1,11 +1,12 @@
 "use client"
 import { OrdinalRendering } from "@/app/components/Ordinals"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
-import { butterflyAtom } from "@/app/recoil/butterflyAtom"
+import { butterflyAtom, DEFAULT_BUTTERFLY } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { OrdinalData } from "@/app/recoil/ordinalsAtom"
 import { DEFAULT_PSBT_SIGNED, psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
+import { runesAtom } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 
 import { formatNumber } from "@/app/utils/format"
@@ -27,7 +28,7 @@ export const OptimizationOrdinals = ({
   onOptimizeSelection?: () => void
 }) => {
   const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
-
+  const runes = useRecoilValue(runesAtom)
   const setButterfly = useSetRecoilState(butterflyAtom)
   const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
@@ -58,7 +59,10 @@ export const OptimizationOrdinals = ({
     let allBtcInputsValue = ordinal.utxo.satoshi
 
     const inputUtxos =
-      utxos?.filter((utxo) => ordinal.utxo.txid === utxo.txid) || []
+      utxos?.filter(
+        (utxo) =>
+          ordinal.utxo.txid === utxo.txid && ordinal.utxo.vout === utxo.vout
+      ) || []
 
     if (allBtcInputsValue < feeCost) {
       const bestBtcInput = (utxosSorted || [])?.find(
@@ -181,6 +185,7 @@ export const OptimizationOrdinals = ({
     onOptimizeSelection?.()
     onClose()
     setPsbtSigned(DEFAULT_PSBT_SIGNED)
+    setButterfly(DEFAULT_BUTTERFLY)
 
     setConfigs((prev) => ({
       ...prev,
@@ -193,7 +198,10 @@ export const OptimizationOrdinals = ({
     let allBtcInputsValue = ordinal.utxo.satoshi
 
     const inputUtxos =
-      utxos?.filter((utxo) => ordinal.utxo.txid === utxo.txid) || []
+      utxos?.filter(
+        (utxo) =>
+          ordinal.utxo.txid === utxo.txid && ordinal.utxo.vout === utxo.vout
+      ) || []
 
     const address = `${inputUtxos[0]?.wallet}`
     const charge = allBtcInputsValue - 546 - feeCost
@@ -233,8 +241,6 @@ export const OptimizationOrdinals = ({
       ...referrerOutput,
     ]
 
-    console.log("✌️chargeOutput --->", chargeOutput)
-
     const newButterfly = {
       inputs: [...inputUtxos],
       outputs: [
@@ -251,6 +257,14 @@ export const OptimizationOrdinals = ({
 
     setButterfly(newButterfly)
   }
+
+  const runeFound = runes?.find((r) =>
+    r.utxos?.find(
+      (u) => u.location === `${ordinal.utxo.txid}:${ordinal.utxo.vout}`
+    )
+  )
+
+  if (runeFound) return null
 
   return (
     <button
