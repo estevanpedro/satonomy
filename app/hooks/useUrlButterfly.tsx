@@ -97,9 +97,7 @@ export const useUrlButterfly = () => {
     }
 
     if (urlOrdinals) {
-      console.log("✌️urlOrdinals --->", urlOrdinals)
       const decodedInscription: any[] = decompressFromUrlParam(urlOrdinals)
-      console.log("✌️decodedInscription --->", decodedInscription)
 
       if (decodedInscription?.length) {
         setOrdinals([

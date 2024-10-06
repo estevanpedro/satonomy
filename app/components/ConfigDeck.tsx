@@ -339,7 +339,7 @@ export const ConfigDeck = () => {
         track("error-broadcast", { wallet: account })
       }
     } catch (error) {
-      console.log
+      console.error(error)
     }
   }
 

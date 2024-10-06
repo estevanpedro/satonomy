@@ -459,10 +459,18 @@ export const CardOption = ({
       )}
 
       <div
-        className={`absolute w-[180px] h-[250px] left-3 top-2 z-[1] ${
+        className={`absolute   left-3 top-2 z-[1] ${
           isFavorite ? "opacity-90" : "opacity-20"
+        } ${
+          !isSelected && isInputFullDeckOpen
+            ? "w-[180px] h-[250px]"
+            : "w-[30px] h-[30px]"
         }`}
-        onClick={() => (!isSelected ? onFavorite(utxo, !isFavorite) : null)}
+        onClick={() =>
+          !isSelected && isInputFullDeckOpen
+            ? onFavorite(utxo, !isFavorite)
+            : null
+        }
       >
         ⭐️
       </div>

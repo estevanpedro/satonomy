@@ -76,6 +76,7 @@ export const OrdinalRendering = ({
             height={size || 140}
             alt="Ordinal Image"
             loading="lazy"
+            className="pointer-events-none"
           />
         )}
         {hasImage && (
@@ -89,6 +90,7 @@ export const OrdinalRendering = ({
             onError={() => {
               setHasImage(false)
             }}
+            className="pointer-events-none"
           />
         )}
       </>
@@ -136,7 +138,7 @@ const TextContent = ({ url, setIsBrc20 }: TextContentProps) => {
   return (
     <>
       {isBrc20 && (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center pointer-events-none">
           <pre className="mt-[-40px] mb-[18px] opacity-50 px-2 text-[12px] max-w-[180px] text-center overflow-hidden whitespace-pre-wrap">
             {text.length > 120
               ? `${text.slice(0, 120)}...`
@@ -153,7 +155,7 @@ const TextContent = ({ url, setIsBrc20 }: TextContentProps) => {
       )}
 
       {!isBrc20 && (
-        <span className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden">
+        <span className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden ">
           {text.length > 120
             ? `${text.slice(0, 120)}...`
             : text.replaceAll(`","`, `", "`)}
