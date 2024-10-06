@@ -21,6 +21,7 @@ import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { loadingAtom } from "@/app/recoil/loading"
+import { favoritesAtom } from "@/app/recoil/favoritesAtom"
 
 export function generateBowtiePath(
   inputX: number,
@@ -270,6 +271,21 @@ export const CardOption = ({
       : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
+  const [favorites, setFavorites] = useRecoilState(favoritesAtom)
+  const isFavorite = favorites.utxos.includes(`${utxo.txid}:${utxo.vout}`)
+
+  const onFavorite = (utxo: MempoolUTXO, isFavorite: boolean) => {
+    if (isFavorite) {
+      setFavorites((prev) => ({
+        utxos: [...prev.utxos, `${utxo.txid}:${utxo.vout}`],
+      }))
+    } else {
+      setFavorites((prev) => ({
+        utxos: prev.utxos.filter((u) => u !== `${utxo.txid}:${utxo.vout}`),
+      }))
+    }
+  }
+
   return (
     <div
       style={{
@@ -442,6 +458,14 @@ export const CardOption = ({
         </button>
       )}
 
+      <div
+        className={`absolute w-[180px] h-[250px] left-3 top-2 z-[1] ${
+          isFavorite ? "opacity-90" : "opacity-20"
+        }`}
+        onClick={() => (!isSelected ? onFavorite(utxo, !isFavorite) : null)}
+      >
+        ⭐️
+      </div>
       <div
         className="absolute inset-0 rounded-xl z-[-1]"
         style={{

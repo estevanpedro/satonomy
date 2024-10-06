@@ -1,5 +1,7 @@
 import { CardOption, EmptyCard } from "@/app/components/Card"
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
+import { favoritesAtom } from "@/app/recoil/favoritesAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
@@ -16,6 +18,8 @@ export const Portfolio = ({
   const ordinals = useRecoilValue(ordinalsAtom)
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
   const runesStates = useRecoilValue(runesAtom)
+  const [favorites, setFavorites] = useRecoilState(favoritesAtom)
+  const butterfly = useRecoilValue(butterflyAtom)
 
   const onExpand = () => {
     setConfigs((configs) => ({
@@ -33,6 +37,22 @@ export const Portfolio = ({
     const normalUtxosFiltered = utxos?.filter((utxo) => {
       if (filterSelected === "all") {
         return true
+      }
+      // if (filterSelected === "selectable") {
+      //   const isRunesOneInput = butterfly.inputs.find((input) =>
+      //     runesStates?.find((rune) =>
+      //       rune.utxos.find((u) => u.location === `${input.txid}:${input.vout}`)
+      //     )
+      //   )
+      //   if (isRunesOneInput) {
+      //     const rune = runesStates?.find((rune) =>
+      //       rune.utxos?.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+      //     )
+      //   }
+      // }
+      if (filterSelected === "favorites") {
+        const isFavorite = favorites.utxos.includes(`${utxo.txid}:${utxo.vout}`)
+        return isFavorite
       }
 
       if (filterSelected === "ordinals") {
@@ -92,6 +112,8 @@ export const Portfolio = ({
           >
             All
           </div>
+          <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
           <div
             className={`border-2  px-2 rounded text-zinc-200 cursor-pointer ${
               filterSelected === "ordinals" ? "border-b-[#3478F7]" : ""
@@ -102,6 +124,8 @@ export const Portfolio = ({
           >
             Ordinals
           </div>
+          <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
           <div
             className={`border-2  ${
               filterSelected === "runes" ? "border-b-[#FF61F6]" : ""
@@ -112,7 +136,8 @@ export const Portfolio = ({
           >
             Runes
           </div>
-
+          <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
           <div
             className={`border-2 px-2 rounded text-zinc-200 cursor-pointer ${
               filterSelected === "bitcoin" ? "border-b-[#FF8A00]" : ""
@@ -122,6 +147,30 @@ export const Portfolio = ({
             }}
           >
             Bitcoin
+          </div>
+          {/* <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
+          <div
+            className={`border-2 px-2 rounded text-zinc-200 cursor-pointer ${
+              filterSelected === "selectable" ? "border-b-[#a937cf]" : ""
+            } hover:text-zinc-50  hover:scale-105`}
+            onClick={() => {
+              setFilterSelected("selectable")
+            }}
+          >
+            Selectable
+          </div> */}
+          <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
+          <div
+            className={`border-2 px-2 rounded text-zinc-200 cursor-pointer ${
+              filterSelected === "favorites" ? "border-b-[#ebce15]" : ""
+            } hover:text-zinc-50  hover:scale-105`}
+            onClick={() => {
+              setFilterSelected("favorites")
+            }}
+          >
+            ⭐️ Favorites
           </div>
         </div>
 
@@ -136,7 +185,10 @@ export const Portfolio = ({
         {configs.isInputFullDeckOpen &&
           utxosFiltered!.map((utxo, index) => {
             return (
-              <div key={`index-${index}`} className="w-full max-w-[200px] mt-2">
+              <div
+                key={`${utxo.txid}:${utxo.vout}`}
+                className="w-full max-w-[200px] mt-2"
+              >
                 <CardOption onClick={onClick} utxo={utxo} />
               </div>
             )

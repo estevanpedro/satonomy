@@ -184,7 +184,7 @@ export const useInputs = ({
           </div>
         )}
         {((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
-          !feeRateOk) && (
+          (!feeRateOk && Boolean(butterfly.outputs.length))) && (
           <div
             className="mb-[80px] rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
