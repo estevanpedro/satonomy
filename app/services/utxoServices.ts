@@ -185,7 +185,6 @@ export const utxoServices = {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
       },
     })
-    console.log("✌️response --->", response)
     const balances = await response.json()
     return (balances?.data?.detail as RunesUtxo[]) || []
   },
@@ -193,7 +192,7 @@ export const utxoServices = {
     const response = await fetch(
       `${unisatURL}/${wallet}/inscription-data?size=402`,
       {
-        ...nextRevalidate,
+        next: { revalidate: 60 * 5 },
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_UNISAT_API_KEY}`,
