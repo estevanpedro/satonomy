@@ -1,4 +1,5 @@
 import { ConnectButton } from "@/app/components/Connect"
+import { HistoryModal } from "@/app/components/HistoryModal"
 import { Optimizations } from "@/app/components/Optimizations"
 import { WalletConfigsModal } from "@/app/components/WalletConfigsModal"
 
@@ -82,6 +83,7 @@ export const NavBar = () => {
           <ConnectButton />
 
           <WalletConfigsModal />
+          <HistoryModal />
         </div>
       </div>
       <div className="w-full border-b-[1px] border-b-zinc-900"></div>

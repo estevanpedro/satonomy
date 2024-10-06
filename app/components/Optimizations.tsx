@@ -12,6 +12,7 @@ import { formatAddress } from "@/app/utils/format"
 import { ConnectButton } from "@/app/components/Connect"
 import { OrdinalData, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { OptimizationOrdinals } from "@/app/components/OptimizationOrdinals"
+import { utxoAtom } from "@/app/recoil/utxoAtom"
 
 export const Optimizations = () => {
   const { accounts } = useAccounts()
@@ -28,7 +29,7 @@ export const Optimizations = () => {
 
   const account = accounts?.[0]
   const onClose = () => setIsOpen(false)
-
+  const utxos = useRecoilValue(utxoAtom)
   useEffect(() => {
     const ordinalsOptimizationsFiltered = ordinals
       ?.flatMap((o) => o.inscription) // Flatten all inscriptions from Ordinals[]
@@ -38,6 +39,14 @@ export const Optimizations = () => {
           a.findIndex(
             (t) => t.utxo.txid === v.utxo.txid && t.utxo.vout === v.utxo.vout
           ) === i
+      )
+      .filter((o) =>
+        utxos?.find(
+          (u) =>
+            o.utxo.txid === u.txid &&
+            o.utxo.vout === u.vout &&
+            u.status.confirmed
+        )
       )
 
     if (ordinalsOptimizationsFiltered?.length) {

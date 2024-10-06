@@ -17,6 +17,7 @@ import { toast } from "react-toastify"
 import { toastOptions } from "@/app/components/Toast"
 import { loadingAtom } from "@/app/recoil/loading"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { historyAtom } from "@/app/recoil/history"
 
 export const ConfigDeck = () => {
   const loading = useRecoilValue(loadingAtom)
@@ -28,6 +29,7 @@ export const ConfigDeck = () => {
   const { accounts } = useAccounts()
   const account = accounts[0]
   const ordinals = useRecoilValue(ordinalsAtom)
+  const setHistory = useSetRecoilState(historyAtom)
   const isDeckOpen = configs?.isInputDeckOpen || configs?.isOutputDeckOpen
 
   let position = isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]"
@@ -73,8 +75,6 @@ export const ConfigDeck = () => {
 
   const { provider } = useBTCProvider()
   const confirmed = configs.isConfirmedModalTxId
-  const isOpen = configs.isOpenModalTxId
-  const txid = configs.txid
 
   const onConfirm = async (e: any) => {
     e.preventDefault()
@@ -215,7 +215,6 @@ export const ConfigDeck = () => {
         )
       )
 
-    console.log("✌️ordinalsObj --->", ordinalsObj)
     const stringToCopy = `http://${
       window.location.hostname
     }:3000/?b=${butterflyUrl}&c=${configsUrl}${
@@ -310,8 +309,20 @@ export const ConfigDeck = () => {
           if (runesUrl) searchParams.set("r", `${runesUrl}`)
           searchParams.set("psbtHexSigned", `${psbtSigned?.psbtHexSigned}`)
           searchParams.set("txid", txidRes)
-          const newURL = `${window.location.href}/?${searchParams.toString()}`
+          const newURL = `${window.location.href}?${searchParams.toString()}`
+
           history.pushState({}, "", newURL)
+
+          const historyObj = {
+            inputs: butterfly.inputs.length,
+            outputs: butterfly.outputs.length,
+            txid: txidRes,
+            url: newURL,
+            timestamp: new Date().toISOString(),
+          }
+
+          setHistory((prev) => [historyObj, ...prev])
+
           setUtxos(
             (prev) =>
               prev?.filter(

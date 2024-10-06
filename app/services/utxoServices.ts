@@ -99,17 +99,18 @@ export const utxoServices = {
 
       const btcTxHex = btcTx.toHex()
       // console.log("✌️btcTxHex --->", btcTxHex)
-      return btcTxHex
-      // const res = await fetch(`${mempoolURL}/tx`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: btcTxHex,
-      // })
-      // const txid = await res.text()
+      // return btcTxHex
+      const res = await fetch(`${mempoolURL}/tx`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: btcTxHex,
+      })
+      const txid = await res.text()
+      console.log("✌️txid --->", txid)
 
-      // return txid as string
+      return txid as string
     } catch (error) {
       console.error(error)
       return null
