@@ -1,5 +1,6 @@
 import { generateBowtiePath } from "@/app/components/Card"
 import { Butterfly } from "@/app/recoil/butterflyAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import Image from "next/image"
@@ -24,6 +25,7 @@ export const useInputs = ({
   const runes = useRecoilValue(runesAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
   const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
+  const configs = useRecoilValue(configsAtom)
 
   const ordinal = butterfly?.inputs?.find((input) =>
     allOrdinals?.find(
@@ -37,6 +39,8 @@ export const useInputs = ({
   const outputY = totalHeight / 2
 
   const butterflyIsOk = !isNotReady && !isConfirmDisabled
+
+  const feeRateOk = configs.feeRateEstimated > 2
 
   for (let i = 0; i < inputsCount; i++) {
     let inputY = height / 2 + height * i
@@ -165,31 +169,32 @@ export const useInputs = ({
           </div>
         )}
 
-        {butterflyIsOk && !isConfirmDisabled && (
+        {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
           <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
+            className="mb-[80px]  rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
           >
             <Image
-              src="/satonomy-green.png"
+              src="/satonomy-green-2.png"
               alt="Satonomy"
               width={36}
               height={36}
-              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
+              className="object-cover pointer-events-none" // Slightly scale the image up
             />
           </div>
         )}
-        {isConfirmDisabled && !butterflyIsOk && isNotReady && (
+        {((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
+          !feeRateOk) && (
           <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
+            className="mb-[80px] rounded-full overflow-hidden pointer-events-none"
             style={{ width: "36px", height: "36px" }}
           >
             <Image
-              src="/satonomy-red.png"
+              src="/satonomy-red-2.png"
               alt="Satonomy"
               width={36}
               height={36}
-              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
+              className="object-cover pointer-events-none" // Slightly scale the image up
             />
           </div>
         )}
@@ -211,7 +216,7 @@ export const useInputs = ({
           />
         )}
 
-        {butterflyIsOk && !isConfirmDisabled && (
+        {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
           <Image
             src="/satonomy-green.png"
             alt="Satonomy"
