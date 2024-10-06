@@ -210,8 +210,6 @@ export const usePlatformFee = () => {
             output.type !== "platformFee" && output.type !== "referrer"
         )
 
-        console.log("✌️updatedOutputs --->", updatedOutputs)
-
         let updatedButterfly = {
           ...butterfly,
           outputs: updatedOutputs,

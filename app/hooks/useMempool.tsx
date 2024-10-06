@@ -86,7 +86,7 @@ export const useMempool = () => {
       if (allUtxos.length) {
         setUtxo(allUtxos as [])
       } else {
-        setUtxo(null)
+        // setUtxo(null)
         setLoading((prev) => ({
           ...prev,
           walletLoadingList: [],

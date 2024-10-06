@@ -85,7 +85,7 @@ const WalletInput = ({
 export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
-  console.log("✌️walletConfigs --->", walletConfigs)
+
   const [isOpen, setIsOpen] = useState(false)
   const configs = useRecoilValue(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode

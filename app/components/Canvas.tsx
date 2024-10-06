@@ -12,6 +12,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const setConfigs = useSetRecoilState(configsAtom)
   const { proMode, isInputFullDeckOpen } = useRecoilValue(configsAtom) // Get proMode value from the config
+
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
   const [scale, setScale] = useState(1)
@@ -130,6 +131,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
                 ...prev,
                 isInputDeckOpen: false,
                 isOutputDeckOpen: false,
+                isInputFullDeckOpen: false,
                 proMode: !prev.proMode,
               }))
 

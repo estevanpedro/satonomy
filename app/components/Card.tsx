@@ -537,9 +537,6 @@ export const CardOutput = ({
     ? ordinalFound.contentType
     : CARD_TYPES.BTC
 
-  console.log("✌️isInscription --->", isInscription)
-  console.log("✌️contentType --->", contentType)
-
   const colorType = rune
     ? CARD_TYPES_COLOR.RUNES
     : isInscription

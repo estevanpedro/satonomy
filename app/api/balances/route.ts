@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     const runesBalances = await utxoServices.getRunesBalances(account)
-    console.log("✌️runesBalances --->", runesBalances)
+
     const runesUtxos = await Promise.all(
       runesBalances.map(async (rune) => {
         const utxos = await utxoServices.getRunesUTXOs(account, rune.rune)

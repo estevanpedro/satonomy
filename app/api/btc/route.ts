@@ -9,9 +9,7 @@ export async function GET(request: NextRequest) {
       next: { revalidate: 3600 },
     })
 
-    console.log("✌️response --->", response)
     const data = await response.json()
-    console.log("✌️data --->", data)
 
     return NextResponse.json(data.bitcoin.usd, {
       status: 200,

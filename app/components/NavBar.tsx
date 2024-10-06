@@ -24,6 +24,11 @@ export const NavBar = () => {
     }
   }
 
+  const onRefreshClick = () => {
+    localStorage.clear()
+    window.location.reload()
+  }
+
   return (
     <>
       <div className="z-10 pt-4 pb-3 w-full max-w-[1200px] items-center justify-around  text-sm flex  sm:justify-between">
@@ -50,12 +55,25 @@ export const NavBar = () => {
         </div>
 
         <div className="flex  items-center justify-center gap-4">
+          <div
+            onClick={onRefreshClick}
+            data-tooltip-id={"feerate"}
+            data-tooltip-content={
+              "Refresh the app, delete local data, clean history and disconnect wallets."
+            }
+            data-tooltip-place="bottom"
+            // href={`${window.location.origin}`}
+            className="border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
+          >
+            <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
+          </div>
+
           {Boolean(hourFee) && (
             <div
               className="text-[12px] opacity-50 flex gap-2 mr-4"
               data-tooltip-id={"feerate"}
               data-tooltip-content={"Average 1 hour fee rate"}
-              data-tooltip-place="left"
+              data-tooltip-place="bottom"
             >
               <Tooltip
                 id={"feerate"}

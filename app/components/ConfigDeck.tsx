@@ -203,8 +203,6 @@ export const ConfigDeck = () => {
     const runeObj = runes?.find((r) => r.runeid === runeFound?.rune?.runeid)
     const runesUrl = encodeData(runeObj ? [runeObj] : undefined)
 
-    console.log("✌️butterfly.outputs --->", butterfly.outputs)
-
     const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
 
     const ordinalsObj =

@@ -80,26 +80,11 @@ export const utxoServices = {
         network: networks.bitcoin,
       })
 
-      // userPSBT.data.inputs.forEach((input, index) => {
-      //   if (input.finalScriptSig || input.finalScriptWitness) {
-      //     // console.log(`Input ${index} is fully signed and finalized`)
-      //   } else if (input.partialSig && input.partialSig.length > 0) {
-      //     // console.log(`Input ${index} is partially signed`)
-      //   } else {
-      //     // console.log(`Input ${index} is not signed`)
-      //   }
-      // })
-
-      // console.log("✌️userPSBT --->", userPSBT)
       const tx = userPSBT.extractTransaction()
-      // console.log("✌️tx --->", tx)
       const txHex = tx.toHex()
       const btcTx = Transaction.fromHex(txHex)
-      // console.log("✌️btcTx --->", btcTx)
-
       const btcTxHex = btcTx.toHex()
-      // console.log("✌️btcTxHex --->", btcTxHex)
-      // return btcTxHex
+
       const res = await fetch(`${mempoolURL}/tx`, {
         method: "POST",
         headers: {
@@ -107,9 +92,8 @@ export const utxoServices = {
         },
         body: btcTxHex,
       })
-      const txid = await res.text()
-      console.log("✌️txid --->", txid)
 
+      const txid = await res.text()
       return txid as string
     } catch (error) {
       console.error(error)
@@ -136,8 +120,6 @@ export const utxoServices = {
           hasIndexesNotSigned = true
         }
       }
-      console.log("✌️signedIndexes --->", signedIndexes)
-      console.log("✌️hasIndexesNotSigned --->", hasIndexesNotSigned)
 
       if (signedIndexes.length > 0 && hasIndexesNotSigned) {
         return {

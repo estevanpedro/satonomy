@@ -68,6 +68,11 @@ export const Bowtie = () => {
 
   const onAddInput = () => {
     const isConnected = Boolean(account)
+
+    if (!isConnected && !configs.proMode) {
+      return
+    }
+
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: isConnected ? !prev.isInputDeckOpen : false,
@@ -483,58 +488,54 @@ export const Bowtie = () => {
               )}
               {isNotReady && (
                 <div>
-                  {utxos?.length ? (
-                    isConfirmDisabled ? (
-                      difference > 0 || outputValues < 0 ? (
-                        <p>
-                          Adjust the fee or outputs. UTXO balance is{" "}
-                          <span
-                            className={`${
-                              inputValues - outputValues > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {formatNumber(
-                              inputValues - outputValues,
-                              0,
-                              0,
-                              false,
-                              false
-                            )}{" "}
-                            sats
-                          </span>
-                          ; it should be 0.
-                        </p>
-                      ) : (
-                        <p>
-                          Add more inputs{" "}
-                          {outputValues ? "or adjust the output" : ""}. UTXO
-                          balance is{" "}
-                          <span
-                            className={`${
-                              inputValues - outputValues > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {formatNumber(
-                              inputValues - outputValues,
-                              0,
-                              0,
-                              false,
-                              false
-                            )}{" "}
-                            sats
-                          </span>
-                          ; it should be 0.
-                        </p>
-                      )
+                  {isConfirmDisabled ? (
+                    difference > 0 || outputValues < 0 ? (
+                      <p>
+                        Adjust the fee or outputs. UTXO balance is{" "}
+                        <span
+                          className={`${
+                            inputValues - outputValues > 0
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {formatNumber(
+                            inputValues - outputValues,
+                            0,
+                            0,
+                            false,
+                            false
+                          )}{" "}
+                          sats
+                        </span>
+                        ; it should be 0.
+                      </p>
                     ) : (
-                      "Create PSBT and sign"
+                      <p>
+                        Add more inputs{" "}
+                        {outputValues ? "or adjust the output" : ""}. UTXO
+                        balance is{" "}
+                        <span
+                          className={`${
+                            inputValues - outputValues > 0
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {formatNumber(
+                            inputValues - outputValues,
+                            0,
+                            0,
+                            false,
+                            false
+                          )}{" "}
+                          sats
+                        </span>
+                        ; it should be 0.
+                      </p>
                     )
                   ) : (
-                    "No UTXOs"
+                    "Create PSBT and sign"
                   )}
                 </div>
               )}

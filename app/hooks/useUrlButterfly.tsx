@@ -97,7 +97,9 @@ export const useUrlButterfly = () => {
     }
 
     if (urlOrdinals) {
+      console.log("✌️urlOrdinals --->", urlOrdinals)
       const decodedInscription: any[] = decompressFromUrlParam(urlOrdinals)
+      console.log("✌️decodedInscription --->", decodedInscription)
 
       if (decodedInscription?.length) {
         setOrdinals([
@@ -107,7 +109,9 @@ export const useUrlButterfly = () => {
             cursor: 1,
             totalUnconfirmedSpend: 0,
             totalUnconfirmed: 0,
-            inscription: decodedInscription.map((i) => ({ ...i.inscription })),
+            inscription: decodedInscription.map((i) => ({
+              ...(i?.inscription ? i.inscription : i),
+            })),
           },
         ])
       }
@@ -151,7 +155,6 @@ export const useUrlButterfly = () => {
       }))
     }
 
-    console.log("DJKOPSADJKPOSADJKOPSA")
     setLoading((prev) => ({
       ...prev,
       mempoolUtxoIsLoading: false,
