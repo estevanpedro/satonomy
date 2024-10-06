@@ -33,6 +33,12 @@ export const Optimizations = () => {
     const ordinalsOptimizationsFiltered = ordinals
       ?.flatMap((o) => o.inscription) // Flatten all inscriptions from Ordinals[]
       .filter((inscription) => inscription.utxo.satoshi > 546) // Filter based on UTXO's satoshi value
+      .filter(
+        (v, i, a) =>
+          a.findIndex(
+            (t) => t.utxo.txid === v.utxo.txid && t.utxo.vout === v.utxo.vout
+          ) === i
+      )
 
     if (ordinalsOptimizationsFiltered?.length) {
       setOrdinalsOptimizations(ordinalsOptimizationsFiltered as OrdinalData[])

@@ -178,8 +178,9 @@ export const CardOption = ({
     : undefined
 
   // Find the ordinal using the flattened inscriptions array
+  console.log("✌️allInscriptions --->", allInscriptions)
   let ordinal = !utxoFound
-    ? allInscriptions.find(
+    ? allInscriptions?.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
     : undefined
@@ -244,7 +245,8 @@ export const CardOption = ({
     (Boolean(runeSelected) && !isSameRune && Boolean(rune)) ||
     isDifferentRuneId ||
     ((Boolean(ordinalSelected) || Boolean(runeSelected)) &&
-      (Boolean(ordinal) || Boolean(rune)))
+      (Boolean(ordinal) || Boolean(rune)) &&
+      Boolean(!isSameRune))
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
@@ -432,8 +434,8 @@ export const CardOption = ({
           disabled={isDisabled || Boolean(hasSomeSigned)}
           onClick={() => onClick?.(utxo)}
           className={`${
-            isDisabled || Boolean(hasSomeSigned) ? "opacity-50" : ""
-          } font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105 transition-all duration-300`}
+            isDisabled || Boolean(hasSomeSigned) ? "opacity-0" : ""
+          } font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105 transition-all duration-300 animate-accordion-up`}
           style={{
             background: `linear-gradient(45deg, ${colorType} 0%, ${colorType} 50%, ${secondaryColorType} 95%, ${secondaryColorType} 115%)`,
           }}

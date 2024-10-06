@@ -20,7 +20,13 @@ export const usePlatformFee = () => {
     const updatePlatformFee = () => {
       if (!butterfly || !butterfly.inputs || butterfly.inputs.length === 0)
         return
-      if (!runes || !btcUtxos || !config || !config.feeCost) return // Validate required data
+
+      const ordinal = butterfly.outputs.find(
+        (output) => output.type === "inscription"
+      )
+
+      if ((!runes && !ordinal) || !btcUtxos || !config || !config.feeCost)
+        return // Validate required data
 
       const feeCost = config.feeCost
 
@@ -30,7 +36,7 @@ export const usePlatformFee = () => {
 
       butterfly.inputs.forEach((input) => {
         // For each input in the butterfly, find the corresponding Rune UTXO and its associated BTC value
-        runes.forEach((rune) => {
+        runes?.forEach((rune) => {
           rune.utxos.forEach((utxo) => {
             if (utxo.location === `${input.txid}:${input.vout}`) {
               runeUtxoCount++ // Increment Rune UTXO count
@@ -58,8 +64,27 @@ export const usePlatformFee = () => {
         0
       )
 
-      const firstProfit =
-        totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos
+      const ordinalInputBtcValue = butterfly.inputs.reduce(
+        (acc, cur) =>
+          acc +
+          (ordinal?.inscription?.utxo.txid === cur.txid &&
+          ordinal?.inscription?.utxo.vout === cur.vout
+            ? cur.value
+            : 0),
+        0
+      )
+      const ordinalOutputBtcValue = butterfly.outputs.reduce(
+        (acc, cur) => acc + (cur.type === "inscription" ? cur.value : 0),
+        0
+      )
+      const firstOrdinalProfit =
+        (ordinalInputBtcValue - ordinalOutputBtcValue - feeCost) * 0.8
+
+      const hasOrdinalPlatformFee = firstOrdinalProfit > 5000
+
+      const firstProfit = hasOrdinalPlatformFee
+        ? ordinalInputBtcValue - ordinalOutputBtcValue - feeCost
+        : totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos
 
       const charge = firstProfit
       const usersProfit = charge * 0.8
@@ -73,7 +98,12 @@ export const usePlatformFee = () => {
 
       let userProfitValue = finalUserProfit + difference
 
-      if (runeUtxoCount >= 5 && userProfitValue > 0) {
+      console.log("✌️hasOrdinalPlatformFee --->", hasOrdinalPlatformFee)
+
+      if (
+        (runeUtxoCount >= 5 && userProfitValue > 0) ||
+        hasOrdinalPlatformFee
+      ) {
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {
             // Update the existing platform fee in place
@@ -139,7 +169,8 @@ export const usePlatformFee = () => {
                 (output) =>
                   output.type !== "OP RETURN" &&
                   output.type !== "runes" &&
-                  output.type !== "platformFee"
+                  output.type !== "platformFee" &&
+                  output.type !== "inscription"
               )
               ?.sort((a, b) => a.value - b.value)
 
@@ -153,7 +184,8 @@ export const usePlatformFee = () => {
                 o.type !== "platformFee" &&
                 o.type !== "referrer" &&
                 o.type !== "OP RETURN" &&
-                o.type !== "runes"
+                o.type !== "runes" &&
+                o.type !== "inscription"
             )
 
             if (usersOutput) {
@@ -177,10 +209,12 @@ export const usePlatformFee = () => {
         )
       } else {
         // If the platform fee should not exist (profit <= 0 or <= 5 Rune UTXOs)
+
         const updatedOutputs = butterfly.outputs.filter(
           (output) =>
             output.type !== "platformFee" && output.type !== "referrer"
         )
+        console.log("✌️updatedOutputs --->", updatedOutputs)
 
         let updatedButterfly = {
           ...butterfly,

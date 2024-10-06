@@ -169,6 +169,15 @@ export const OptimizationCard = ({
     onOptimizeSelection?.()
     onClose()
     setPsbtSigned(DEFAULT_PSBT_SIGNED)
+
+    setConfigs((prev) => ({
+      ...prev,
+      feeCost: feeCost,
+      isInputDeckOpen: false,
+      isInputFullDeckOpen: false,
+      isOutputDeckOpen: false,
+    }))
+
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>
         acc +
@@ -184,14 +193,6 @@ export const OptimizationCard = ({
       ) || []
 
     const address = `${inputUtxos[0]?.wallet}`
-
-    setConfigs((prev) => ({
-      ...prev,
-      feeCost: feeCost,
-      isInputDeckOpen: false,
-      isInputFullDeckOpen: false,
-      isOutputDeckOpen: false,
-    }))
 
     const charge = allBtcInputsValue - 546 - feeCost
     const usersProfit = charge * 0.8

@@ -4,6 +4,7 @@ import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { OrdinalData } from "@/app/recoil/ordinalsAtom"
+import { DEFAULT_PSBT_SIGNED, psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 
@@ -37,6 +38,7 @@ export const OptimizationOrdinals = ({
   const length = 1
   const [feeCost, setFeeCost] = useState<number>(500)
   const { referrer } = useParams()
+  const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
 
   const profitMocked = length * 546 - feeCost - 546
 
@@ -173,18 +175,101 @@ export const OptimizationOrdinals = ({
 
   if (profitInSats < 0) return null
 
+  const onSelect = (ordinal: OrdinalData) => {
+    if (!ordinal) return
+
+    onOptimizeSelection?.()
+    onClose()
+    setPsbtSigned(DEFAULT_PSBT_SIGNED)
+
+    setConfigs((prev) => ({
+      ...prev,
+      feeCost: feeCost,
+      isInputDeckOpen: false,
+      isInputFullDeckOpen: false,
+      isOutputDeckOpen: false,
+    }))
+
+    let allBtcInputsValue = ordinal.utxo.satoshi
+
+    const inputUtxos =
+      utxos?.filter((utxo) => ordinal.utxo.txid === utxo.txid) || []
+
+    const address = `${inputUtxos[0]?.wallet}`
+    const charge = allBtcInputsValue - 546 - feeCost
+    const usersProfit = charge * 0.8
+    const finalUserProfit = Math.floor(usersProfit)
+    const satonomyFees = charge - finalUserProfit // 20%
+    const platformFee = referrer
+      ? Math.floor(satonomyFees * 0.5)
+      : Math.floor(satonomyFees * 1)
+    const referrerFee = referrer ? Math.floor(satonomyFees * 0.5) : 0
+    const difference = Math.floor(satonomyFees - platformFee - referrerFee)
+
+    const referrerOutput = referrer
+      ? [
+          {
+            value: referrerFee,
+            address: referrer as string,
+            vout: 4,
+            type: "referrer",
+          },
+        ]
+      : []
+
+    const chargeOutput = [
+      {
+        value: finalUserProfit + difference,
+        address: address,
+        vout: 2,
+      },
+      {
+        value: platformFee,
+        address:
+          "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+        vout: 3,
+        type: "platformFee",
+      },
+      ...referrerOutput,
+    ]
+
+    console.log("✌️chargeOutput --->", chargeOutput)
+
+    const newButterfly = {
+      inputs: [...inputUtxos],
+      outputs: [
+        {
+          type: "inscription",
+          value: 546,
+          address: address,
+          inscription: ordinal,
+          vout: 1,
+        },
+        ...chargeOutput,
+      ],
+    }
+
+    setButterfly(newButterfly)
+  }
+
   return (
     <button
       data-tooltip-id={"Optimizations"}
       data-tooltip-content={"Coming Soon"}
       data-tooltip-place="right"
-      className={`cursor-progress flex justify-start items-start w-full h-full border p-2  ${
+      className={` flex justify-start items-start w-full h-full border p-2  ${
         !Boolean(profitInSats) || !Boolean(profitInUsd)
           ? "opacity-50 cursor-progress"
           : "opacity-100 hover:border-gray-50 cursor-pointer"
       }`}
       onMouseEnter={() => setShowSats(index)} // Show sats on hover
       onMouseLeave={() => setShowSats(null)} // Hide sats when not hovered
+      onClick={() => {
+        if (!Boolean(profitInSats) || !Boolean(profitInUsd)) {
+        } else {
+          onSelect(ordinal)
+        }
+      }}
     >
       <div className="justify-center items-center flex text-center text-[52px] mr-4">
         <div className="min-w-[38px] h-[38px] rounded bg-gray-800 border-[1px] border-gray-600 flex justify-center items-center text-[20px]">

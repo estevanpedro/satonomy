@@ -40,7 +40,6 @@ export const useUrlButterfly = () => {
     const urlConfigs = urlParams.get("c")
     const urlRunes = urlParams.get("r")
     const urlOrdinals = urlParams.get("o")
-    console.log("✌️urlOrdinals --->", urlOrdinals)
     const psbtHexSigned = urlParams.get("psbtHexSigned")
     const txid = urlParams.get("txid")
 
@@ -98,8 +97,8 @@ export const useUrlButterfly = () => {
     }
 
     if (urlOrdinals) {
-      const decodedInscription: OrdinalData[] =
-        decompressFromUrlParam(urlOrdinals)
+      const decodedInscription: any[] = decompressFromUrlParam(urlOrdinals)
+
       if (decodedInscription?.length) {
         setOrdinals([
           {
@@ -108,7 +107,7 @@ export const useUrlButterfly = () => {
             cursor: 1,
             totalUnconfirmedSpend: 0,
             totalUnconfirmed: 0,
-            inscription: decodedInscription,
+            inscription: decodedInscription.map((i) => ({ ...i.inscription })),
           },
         ])
       }

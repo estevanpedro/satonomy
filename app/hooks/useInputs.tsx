@@ -25,9 +25,9 @@ export const useInputs = ({
   const ordinals = useRecoilValue(ordinalsAtom)
   const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
 
-  const ordinal = butterfly.inputs.find((input) =>
+  const ordinal = butterfly?.inputs?.find((input) =>
     allOrdinals?.find(
-      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+      (o) => o?.utxo?.txid === input.txid && o.utxo.vout === input.vout
     )
   )
   const paths = []
