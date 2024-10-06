@@ -85,6 +85,7 @@ const WalletInput = ({
 export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
+  console.log("✌️walletConfigs --->", walletConfigs)
 
   const [isOpen, setIsOpen] = useState(false)
   const configs = useRecoilValue(configsAtom)
@@ -96,12 +97,17 @@ export const WalletConfigsModal = () => {
     )
 
     // If proMode has changed from true to false (Pro -> Simple)
+    console.log("✌️configs.proMode --->", configs.proMode)
+    console.log("✌️previousProModeRef.current --->", previousProModeRef.current)
+    console.log("✌️walletConfigs --->", walletConfigs)
     if (previousProModeRef.current && !configs.proMode) {
-      setWalletConfigs((prev) => ({
-        ...prev,
-        prevWallets: prev.wallets, // Save previous wallets to prevWallets
-        wallets: accounts, // In simple mode, only use current accounts
-      }))
+      setWalletConfigs((prev) => {
+        console.log("✌️prev.wallets --->", prev.wallets)
+        return {
+          prevWallets: prev.wallets, // Save previous wallets to prevWallets
+          wallets: accounts, // In simple mode, only use current accounts
+        }
+      })
     }
     // If proMode has changed from false to true (Simple -> Pro), restore prevWallets
     else if (!previousProModeRef.current && configs.proMode) {
@@ -109,6 +115,9 @@ export const WalletConfigsModal = () => {
         const restoredWallets = Array.from(
           new Set([...(prev.prevWallets || []), ...accounts])
         )
+
+        console.log("✌️prev --->", prev)
+        console.log("✌️restoredWallets --->", restoredWallets)
         return {
           ...prev,
           wallets: restoredWallets, // Restore wallets from prevWallets and current accounts
@@ -117,6 +126,7 @@ export const WalletConfigsModal = () => {
     }
     // Normal pro mode behavior: Add new accounts if not already included
     else if (configs.proMode && accountsIncluded.length === 0) {
+      console.log("✌️accountsIncluded --->", accountsIncluded)
       setWalletConfigs((prev) => {
         const newWallets = Array.from(new Set([...prev.wallets, ...accounts]))
         if (newWallets.length !== prev.wallets.length) {

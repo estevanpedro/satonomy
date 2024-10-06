@@ -63,7 +63,7 @@ export const NavBar = () => {
             }
             data-tooltip-place="bottom"
             // href={`${window.location.origin}`}
-            className="border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
+            className="cursor-pointer border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
           >
             <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
           </div>

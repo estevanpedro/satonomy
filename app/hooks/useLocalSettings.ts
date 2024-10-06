@@ -21,7 +21,9 @@ export const useLocalSettings = () => {
     if (localWalletConfigs) {
       setWalletConfigs((prev) => ({
         ...prev,
-        prevWallets: JSON.parse(localWalletConfigs).wallets,
+        prevWallets: prev?.prevWallets
+          ? prev?.prevWallets
+          : JSON.parse(localWalletConfigs).wallets,
         wallets: JSON.parse(localWalletConfigs).wallets,
       }))
     }

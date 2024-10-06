@@ -1,13 +1,17 @@
 import { Ordinals, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { filterBitcoinWallets } from "@/app/utils/filters"
+import { useAccounts } from "@particle-network/btc-connectkit"
 import { useEffect, useRef, useState } from "react"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 
 export const useOrdinals = () => {
   const [isLoading, setIsLoading] = useState(false)
   const setOrdinals = useSetRecoilState(ordinalsAtom)
+  const { accounts } = useAccounts()
   const walletConfigs = useRecoilValue(walletConfigsAtom)
+
+  const wallets = [...walletConfigs.wallets, ...accounts]
 
   // Store fetched wallets to prevent fetching them again
   const fetchedWalletsRef = useRef<Set<string>>(new Set())
@@ -58,7 +62,7 @@ export const useOrdinals = () => {
       setIsLoading(false)
     }
 
-    const walletsFiltered = filterBitcoinWallets(walletConfigs.wallets)
+    const walletsFiltered = filterBitcoinWallets(wallets)
 
     // Filter wallets that haven't been fetched yet
     const walletsToFetch = walletsFiltered.filter(
@@ -74,7 +78,7 @@ export const useOrdinals = () => {
       // setOrdinals(null)
       fetchedWalletsRef.current.clear()
     }
-  }, [walletConfigs.wallets, setOrdinals])
+  }, [wallets, setOrdinals])
 
   return { isLoading, ordinals: useRecoilValue(ordinalsAtom) }
 }

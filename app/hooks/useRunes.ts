@@ -2,6 +2,7 @@ import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { runesAtom, RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { filterBitcoinWallets } from "@/app/utils/filters"
+import { useAccounts } from "@particle-network/btc-connectkit"
 import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
@@ -10,7 +11,9 @@ export const useRunes = () => {
   const [runesStates, setRuneStates] = useRecoilState(runesAtom)
   const walletConfigs = useRecoilValue(walletConfigsAtom)
   const butterfly = useRecoilValue(butterflyAtom)
-  // Ref to store previously fetched wallets
+  const { accounts } = useAccounts()
+  const wallets = [...walletConfigs.wallets, ...accounts]
+
   const fetchedWalletsRef = useRef<Set<string>>(new Set())
 
   const hasRunesSelected = butterfly?.inputs?.some((input) =>
@@ -71,7 +74,7 @@ export const useRunes = () => {
       setIsLoading(false)
     }
 
-    const walletsFiltered = filterBitcoinWallets(walletConfigs.wallets)
+    const walletsFiltered = filterBitcoinWallets(wallets)
     const walletsToFetch = walletsFiltered.filter(
       (wallet) => !fetchedWalletsRef.current.has(wallet)
     )
@@ -84,7 +87,7 @@ export const useRunes = () => {
       setRuneStates(null) // Clear rune states if no wallets are present
       fetchedWalletsRef.current.clear() // Reset fetched wallets
     }
-  }, [walletConfigs.wallets, setRuneStates, hasRunesSelected])
+  }, [wallets, setRuneStates, hasRunesSelected])
 
   return { isLoading, runeStates: useRecoilValue(runesAtom) }
 }
