@@ -1,5 +1,5 @@
 import { bech32m } from "bech32"
-import { initEccLib, networks, Psbt } from "bitcoinjs-lib"
+import { initEccLib, networks, payments, Psbt } from "bitcoinjs-lib"
 import { toOutputScript } from "bitcoinjs-lib/src/address"
 import { Butterfly } from "@/app/recoil/butterflyAtom"
 import * as ecc from "@bitcoinerlab/secp256k1"
@@ -31,14 +31,39 @@ export const psbtService = {
     const psbt = new Psbt({ network: networks.bitcoin })
 
     for (const utxo of butterfly.inputs) {
-      psbt.addInput({
-        hash: utxo.txid,
-        index: utxo.vout,
-        witnessUtxo: {
-          value: utxo.value,
-          script: toOutputScript(`${utxo.wallet}`, networks.bitcoin),
-        },
-      })
+      const isP2SH_P2WPKH = utxo?.wallet?.startsWith("3")
+
+      if (isP2SH_P2WPKH) {
+        const p2wpkh = payments.p2wpkh({
+          address: utxo.wallet,
+          network: networks.bitcoin,
+        })
+
+        const p2sh = payments.p2sh({
+          redeem: p2wpkh,
+          network: networks.bitcoin,
+        })
+
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          witnessUtxo: {
+            value: utxo.value,
+            script: p2wpkh.output!, // The P2WPKH output script
+          },
+          redeemScript: p2sh.redeem!.output, // Include the redeem script for P2SH-P2WPKH
+        })
+      } else {
+        // Default to adding as a native SegWit input (Bech32)
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          witnessUtxo: {
+            value: utxo.value,
+            script: toOutputScript(`${utxo.wallet}`, networks.bitcoin),
+          },
+        })
+      }
     }
 
     for (const utxo of butterfly.outputs) {
@@ -75,10 +100,35 @@ export const psbtService = {
         continue
       }
 
-      psbt.addOutput({
-        address: utxo.address,
-        value: utxo.value,
-      })
+      const isP2SH_P2WPKH_Output = utxo.address.startsWith("3")
+      console.log("✌️isP2SH_P2WPKH_Output --->", isP2SH_P2WPKH_Output)
+
+      if (isP2SH_P2WPKH_Output) {
+        // const p2wpkh = payments.p2wpkh({
+        //   address: utxo.address,
+        //   network: networks.bitcoin,
+        // })
+        // const p2sh = payments.p2sh({
+        //   redeem: p2wpkh,
+        //   network: networks.bitcoin,
+        // })
+
+        const { output } = payments.p2sh({
+          address: utxo.address,
+          network: networks.bitcoin,
+        })
+
+        psbt.addOutput({
+          script: output!, // Script for the P2SH-P2WPKH output
+          value: utxo.value,
+        })
+      } else {
+        // Default output handling
+        psbt.addOutput({
+          address: utxo.address,
+          value: utxo.value,
+        })
+      }
     }
 
     return psbt.toHex()
