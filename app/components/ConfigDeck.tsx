@@ -185,7 +185,11 @@ export const ConfigDeck = () => {
       ordinalsObj ? `&o=${encodeData([ordinalsObj])}` : ""
     }`
 
-    history.pushState({}, "", stringToCopy)
+    try {
+      history.pushState({}, "", stringToCopy)
+    } catch (error) {
+      console.error("Could not update URL: ", error)
+    }
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(stringToCopy).then(
@@ -269,7 +273,11 @@ export const ConfigDeck = () => {
           searchParams.set("txid", txidRes)
           const newURL = `${window.location.href}?${searchParams.toString()}`
 
-          history.pushState({}, "", newURL)
+          try {
+            history.pushState({}, "", newURL)
+          } catch (error) {
+            console.error("Could not update URL: ", error)
+          }
 
           const historyObj = {
             inputs: butterfly.inputs.length,
