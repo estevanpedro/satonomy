@@ -3,7 +3,7 @@ import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 import { track } from "@vercel/analytics"
 import { useRecoilValue, useSetRecoilState } from "recoil"
-import { BitcoinNetworkType, signTransaction } from "sats-connect"
+import { BitcoinNetworkType, InputToSign, signTransaction } from "sats-connect"
 
 export const useSignPsbt = () => {
   const { accounts } = useAccounts()
@@ -17,20 +17,22 @@ export const useSignPsbt = () => {
   const signPsbt = async (psbtHex: string, addressSigner?: string) => {
     if (hasTwoWallets) {
       const indexOfAccount0 = butterfly.inputs
-        .map((i, index) => (i.wallet === accounts[0] ? index : null))
-        .filter((i) => i !== null)
+        .map((i, index) => (i.wallet === accounts[0] ? index : -1))
+        .filter((i) => i !== -1)
 
       const indexOfAccount1 = butterfly.inputs
-        .map((i, index) => (i.wallet === accounts[1] ? index : null))
-        .filter((i) => i !== null)
+        .map((i, index) => (i.wallet === accounts[1] ? index : -1))
+        .filter((i) => i !== -1)
 
-      const inputs = addressSigner
+      const signerIndexed = butterfly.inputs
+        .map((i, index) => (i?.wallet === addressSigner ? index : -1))
+        .filter((i) => i !== -1)
+
+      const inputs: InputToSign[] = addressSigner
         ? [
             {
               address: addressSigner,
-              signingIndexes: butterfly.inputs
-                .map((i, index) => (i.wallet === addressSigner ? index : null))
-                .filter((i) => i !== null),
+              signingIndexes: signerIndexed,
             },
           ]
         : [
