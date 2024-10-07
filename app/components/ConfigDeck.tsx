@@ -177,9 +177,7 @@ export const ConfigDeck = () => {
 
     const stringToCopy = `http://${
       window.location.hostname
-    }:3000/?b=${butterflyUrl}&c=${configsUrl}${
-      runesUrl ? `&r=${runesUrl}` : ""
-    }${
+    }/?b=${butterflyUrl}&c=${configsUrl}${runesUrl ? `&r=${runesUrl}` : ""}${
       psbtSigned.psbtHexSigned
         ? `&psbtHexSigned=${psbtSigned.psbtHexSigned}`
         : ""
