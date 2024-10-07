@@ -35,6 +35,7 @@ import { loadingAtom } from "@/app/recoil/loading"
 import { useLocalSettings } from "@/app/hooks/useLocalSettings"
 import { useMempool } from "@/app/hooks/useMempool"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { useSignPsbt } from "@/app/hooks/useSignPsbt"
 
 export const Bowtie = () => {
   useMempool()
@@ -324,36 +325,26 @@ export const Bowtie = () => {
     inputsCount,
   })
 
-  const { provider } = useBTCProvider()
+  const { signPsbt } = useSignPsbt()
 
   const onSignWithWallet = async (e: any) => {
     e.preventDefault()
     try {
-      if (psbtSigned.psbtHexSigned) {
-        const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
-        const psbtHexSigned = await provider.signPsbt(alreadyPsbtHexSigned)
+      const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
 
-        const inputsSigned = butterfly.inputs.filter(
-          (i) => i.wallet === account
-        )
+      if (alreadyPsbtHexSigned) {
+        const psbtHexSigned = await signPsbt(alreadyPsbtHexSigned)
 
-        setPsbtSigned({
-          psbtHexSigned,
-          inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
-        })
+        if (psbtHexSigned) {
+          const inputsSigned = butterfly.inputs.filter(
+            (i) => i.wallet === account
+          )
 
-        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        // if (txidRes) {
-        //   track("psbt-sign", { wallet: account })
-        //   setConfigs((prev) => ({
-        //     ...prev,
-        //     txid: txidRes,
-        //     isOpenModalTxId: true,
-        //     isConfirmedModalTxId: true,
-        //   }))
-        // } else {
-        //   track("error-psbt-sign", { wallet: account })
-        // }
+          setPsbtSigned({
+            psbtHexSigned,
+            inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+          })
+        }
 
         return
       }
@@ -366,33 +357,18 @@ export const Bowtie = () => {
 
       if (result?.psbtHex) {
         track("psbt-created", { wallet: account })
-
-        const psbtHexSigned = await provider.signPsbt(result.psbtHex)
-        console.log("✌️psbtHexSigned --->", psbtHexSigned)
-
-        const inputsSigned = butterfly.inputs.filter(
-          (i) => i.wallet === account
-        )
+        const psbtHexSigned = await signPsbt(result.psbtHex)
 
         if (psbtHexSigned) {
+          track("psbt-signed", { wallet: account })
+          const newInputsSigned = butterfly.inputs.filter(
+            (i) => i.wallet === account
+          )
           setPsbtSigned({
             psbtHexSigned,
-            inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+            inputsSigned: [...psbtSigned.inputsSigned, ...newInputsSigned],
           })
         }
-
-        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        // if (txidRes) {
-        //   track("psbt-sign", { wallet: account })
-        //   setConfigs((prev) => ({
-        //     ...prev,
-        //     txid: txidRes,
-        //     isOpenModalTxId: true,
-        //     isConfirmedModalTxId: true,
-        //   }))
-        // } else {
-        //   track("error-psbt-sign", { wallet: account })
-        // }
       }
     } catch (error) {
       console.log(error)

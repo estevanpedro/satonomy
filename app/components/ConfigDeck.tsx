@@ -2,13 +2,11 @@ import { utxoAtom } from "@/app/recoil/utxoAtom"
 import Image from "next/image"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { Tooltip } from "react-tooltip"
-import { formatAddress, formatNumber } from "@/app/utils/format"
+import { formatNumber } from "@/app/utils/format"
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 import { track } from "@vercel/analytics"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
-import { Modal } from "@/app/components/Modal"
-import Link from "next/link"
 import { psbtService } from "@/app/services/psbtService"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { encodeData } from "@/app/utils/encodeButterfly"
@@ -18,6 +16,7 @@ import { toastOptions } from "@/app/components/Toast"
 import { loadingAtom } from "@/app/recoil/loading"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { historyAtom } from "@/app/recoil/history"
+import { useSignPsbt } from "@/app/hooks/useSignPsbt"
 
 export const ConfigDeck = () => {
   const loading = useRecoilValue(loadingAtom)
@@ -31,7 +30,7 @@ export const ConfigDeck = () => {
   const ordinals = useRecoilValue(ordinalsAtom)
   const setHistory = useSetRecoilState(historyAtom)
   const isDeckOpen = configs?.isInputDeckOpen || configs?.isOutputDeckOpen
-
+  const { signPsbt } = useSignPsbt()
   let position = isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]"
 
   if (configs.isInputFullDeckOpen) {
@@ -73,36 +72,25 @@ export const ConfigDeck = () => {
     runesButterflyBalance !== 0 ||
     configs.feeRateEstimated < 2
 
-  const { provider } = useBTCProvider()
   const confirmed = configs.isConfirmedModalTxId
 
   const onConfirm = async (e: any) => {
     e.preventDefault()
     try {
-      if (psbtSigned.psbtHexSigned) {
-        const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
-        const psbtHexSigned = await provider.signPsbt(alreadyPsbtHexSigned)
+      const alreadyPsbtHexSigned = psbtSigned.psbtHexSigned
 
-        const inputsSigned = butterfly.inputs.filter(
-          (i) => i.wallet === account
-        )
+      if (alreadyPsbtHexSigned) {
+        const psbtHexSigned = await signPsbt(alreadyPsbtHexSigned)
 
-        setPsbtSigned({
-          psbtHexSigned,
-          inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
-        })
+        if (psbtHexSigned) {
+          const inputsSigned = butterfly.inputs.filter(
+            (i) => i.wallet === account
+          )
 
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        if (txidRes) {
-          track("psbt-sign", { wallet: account })
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-        } else {
-          track("error-psbt-sign", { wallet: account })
+          setPsbtSigned({
+            psbtHexSigned,
+            inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+          })
         }
 
         return
@@ -115,45 +103,19 @@ export const ConfigDeck = () => {
       const result = await res.json()
 
       if (result?.psbtHex) {
-        const psbtHexSigned = await provider.signPsbt(result.psbtHex)
-
-        // const shouldNotBroadcast =
-        //   butterfly.inputs.filter((i) => accounts.find((a) => a !== i?.wallet))
-        //     .length > 0
-
-        const inputsSigned = butterfly.inputs.filter(
-          (i) => i.wallet === account
-        )
+        track("psbt-created", { wallet: account })
+        const psbtHexSigned = await signPsbt(result.psbtHex)
 
         if (psbtHexSigned) {
+          track("psbt-signed", { wallet: account })
+          const newInputsSigned = butterfly.inputs.filter(
+            (i) => i.wallet === account
+          )
           setPsbtSigned({
             psbtHexSigned,
-            inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+            inputsSigned: [...psbtSigned.inputsSigned, ...newInputsSigned],
           })
         }
-
-        // if (shouldNotBroadcast) {
-        //   return
-        // }
-
-        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        // if (txidRes) {
-        //   track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
-        //   setConfigs((prev) => ({
-        //     ...prev,
-        //     txid: txidRes,
-        //     isOpenModalTxId: true,
-        //     isConfirmedModalTxId: true,
-        //   }))
-        //   setConfigs((prev) => ({
-        //     ...prev,
-        //     txid: txidRes,
-        //     isOpenModalTxId: true,
-        //     isConfirmedModalTxId: true,
-        //   }))
-        // } else {
-        //   track("error-psbt-sign", { wallet: account })
-        // }
       }
     } catch (error) {
       console.log(error)

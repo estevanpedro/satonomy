@@ -113,7 +113,11 @@ export const utxoServices = {
       for (let index = 0; index < userPSBT.data.inputs.length; index++) {
         const input = userPSBT.data.inputs[index]
 
-        if (input.finalScriptSig || input.finalScriptWitness) {
+        if (
+          input.finalScriptSig ||
+          input.finalScriptWitness ||
+          input.tapKeySig
+        ) {
           signedIndexes = [...signedIndexes, index]
         } else if (input.partialSig && input.partialSig.length > 0) {
           signedIndexes = [...signedIndexes, index]
@@ -129,16 +133,27 @@ export const utxoServices = {
         }
       }
 
-      const tx = userPSBT.extractTransaction()
-
-      const txHex = tx.toHex()
-      const btcTx = Transaction.fromHex(txHex)
-
-      const btcTxHex = btcTx.toHex()
-
-      return {
-        signedIndexes,
-        btcTxHex,
+      try {
+        const tx = userPSBT.extractTransaction()
+        const txHex = tx.toHex()
+        const btcTx = Transaction.fromHex(txHex)
+        const btcTxHex = btcTx.toHex()
+        return {
+          signedIndexes,
+          btcTxHex,
+          psbtHexSigned,
+        }
+      } catch (error) {
+        userPSBT.finalizeAllInputs()
+        const tx = userPSBT.extractTransaction()
+        const txHex = tx.toHex()
+        const btcTx = Transaction.fromHex(txHex)
+        const btcTxHex = btcTx.toHex()
+        return {
+          signedIndexes,
+          btcTxHex,
+          psbtHexSigned,
+        }
       }
     } catch (error) {
       console.error(error)

@@ -126,6 +126,7 @@ export const useUrlButterfly = () => {
         })
 
         const data: PsbtHexSignedRes = await res.json()
+
         const inputsSigned = decodedButterfly.inputs.filter((_, index) => {
           if (data?.signedIndexes?.includes(index)) return true
         })
