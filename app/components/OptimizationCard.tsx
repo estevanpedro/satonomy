@@ -264,7 +264,7 @@ export const OptimizationCard = ({
     })
   }
 
-  if (profitInSats < 0) return null
+  if (profitInSats < 200) return null
 
   return (
     <button

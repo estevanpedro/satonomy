@@ -5,6 +5,7 @@ import { loadingAtom } from "@/app/recoil/loading"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
+
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { Tooltip } from "react-tooltip"
@@ -90,7 +91,7 @@ export const WalletConfigsModal = () => {
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
 
   const [isOpen, setIsOpen] = useState(false)
-  const configs = useRecoilValue(configsAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode
 
   useEffect(() => {
@@ -144,6 +145,18 @@ export const WalletConfigsModal = () => {
   const onChange = (e: any, index: number) => {
     const wallet = e.target.value
 
+    if (
+      configs.isInputFullDeckOpen ||
+      configs.isInputDeckOpen ||
+      configs.isOutputDeckOpen
+    ) {
+      setConfigs((prev) => ({
+        ...prev,
+        isInputDeckOpen: false,
+        isInputFullDeckOpen: false,
+        isOutputDeckOpen: false,
+      }))
+    }
     // Update state
     setWalletConfigs((prev) => ({
       ...prev,
