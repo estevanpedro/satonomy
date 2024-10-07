@@ -98,7 +98,7 @@ export const usePlatformFee = () => {
 
       let userProfitValue = finalUserProfit + difference
 
-      if ((runeUtxoCount && userProfitValue > 0) || hasOrdinalPlatformFee) {
+      if ((runeUtxoCount && userProfitValue > 600) || hasOrdinalPlatformFee) {
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {
             // Update the existing platform fee in place

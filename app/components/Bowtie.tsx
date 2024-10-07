@@ -92,13 +92,42 @@ export const Bowtie = () => {
     const rune = runes?.[runeIndex!]
     const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-    const ordinal = butterfly.inputs.find((input) =>
-      allInscriptions?.find(
-        (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
-      )
+    const ordinal = !rune
+      ? butterfly.inputs.find((input) =>
+          allInscriptions?.find(
+            (o) => o.utxo?.txid === input?.txid && o.utxo.vout === input?.vout
+          )
+        )
+      : undefined
+
+    const inscription = allInscriptions.find(
+      (o) =>
+        o.utxo.txid === butterfly.inputs[0]?.txid &&
+        o.utxo.vout === butterfly.inputs[0]?.vout
     )
 
-    if (rune || ordinal) {
+    const inscriptionAlreadyInTheOutput = butterfly.outputs.find(
+      (o) => o?.inscription
+    )
+
+    if (ordinal && !inscriptionAlreadyInTheOutput && inscription) {
+      setButterfly((prev) => ({
+        ...prev,
+        outputs: [
+          ...prev.outputs,
+          {
+            value: 546,
+            type: "inscription",
+            inscription: inscription,
+            vout: prev.outputs.length,
+            address: walletForOutput,
+          },
+        ],
+      }))
+      return
+    }
+
+    if (rune) {
       setConfigs((prev) => ({
         ...prev,
         isOutputDeckOpen: !prev.isOutputDeckOpen,
@@ -143,15 +172,30 @@ export const Bowtie = () => {
       )
     ).length
 
+    const isRemovingOneInscription =
+      Boolean(
+        ordinals?.find((o) =>
+          o.inscription?.find(
+            (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+          )
+        )
+      ) || !isThisRune
+
+    const hasOutputInscription = butterfly.outputs.filter((o) => o?.inscription)
+
     setButterfly((prev) => ({
       ...prev,
       inputs: prev.inputs.filter((input) => input !== utxo),
-      outputs:
-        isThisRune && runesInputLength <= 1
-          ? prev.outputs.filter(
-              (o) => !(o.type === "runes" || o.type === "OP RETURN")
-            )
-          : prev.outputs,
+      outputs: (isThisRune && runesInputLength <= 1
+        ? prev.outputs.filter(
+            (o) => !(o.type === "runes" || o.type === "OP RETURN")
+          )
+        : prev.outputs
+      )?.filter((o) =>
+        isRemovingOneInscription && hasOutputInscription
+          ? !Boolean(o?.inscription)
+          : true
+      ),
     }))
   }
 
@@ -178,8 +222,6 @@ export const Bowtie = () => {
   }
 
   const selectNewUtxoInput = (utxo: MempoolUTXO) => {
-    const selectedFeeRate = getSelectedFeeRate(configs.feeType)
-
     setConfigs((prev) => ({
       ...prev,
       isInputDeckOpen: false,
@@ -196,7 +238,13 @@ export const Bowtie = () => {
       inputs: [...prev.inputs, utxo],
     }))
 
-    if (inputSum - outputSum > 0) {
+    const isRune = butterfly.outputs[butterfly.outputs.length - 1]?.rune
+    const isInscription =
+      butterfly.outputs[butterfly.outputs.length - 1]?.inscription
+
+    console.log("✌️isInscription --->", isInscription)
+    console.log("✌️isRune --->", isRune)
+    if (inputSum - outputSum > 0 && !isInscription && !isRune) {
       let outputsUpdated = [...butterfly.outputs]
 
       outputsUpdated[butterfly.outputs.length - 1] = {

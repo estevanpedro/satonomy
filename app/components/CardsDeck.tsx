@@ -82,9 +82,14 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
       let outputsUpdated = [...butterfly.outputs]
 
       const indexUtxoToUpdateSats = butterfly.outputs.findIndex(
-        (o) => o.type !== "OP RETURN" && o.type !== "runes"
+        (o) =>
+          o.type !== "OP RETURN" &&
+          o.type !== "runes" &&
+          o.type !== "inscription" &&
+          !o.inscription
       )
 
+      console.log("✌️indexUtxoToUpdateSats --->", indexUtxoToUpdateSats)
       if (indexUtxoToUpdateSats !== -1) {
         const value =
           outputsUpdated[indexUtxoToUpdateSats]?.value +

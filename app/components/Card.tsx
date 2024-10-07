@@ -254,7 +254,6 @@ export const CardOption = ({
     ordInscriptionsFound?.satributes.length ||
     satributesFound?.satributes?.length
   const hasSatributes = Boolean(satributesAmount)
-  console.log("✌️hasSatributes --->", hasSatributes)
 
   const isDisabled =
     inputs?.includes(utxo) ||
@@ -579,20 +578,6 @@ export const CardOutput = ({
       : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
-  // const colorType =
-  //   rune && !ordinalFound
-  //     ? CARD_TYPES_COLOR.RUNES
-  //     : ordinalFound && isInscription
-  //     ? CARD_TYPES_COLOR.INSCRIPTIONS
-  // : CARD_TYPES_COLOR.BTC
-
-  // const secondaryColorType =
-  //   rune && !ordinalFound
-  //     ? CARD_TYPES_COLOR_SECONDARY.RUNES
-  //     : ordinalFound && isInscription
-  //     ? CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
-  //     : CARD_TYPES_COLOR_SECONDARY.BTC
-
   const type = butterfly.outputs[index]?.type
 
   const hasSomeSigned = Boolean(
@@ -602,6 +587,8 @@ export const CardOutput = ({
       )
     )
   )
+
+  const isOrdinalsInscription = butterfly.outputs[index]?.type === "inscription"
 
   if (butterfly.outputs[index]?.type === "OP RETURN" && rune) {
     return (
@@ -793,13 +780,13 @@ export const CardOutput = ({
           />
         </div>
 
-        {!hasSomeSigned && (
+        {!hasSomeSigned && !isOrdinalsInscription && (
           <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
             CLONE 📋
           </button>
         )}
 
-        {!hasSomeSigned && (
+        {!hasSomeSigned && !isOrdinalsInscription && (
           <button
             className=" opacity-30 hover:opacity-100"
             onClick={() => {

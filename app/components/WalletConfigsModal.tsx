@@ -28,13 +28,15 @@ const WalletInput = ({
 
   const content = () => {
     if (isConnected) {
-      return "Connected"
+      return `Connected with ${
+        utxos?.filter((u) => u.wallet === wallet).length || 0
+      } UTXOs`
     }
     if (loading.walletLoadingList?.includes(wallet)) {
       return "Loading..."
     }
     if (hasError) {
-      return "Too many UTXOs in this wallet. >500 coming soon!"
+      return "Too many UTXOs or something else"
     }
     return `☑️ ${
       utxos?.filter((u) => u.wallet === wallet).length || 0
@@ -123,7 +125,6 @@ export const WalletConfigsModal = () => {
     else if (configs.proMode && accountsIncluded.length === 0) {
       setWalletConfigs((prev) => {
         const newWallets = Array.from(new Set([...prev.wallets, ...accounts]))
-        console.log("✌️newWallets --->", newWallets)
         if (newWallets.length !== prev.wallets.length) {
           return {
             ...prev,

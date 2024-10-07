@@ -154,21 +154,6 @@ export const useInputs = ({
         className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
         style={{ top: "calc(50% + 40px)" }}
       >
-        {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
-          <div
-            className="mb-[80px] bg-black rounded-full overflow-hidden pointer-events-none"
-            style={{ width: "36px", height: "36px" }}
-          >
-            <Image
-              src="/satonomy-logo.png"
-              alt="Satonomy"
-              width={36}
-              height={36}
-              className="object-cover scale-110 mt-[-4px] pointer-events-none" // Slightly scale the image up
-            />
-          </div>
-        )}
-
         {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
           <div
             className="mb-[80px]  rounded-full overflow-hidden pointer-events-none"
