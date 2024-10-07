@@ -1,21 +1,24 @@
 export const CARD_TYPES: Record<string, string> = {
   RUNES: "Runes",
   BTC: "Bitcoin",
-};
+  INSCRIPTIONS: "Inscriptions",
+}
 
 export const CARD_TYPES_COLOR: Record<string, string> = {
   BRC20: "#ff085f",
-  RUNES: "#FF8A00",
-  BTC: "#52525B",
-  INSCRIPTIONS: "#FF61F6",
-};
+  RUNES: "#FF61F6",
+  BTC: "#FF8A00",
+  INSCRIPTIONS: "#6839B6",
+  OP_RETURN: "#52525b",
+}
 
 export const CARD_TYPES_COLOR_SECONDARY: Record<string, string> = {
   BRC20: "#ff639a",
-  RUNES: "#FAF22E",
-  BTC: "#818189",
-  INSCRIPTIONS: "#FF95F9",
-};
+  RUNES: "#FF95F9",
+  BTC: "#FAF22E",
+  INSCRIPTIONS: "#3478F7",
+  OP_RETURN: "#D1D5DB",
+}
 
 export const Category = ({ color, type }: { color: string; type: string }) => {
   return (
@@ -46,5 +49,5 @@ export const Category = ({ color, type }: { color: string; type: string }) => {
         {type.split("/")[0]}
       </div>
     </>
-  );
-};
+  )
+}

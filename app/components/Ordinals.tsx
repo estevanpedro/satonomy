@@ -1,30 +1,33 @@
-import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import Image from "next/image";
+import { useEffect, useState } from "react"
+import { useRecoilValue } from "recoil"
+import Image from "next/image"
 
-import { MempoolUTXO } from "@/app/recoil/utxoAtom";
-import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
-import { formatNumber } from "@/app/utils/format";
+import { MempoolUTXO } from "@/app/recoil/utxoAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { formatNumber } from "@/app/utils/format"
 
-const ORDIN_URL = `https://ordin.s3.amazonaws.com/inscriptions`;
-
+const ORDIN_URL = `https://ordin.s3.amazonaws.com/inscriptions`
 export const OrdinalRendering = ({
   utxo,
   setIsBrc20,
   size,
 }: {
-  utxo: MempoolUTXO;
-  setIsBrc20: (string: string) => void;
-  size?: number;
+  utxo: MempoolUTXO
+  setIsBrc20: (string: string) => void
+  size?: number
 }) => {
-  const ordinals = useRecoilValue(ordinalsAtom);
-  const [hasImage, setHasImage] = useState<boolean | undefined>(true);
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const [hasImage, setHasImage] = useState<boolean | undefined>(true)
 
-  const ordinal = ordinals?.inscription.find(
+  // Flatten ordinals to access inscriptions
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
+
+  // Find the ordinal using the flattened inscriptions array
+  const ordinal = allInscriptions.find(
     (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
-  );
+  )
 
-  const contentType = ordinal?.contentType;
+  const contentType = ordinal?.contentType
 
   if (contentType?.includes("json")) {
     return (
@@ -32,7 +35,7 @@ export const OrdinalRendering = ({
         url={`${ORDIN_URL}/${ordinal?.inscriptionId}`}
         setIsBrc20={setIsBrc20}
       />
-    );
+    )
   }
 
   if (contentType?.includes("Bitcoin")) {
@@ -41,7 +44,7 @@ export const OrdinalRendering = ({
         <span>{ordinal?.utxo.satoshi} sats</span>
         <span>{ordinal?.contentType}</span>
       </div>
-    );
+    )
   }
 
   if (contentType?.includes("text")) {
@@ -50,7 +53,7 @@ export const OrdinalRendering = ({
         url={`${ORDIN_URL}/${ordinal?.inscriptionId}`}
         setIsBrc20={setIsBrc20}
       />
-    );
+    )
   }
 
   if (contentType?.includes("image/svg+xml")) {
@@ -59,8 +62,9 @@ export const OrdinalRendering = ({
         url={`${ORDIN_URL}/${ordinal?.inscriptionId}`}
         setIsBrc20={setIsBrc20}
       />
-    );
+    )
   }
+
   if (contentType?.includes("image")) {
     return (
       <>
@@ -72,6 +76,7 @@ export const OrdinalRendering = ({
             height={size || 140}
             alt="Ordinal Image"
             loading="lazy"
+            className="pointer-events-none"
           />
         )}
         {hasImage && (
@@ -83,56 +88,57 @@ export const OrdinalRendering = ({
             alt="Ordinal Image"
             loading="lazy"
             onError={() => {
-              setHasImage(false);
+              setHasImage(false)
             }}
+            className="pointer-events-none"
           />
         )}
       </>
-    );
+    )
   }
 
   return (
     <div>
       <span>{ordinal?.contentType}</span>
     </div>
-  );
-};
+  )
+}
 
 type TextContentProps = {
-  url: string;
-  setIsBrc20: (string: string) => void;
-};
+  url: string
+  setIsBrc20: (string: string) => void
+}
 
 const TextContent = ({ url, setIsBrc20 }: TextContentProps) => {
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>("")
 
   useEffect(() => {
     const fetchText = async () => {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url)
         if (response.ok) {
-          const textData = await response.text();
+          const textData = await response.text()
           if (textData.includes("brc-20")) {
-            setIsBrc20(textData);
+            setIsBrc20(textData)
           }
-          setText(textData);
+          setText(textData)
         } else {
-          console.error("Failed to fetch text content");
+          console.error("Failed to fetch text content")
         }
       } catch (error) {
-        console.error("Error fetching text content:", error);
+        console.error("Error fetching text content:", error)
       }
-    };
+    }
 
-    fetchText();
-  }, [url, setIsBrc20]);
+    fetchText()
+  }, [url, setIsBrc20])
 
-  const isBrc20 = text.includes("brc-20");
+  const isBrc20 = text.includes("brc-20")
 
   return (
     <>
       {isBrc20 && (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center pointer-events-none">
           <pre className="mt-[-40px] mb-[18px] opacity-50 px-2 text-[12px] max-w-[180px] text-center overflow-hidden whitespace-pre-wrap">
             {text.length > 120
               ? `${text.slice(0, 120)}...`
@@ -149,55 +155,55 @@ const TextContent = ({ url, setIsBrc20 }: TextContentProps) => {
       )}
 
       {!isBrc20 && (
-        <span className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden">
+        <span className="px-2 text-[12px] max-w-[180px] text-center overflow-hidden ">
           {text.length > 120
             ? `${text.slice(0, 120)}...`
             : text.replaceAll(`","`, `", "`)}
         </span>
       )}
     </>
-  );
-};
+  )
+}
 
 export const JsonContent: React.FC<TextContentProps> = ({
   url,
   setIsBrc20,
 }) => {
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>("")
 
   useEffect(() => {
     const fetchText = async () => {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url)
         if (response.ok) {
-          const contentType = response.headers.get("Content-Type");
+          const contentType = response.headers.get("Content-Type")
           if (contentType && contentType.includes("application/json")) {
-            const jsonData = await response.json();
+            const jsonData = await response.json()
 
             if (jsonData.op?.includes("brc-20")) {
-              setIsBrc20(JSON.stringify(jsonData, null, 2)); // Pretty-print JSON
+              setIsBrc20(JSON.stringify(jsonData, null, 2)) // Pretty-print JSON
             }
 
-            setText(JSON.stringify(jsonData, null, 2)); // Pretty-print JSON
+            setText(JSON.stringify(jsonData, null, 2)) // Pretty-print JSON
           } else {
-            const textData = await response.text();
+            const textData = await response.text()
             if (textData.includes("brc-20")) {
-              setIsBrc20(textData);
+              setIsBrc20(textData)
             }
-            setText(textData);
+            setText(textData)
           }
         } else {
-          console.error("Failed to fetch text content");
+          console.error("Failed to fetch text content")
         }
       } catch (error) {
-        console.error("Error fetching text content:", error);
+        console.error("Error fetching text content:", error)
       }
-    };
+    }
 
-    fetchText();
-  }, [url, setIsBrc20]);
+    fetchText()
+  }, [url, setIsBrc20])
 
-  const isBrc20 = text.includes("brc-20");
+  const isBrc20 = text.includes("brc-20")
   return (
     <>
       {isBrc20 && (
@@ -216,5 +222,5 @@ export const JsonContent: React.FC<TextContentProps> = ({
         </pre>
       )}
     </>
-  );
-};
+  )
+}

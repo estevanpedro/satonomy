@@ -1,10 +1,10 @@
-import "react-tooltip/dist/react-tooltip.css"
-
+import "react-toastify/dist/ReactToastify.css"
 import type { Metadata } from "next"
 import { Analytics } from "@vercel/analytics/react"
 import { Inter } from "next/font/google"
 
 import "./globals.css"
+import { ToastContainer } from "react-toastify"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -51,6 +51,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <main className="flex min-h-screen flex-col items-center justify-start">
           {children}
+          <ToastContainer />
         </main>
       </body>
     </html>

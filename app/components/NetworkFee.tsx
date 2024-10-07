@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import { Tooltip } from "react-tooltip"
@@ -9,9 +9,10 @@ import { runesAtom } from "@/app/recoil/runesAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { useParams } from "next/navigation"
 import { formatNumber } from "@/app/utils/format"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
 
 export const NetworkFee = () => {
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFees = useRecoilValue(recommendedFeesAtom)
 
   const getSelectedFeeRate = (feeType: string) => {
@@ -29,6 +30,7 @@ export const NetworkFee = () => {
         return recommendedFees?.hourFee
     }
   }
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
   const butterfly = useRecoilValue(butterflyAtom)
   const { accounts } = useAccounts()
   const account = accounts?.[0]
@@ -141,9 +143,14 @@ export const NetworkFee = () => {
         }
       }
 
+      const feePayer =
+        butterfly.inputs.find((input) => input.wallet && input.value > 10000) ||
+        butterfly.inputs.find((input) => input.wallet && input.value > 546) ||
+        butterfly.inputs.find((input) => input.wallet)
+
       const body = JSON.stringify({
         newButterfly: newButterfly,
-        address: account,
+        address: feePayer?.wallet || account,
         feeRate: selectedFeeRate,
       })
 
@@ -169,8 +176,27 @@ export const NetworkFee = () => {
     }
   }
 
+  const hasSomeSigned = Boolean(
+    psbtSigned.inputsSigned.find((i) =>
+      butterfly.inputs.find(
+        (input) => input.txid === i.txid && input.vout === i.vout
+      )
+    )
+  )
+  const feeRateLessThan2 =
+    Boolean(configs.feeRateEstimated < 2) && configs.feeCost
+
   return (
-    <div className="pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ">
+    <div
+      data-tooltip-id={"fee-tool"}
+      data-tooltip-content={
+        feeRateLessThan2 ? "Fee must be higher than 2 sats/vb 🚨" : ""
+      }
+      data-tooltip-place="left"
+      className={`pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ${
+        feeRateLessThan2 ? "border-red-500 " : ""
+      }`}
+    >
       <Image
         className="w-14 h-14"
         src="/bitcoin.png"
@@ -181,12 +207,13 @@ export const NetworkFee = () => {
       <div>Network Fee</div>
 
       <div
-        className="text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center"
+        className={`text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center`}
         data-tooltip-id={"fee-tool"}
         data-tooltip-content={"Type the total fee cost in sats"}
         data-tooltip-place="left"
       >
         <input
+          disabled={hasSomeSigned}
           type="number"
           value={configs.feeCost || ""}
           onChange={(e) => {
@@ -202,7 +229,11 @@ export const NetworkFee = () => {
       </div>
       {Boolean(configs.feeRateEstimated || configs.feeRate) &&
         Boolean(typeof configs.feeRateEstimated === "number") && (
-          <div className="mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]">
+          <div
+            className={`mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]  ${
+              feeRateLessThan2 ? "text-red-500 " : ""
+            }`}
+          >
             {formatNumber(
               configs.feeRateEstimated || configs.feeRate,
               0,
@@ -220,10 +251,13 @@ export const NetworkFee = () => {
             configs.feeType === "slow" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("slow")
+            if (!hasSomeSigned) {
+              onFeeRateChange("slow")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="slow"
@@ -231,7 +265,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="slow" className="cursor-pointer ">
+          <label
+            htmlFor="slow"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Slow
           </label>
         </div>
@@ -240,10 +277,13 @@ export const NetworkFee = () => {
             configs.feeType === "mid" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("mid")
+            if (!hasSomeSigned) {
+              onFeeRateChange("mid")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="mid"
@@ -251,7 +291,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="mid" className="cursor-pointer">
+          <label
+            htmlFor="mid"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Mid
           </label>
         </div>
@@ -261,10 +304,13 @@ export const NetworkFee = () => {
             configs.feeType === "fast" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
-            onFeeRateChange("fast")
+            if (!hasSomeSigned) {
+              onFeeRateChange("fast")
+            }
           }}
         >
           <input
+            disabled={hasSomeSigned}
             type="radio"
             name="fee"
             id="fast"
@@ -272,7 +318,10 @@ export const NetworkFee = () => {
             onChange={() => {}}
             className="hidden"
           />
-          <label htmlFor="fast" className="cursor-pointer">
+          <label
+            htmlFor="fast"
+            className={hasSomeSigned ? `` : "cursor-pointer"}
+          >
             Fast
           </label>
         </div>

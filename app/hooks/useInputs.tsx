@@ -1,49 +1,84 @@
-import { generateBowtiePath } from "@/app/components/Card";
-import { Butterfly } from "@/app/recoil/butterflyAtom";
-import { runesAtom } from "@/app/recoil/runesAtom";
-import { use } from "react";
-import { useRecoilValue } from "recoil";
+import { generateBowtiePath } from "@/app/components/Card"
+import { Butterfly } from "@/app/recoil/butterflyAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { runesAtom } from "@/app/recoil/runesAtom"
+import Image from "next/image"
+import { use } from "react"
+import { useRecoilValue } from "recoil"
 
 export const useInputs = ({
   butterfly,
   totalHeight,
   inputsCount,
   height,
+  isConfirmDisabled,
+  isNotReady,
 }: {
-  butterfly: Butterfly;
-  totalHeight: number;
-  inputsCount: number;
-  height: number;
+  butterfly: Butterfly
+  totalHeight: number
+  inputsCount: number
+  height: number
+  isConfirmDisabled: boolean
+  isNotReady: boolean
 }) => {
-  const runes = useRecoilValue(runesAtom);
-  const paths = [];
+  const runes = useRecoilValue(runesAtom)
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
+  const configs = useRecoilValue(configsAtom)
 
-  const inputX = 10;
-  const outputX = 371.5;
-  const outputY = totalHeight / 2;
+  const ordinal = butterfly?.inputs?.find((input) =>
+    allOrdinals?.find(
+      (o) => o?.utxo?.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
+  const paths = []
+
+  const inputX = 10
+  const outputX = 371.5
+  const outputY = totalHeight / 2
+
+  const butterflyIsOk = !isNotReady && !isConfirmDisabled
+
+  const feeRateOk = configs.feeRateEstimated > 2
 
   for (let i = 0; i < inputsCount; i++) {
-    let inputY = height / 2 + height * i;
+    let inputY = height / 2 + height * i
 
-    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY);
+    const pathData = generateBowtiePath(inputX, inputY, outputX, outputY)
 
-    const strangeness = butterfly.inputs[i].value / 1000;
+    const strangeness = butterfly.inputs[i].value / 1000
     const strangenessAdjusted =
-      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness;
+      strangeness > 4 ? 4 : strangeness < 2 ? 2 : strangeness
 
-    const isEven = inputsCount % 2 !== 0;
-    const mode = Math.floor(inputsCount / 2);
+    const isEven = inputsCount % 2 !== 0
+    const mode = Math.floor(inputsCount / 2)
 
-    const txid = butterfly.inputs[i].txid;
-    const utxo = runes?.find((r) =>
-      r.utxos.find((u) => u.location === `${txid}:${butterfly.inputs[i].vout}`)
-    );
-    const isRune = utxo ? true : false;
+    const runesUTXO = runes?.find((r) =>
+      r.utxos?.find(
+        (u) =>
+          u.location ===
+          `${butterfly.inputs[i].txid}:${butterfly.inputs[i].vout}`
+      )
+    )
 
-    const stop1Color = isRune ? "#FF8A00" : "#ff7e5f";
-    const stop2Color = isRune ? "#FAF22E" : "#feb47b";
+    const isRune = runesUTXO ? true : false
+    const isInscription =
+      butterfly.inputs[i]?.txid === ordinal?.txid &&
+      butterfly.inputs[i]?.vout === ordinal?.vout
 
-    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`;
+    const stop1Color = isRune
+      ? "#FF61F6"
+      : isInscription
+      ? "#6839B6"
+      : "#FF8A00"
+    const stop2Color = isRune
+      ? "#FF95F9"
+      : isInscription
+      ? "#3478F7"
+      : "#FAF22E"
+
+    const stroke = isEven && mode === i ? stop2Color : `url(#gradient-${i})`
 
     paths.push(
       <svg
@@ -79,7 +114,7 @@ export const useInputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
     paths.push(
       <svg
         key={i}
@@ -113,8 +148,80 @@ export const useInputs = ({
           fill="none"
         />
       </svg>
-    );
+    )
+    paths.push(
+      <div
+        className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
+        style={{ top: "calc(50% + 40px)" }}
+      >
+        {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
+          <div
+            className="mb-[80px]  rounded-full overflow-hidden pointer-events-none"
+            style={{ width: "36px", height: "36px" }}
+          >
+            <Image
+              src="/satonomy-green-2.png"
+              alt="Satonomy"
+              width={36}
+              height={36}
+              className="object-cover pointer-events-none" // Slightly scale the image up
+            />
+          </div>
+        )}
+        {((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
+          (!feeRateOk && Boolean(butterfly.outputs.length))) && (
+          <div
+            className="mb-[80px] rounded-full overflow-hidden pointer-events-none"
+            style={{ width: "36px", height: "36px" }}
+          >
+            <Image
+              src="/satonomy-red-2.png"
+              alt="Satonomy"
+              width={36}
+              height={36}
+              className="object-cover pointer-events-none" // Slightly scale the image up
+            />
+          </div>
+        )}
+      </div>
+    )
+
+    paths.push(
+      <div
+        className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
+        style={{ top: "calc(50% + 40px)" }}
+      >
+        {!isNotReady && isConfirmDisabled && !butterflyIsOk && (
+          <Image
+            src="/satonomy-logo.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 duration-10000 pointer-events-none"
+          />
+        )}
+
+        {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
+          <Image
+            src="/satonomy-green.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 duration-10000 pointer-events-none"
+          />
+        )}
+        {isConfirmDisabled && !butterflyIsOk && isNotReady && (
+          <Image
+            src="/satonomy-red.png"
+            alt="Satonomy"
+            width={36}
+            height={36}
+            className="mb-[80px] animate-ping-3 opacity-75 duration-10000 pointer-events-none"
+          />
+        )}
+      </div>
+    )
   }
 
-  return paths;
-};
+  return paths
+}

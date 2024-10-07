@@ -2,28 +2,31 @@ import { useEffect, useRef } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 
 import { runesAtom } from "@/app/recoil/runesAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { utxoAtom } from "@/app/recoil/utxoAtom" // BTC UTXOs
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { useParams } from "next/navigation" // Import the useParams hook
 import { track } from "@vercel/analytics"
-import { useAccounts } from "@particle-network/btc-connectkit"
 
 export const usePlatformFee = () => {
-  const { accounts } = useAccounts()
-  const account = accounts?.[0]
   const { referrer } = useParams() // Get the referrer from the URL
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom) // Rune UTXOs
   const btcUtxos = useRecoilValue(utxoAtom) // BTC UTXOs
-  const config = useRecoilValue(configAtom) // Config containing feeCost
+  const config = useRecoilValue(configsAtom) // Config containing feeCost
   const prevFeeCost = useRef<number | null>(config.feeCost)
 
   useEffect(() => {
     const updatePlatformFee = () => {
       if (!butterfly || !butterfly.inputs || butterfly.inputs.length === 0)
         return
-      if (!runes || !btcUtxos || !config || !config.feeCost) return // Validate required data
+
+      const ordinal = butterfly.outputs.find(
+        (output) => output.type === "inscription"
+      )
+
+      if ((!runes && !ordinal) || !btcUtxos || !config || !config.feeCost)
+        return // Validate required data
 
       const feeCost = config.feeCost
 
@@ -33,7 +36,7 @@ export const usePlatformFee = () => {
 
       butterfly.inputs.forEach((input) => {
         // For each input in the butterfly, find the corresponding Rune UTXO and its associated BTC value
-        runes.forEach((rune) => {
+        runes?.forEach((rune) => {
           rune.utxos.forEach((utxo) => {
             if (utxo.location === `${input.txid}:${input.vout}`) {
               runeUtxoCount++ // Increment Rune UTXO count
@@ -61,8 +64,27 @@ export const usePlatformFee = () => {
         0
       )
 
-      const firstProfit =
-        totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos
+      const ordinalInputBtcValue = butterfly.inputs.reduce(
+        (acc, cur) =>
+          acc +
+          (ordinal?.inscription?.utxo.txid === cur.txid &&
+          ordinal?.inscription?.utxo.vout === cur.vout
+            ? cur.value
+            : 0),
+        0
+      )
+      const ordinalOutputBtcValue = butterfly.outputs.reduce(
+        (acc, cur) => acc + (cur.type === "inscription" ? cur.value : 0),
+        0
+      )
+      const firstOrdinalProfit =
+        (ordinalInputBtcValue - ordinalOutputBtcValue - feeCost) * 0.8
+
+      const hasOrdinalPlatformFee = firstOrdinalProfit > 5000
+
+      const firstProfit = hasOrdinalPlatformFee
+        ? ordinalInputBtcValue - ordinalOutputBtcValue - feeCost
+        : totalRuneBtcValue - feeCost - outputsValuesOfRunesUtxos
 
       const charge = firstProfit
       const usersProfit = charge * 0.8
@@ -76,7 +98,7 @@ export const usePlatformFee = () => {
 
       let userProfitValue = finalUserProfit + difference
 
-      if (runeUtxoCount >= 5 && userProfitValue > 0) {
+      if ((runeUtxoCount && userProfitValue > 200) || hasOrdinalPlatformFee) {
         const updatedOutputs = butterfly.outputs.map((output) => {
           if (output.type === "platformFee") {
             // Update the existing platform fee in place
@@ -142,16 +164,23 @@ export const usePlatformFee = () => {
                 (output) =>
                   output.type !== "OP RETURN" &&
                   output.type !== "runes" &&
-                  output.type !== "platformFee"
+                  output.type !== "platformFee" &&
+                  output.type !== "inscription"
               )
               ?.sort((a, b) => a.value - b.value)
 
-            const usersOutputLength = butterflyOutput.filter(
-              (o) => o.address === account
-            )?.length
+            // const usersOutputLength = butterflyOutput.filter(
+            //   (o) => o.address === account
+            // )?.length
 
             const usersOutput = butterflyOutput.find(
-              (o) => o.address === account
+              (o) =>
+                !o.rune &&
+                o.type !== "platformFee" &&
+                o.type !== "referrer" &&
+                o.type !== "OP RETURN" &&
+                o.type !== "runes" &&
+                o.type !== "inscription"
             )
 
             if (usersOutput) {
@@ -175,6 +204,7 @@ export const usePlatformFee = () => {
         )
       } else {
         // If the platform fee should not exist (profit <= 0 or <= 5 Rune UTXOs)
+
         const updatedOutputs = butterfly.outputs.filter(
           (output) =>
             output.type !== "platformFee" && output.type !== "referrer"
@@ -200,12 +230,19 @@ export const usePlatformFee = () => {
                 (output) =>
                   output.type !== "OP RETURN" &&
                   output.type !== "runes" &&
-                  output.type !== "platformFee"
+                  output.type !== "platformFee" &&
+                  output.type !== "inscription"
               )
               ?.sort((a, b) => b.value - a.value)
 
             const usersOutput = butterflyOutput.find(
-              (o) => o.address === account
+              (o) =>
+                !o.rune &&
+                o.type !== "platformFee" &&
+                o.type !== "referrer" &&
+                o.type !== "OP RETURN" &&
+                o.type !== "runes" &&
+                o.type !== "inscription"
             )
 
             if (usersOutput) {

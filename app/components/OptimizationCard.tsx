@@ -1,7 +1,8 @@
 "use client"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
+import { DEFAULT_PSBT_SIGNED, psbtSignedAtom } from "@/app/recoil/psbtAtom"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { RunesUtxo } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
@@ -25,14 +26,14 @@ export const OptimizationCard = ({
   onOptimizeSelection?: () => void
 }) => {
   const [showSats, setShowSats] = useState<number | null>(null) // Track which card is hovered
-
+  const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
   const setButterfly = useSetRecoilState(butterflyAtom)
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const recommendedFeeRate = useRecoilValue(recommendedFeesAtom)
   const utxos = useRecoilValue(utxoAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
-  const { accounts } = useAccounts()
-  const address = accounts[0]
+  // const { accounts } = useAccounts()
+  // const address = accounts[0]
   const length = rune?.utxos.length
   const [feeCost, setFeeCost] = useState<number>(500)
   const { referrer } = useParams()
@@ -65,6 +66,8 @@ export const OptimizationCard = ({
       utxos?.filter((utxo) =>
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
+
+    const address = inputUtxos[0]?.wallet
 
     const charge = allBtcInputsValue - 546 - feeCost
 
@@ -160,15 +163,20 @@ export const OptimizationCard = ({
     }
 
     if (!feeCost || feeCost === 500) fetchFees()
-  }, [feeCost, address, rune, utxos, selectedFeeRate])
+  }, [feeCost, rune, utxos, selectedFeeRate])
 
   const onSelect = (rune: RunesUtxo) => {
     onOptimizeSelection?.()
     onClose()
+    setPsbtSigned(DEFAULT_PSBT_SIGNED)
 
-    const utxosSorted = (
-      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value)
+    setConfigs((prev) => ({
+      ...prev,
+      feeCost: feeCost,
+      isInputDeckOpen: false,
+      isInputFullDeckOpen: false,
+      isOutputDeckOpen: false,
+    }))
 
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>
@@ -184,13 +192,7 @@ export const OptimizationCard = ({
         rune.utxos.find((r) => r.location === `${utxo.txid}:${utxo.vout}`)
       ) || []
 
-    setConfigs((prev) => ({
-      ...prev,
-      feeCost: feeCost,
-      isInputDeckOpen: false,
-      isInputFullDeckOpen: false,
-      isOutputDeckOpen: false,
-    }))
+    const address = `${inputUtxos[0]?.wallet}`
 
     const charge = allBtcInputsValue - 546 - feeCost
     const usersProfit = charge * 0.8
@@ -262,7 +264,7 @@ export const OptimizationCard = ({
     })
   }
 
-  if (profitInSats < 0) return null
+  if (profitInSats < 200) return null
 
   return (
     <button

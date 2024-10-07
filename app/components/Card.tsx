@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import {
   CARD_TYPES,
   CARD_TYPES_COLOR,
@@ -8,16 +9,19 @@ import { MempoolUTXO } from "@/app/recoil/utxoAtom"
 import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useAccounts } from "@particle-network/btc-connectkit"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { OrdinalRendering } from "@/app/components/Ordinals"
 import { runesAtom, RunesUtxo } from "@/app/recoil/runesAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
+import { OrdinalData, Ordinals, ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 import { Tooltip } from "react-tooltip"
 import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
+import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
+import { loadingAtom } from "@/app/recoil/loading"
+import { favoritesAtom } from "@/app/recoil/favoritesAtom"
 
 export function generateBowtiePath(
   inputX: number,
@@ -52,21 +56,6 @@ export const EmptyCard = ({
       <div
         className={`${className} w-52 h-[320px] rounded-xl flex flex-col gap-3 items-center justify-center  cursor-pointer border bg-zinc-950 relative mb-8`}
       >
-        {/* {!text && className && (
-          <div className="absolute top-0 -right-[136px] text-[16px] opacity-50 hover:opacity-100 focus:opacity-100 ">
-            <select className="outline-none w-[110px]" defaultValue="Transfer">
-              <option>Transfer</option>
-
-              <option disabled>Bridge</option>
-              <option disabled>Recursive</option>
-              <option disabled>OP Return</option>
-              <option disabled>Add redeemScript</option>
-              <option disabled>Swap with Saturn</option>
-              <option disabled>Stake with Arch</option>
-            </select>
-          </div>
-        )} */}
-
         <Tooltip
           id={`emptyCard-${className}-${text}`}
           className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
@@ -153,78 +142,54 @@ export const CardMobile = ({
   )
 }
 
-export const Card = ({
-  onRemove,
-  utxo,
-}: {
-  onRemove?: (output: MempoolUTXO) => void
-  utxo: MempoolUTXO
-}) => {
-  const btcUsdPrice = useRecoilValue(btcPriceAtom)
-  const { accounts } = useAccounts()
-  const account = accounts?.[0]
-  return (
-    <div className="min-h-[320px] relative w-52 min-w-52  rounded-xl bg-zinc-900 border-[3px] border-zinc-600 flex flex-col gap-3 items-center justify-center">
-      <div className="absolute top-4 left-[-120px] opacity-30">
-        <div>INPUT #{utxo?.vout}</div>
-      </div>
-      <div className="opacity-30 absolute top-14 left-[-120px]">
-        {account ? formatAddress(account) : ""}
-      </div>
-      <button
-        className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
-        onClick={() => {
-          onRemove?.(utxo)
-        }}
-      >
-        REMOVE 🗑️
-      </button>
-      <div className="absolute top-[-3px] right-[-3px]">
-        <Category color={CARD_TYPES_COLOR.BTC} type={CARD_TYPES.BTC} />
-      </div>
-      <Image
-        className="w-14 h-14 pointer-events-none"
-        src="/bitcoin.png"
-        alt="Bitcoin"
-        width={54}
-        height={54}
-        loading="lazy"
-      />
-      Bitcoin
-      <div className="w-32 h-12  text-center text-white text-xl font-medium">
-        {formatNumber(utxo?.value, 0, 0, false, false)} sats
-      </div>
-      <div>${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}</div>
-    </div>
-  )
-}
-
 export const CardOption = ({
   onClick,
   utxo,
   onRemove,
   isSelected,
+  onSignClick,
 }: {
   onClick?: (utxo: MempoolUTXO) => void
   utxo: MempoolUTXO
   onRemove?: (utxo: MempoolUTXO) => void
   isSelected?: boolean
+  onSignClick?: (e: any) => void
 }) => {
-  const { accounts } = useAccounts()
-  const account = accounts[0]
-
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
   const ordinals = useRecoilValue(ordinalsAtom)
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const { inputs } = useRecoilValue(butterflyAtom)
   const runesStates = useRecoilValue(runesAtom)
   const ord = useRecoilValue(ordByWalletAtom)
-  const { isInputFullDeckOpen } = useRecoilValue(configAtom)
-  const ordUtxoAsset = ord?.json?.inscriptions.find(
-    (o) => o?.id?.replace("i0", "") === utxo?.txid
+  const { isInputFullDeckOpen } = useRecoilValue(configsAtom)
+  const loading = useRecoilValue(loadingAtom)
+
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
+
+  const ordInscriptionsData = ord?.flatMap((o) => o.json.inscriptions) || []
+  // console.log("✌️ordInscriptionsData --->", ordInscriptionsData)
+  // console.log("✌️utxo --->", utxo)
+
+  //only works if its ordinals:
+  const ordInscriptionsFound = ordInscriptionsData?.find(
+    (i) =>
+      i.id.split("i")[0] === utxo.txid &&
+      Number(i.id.split("i")[1]) === utxo.vout
+  )
+
+  const ordinalUtxoFound = allInscriptions?.find(
+    (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+  )?.utxo
+
+  // console.log("✌️ordinalUtxoFound --->", ordinalUtxoFound)
+  const satributesFound = ordInscriptionsData?.find((satributes) =>
+    ordinalUtxoFound?.inscriptions
+      .map((inscription) => inscription.inscriptionId)
+      .includes(satributes.id)
   )
 
   const rune = runesStates?.find((rune) =>
-    rune.utxos.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
+    rune.utxos?.find((u) => u.location === `${utxo.txid}:${utxo.vout}`)
   )
 
   const utxoFound = rune
@@ -232,16 +197,20 @@ export const CardOption = ({
     : undefined
 
   let ordinal = !utxoFound
-    ? ordinals?.inscription.find(
+    ? allInscriptions?.find(
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
     : undefined
 
-  const hasSatributes = Boolean(ordUtxoAsset?.satributes.length)
-
   const runeSelected = runesStates?.find((rune) =>
     inputs.find((i) =>
-      rune.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
+      rune.utxos?.find((u) => u.location === `${i.txid}:${i.vout}`)
+    )
+  )
+
+  const ordinalSelected = allInscriptions.find((i) =>
+    inputs.find(
+      (input) => input.txid === i.utxo.txid && input.vout === i.utxo.vout
     )
   )
 
@@ -249,11 +218,51 @@ export const CardOption = ({
     (runeUtxo) => runeUtxo.location === `${utxo.txid}:${utxo.vout}`
   )
 
+  const [isSigned, setIsSigned] = useState<MempoolUTXO | undefined>(undefined)
+  const setLoading = useSetRecoilState(loadingAtom)
+  const prevPsbtHexSignedRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (
+      !psbtSigned.psbtHexSigned &&
+      !(
+        prevPsbtHexSignedRef.current &&
+        prevPsbtHexSignedRef.current !== psbtSigned.psbtHexSigned
+      )
+    )
+      return
+    const isSigned = psbtSigned.inputsSigned.find(
+      (i) => i.txid === utxo.txid && i.vout === utxo.vout
+    )
+    setIsSigned(isSigned)
+    setLoading((prev) => ({
+      ...prev,
+      signIsLoading: false,
+    }))
+    prevPsbtHexSignedRef.current = psbtSigned.psbtHexSigned
+  }, [psbtSigned.inputsSigned])
+
+  const hasSomeSigned = psbtSigned.inputsSigned.find((i) =>
+    inputs.find((input) => input.txid === i.txid && input.vout === i.vout)
+  )
+
+  const isDifferentRuneId = Boolean(
+    runeSelected?.runeid !== rune?.runeid && rune && runeSelected?.runeid
+  )
+
+  const satributesAmount =
+    ordInscriptionsFound?.satributes.length ||
+    satributesFound?.satributes?.length
+  const hasSatributes = Boolean(satributesAmount)
+
   const isDisabled =
     inputs?.includes(utxo) ||
-    Boolean(ordinal) ||
     hasSatributes ||
-    (Boolean(runeSelected) && !isSameRune && Boolean(rune))
+    (Boolean(runeSelected) && !isSameRune && Boolean(rune)) ||
+    isDifferentRuneId ||
+    ((Boolean(ordinalSelected) || Boolean(runeSelected)) &&
+      (Boolean(ordinal) || Boolean(rune)) &&
+      Boolean(!isSameRune))
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
@@ -279,6 +288,21 @@ export const CardOption = ({
       : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
+  const [favorites, setFavorites] = useRecoilState(favoritesAtom)
+  const isFavorite = favorites.utxos.includes(`${utxo.txid}:${utxo.vout}`)
+
+  const onFavorite = (utxo: MempoolUTXO, isFavorite: boolean) => {
+    if (isFavorite) {
+      setFavorites((prev) => ({
+        utxos: [...prev.utxos, `${utxo.txid}:${utxo.vout}`],
+      }))
+    } else {
+      setFavorites((prev) => ({
+        utxos: prev.utxos.filter((u) => u !== `${utxo.txid}:${utxo.vout}`),
+      }))
+    }
+  }
+
   return (
     <div
       style={{
@@ -293,31 +317,53 @@ export const CardOption = ({
       </div>
 
       {isSelected ? (
-        <>
-          <div className="absolute top-4 left-[-120px] opacity-30">
+        <div className="absolute flex flex-col gap-4 top-0 left-[-120px] items-end">
+          <div className="opacity-30">
             <div>INPUT #{utxo?.vout}</div>
           </div>
-          <div className="opacity-30 absolute top-14 left-[-120px]">
-            {account ? formatAddress(account) : ""}
+          <div className="opacity-30">
+            {utxo?.wallet ? formatAddress(utxo.wallet) : ""}
           </div>
-          <button
-            className="absolute top-24 left-[-120px] opacity-30 hover:opacity-100"
-            onClick={() => {
-              onRemove?.(utxo)
-            }}
-          >
-            REMOVE 🗑️
-          </button>
-        </>
-      ) : null}
-
-      <div className="absolute top-1 left-2 text-[8px] capitalize">
-        <p>
-          {ordUtxoAsset?.satributes.map((t, i) =>
-            i + 1 >= ordUtxoAsset?.satributes.length ? `${t}` : `${t}, `
+          {loading.signIsLoading ||
+          Boolean(isSigned) ||
+          Boolean(hasSomeSigned) ? null : (
+            <button
+              className="opacity-30 hover:opacity-100"
+              onClick={() => {
+                onRemove?.(utxo)
+              }}
+              disabled={Boolean(isSigned)}
+            >
+              REMOVE 🗑️
+            </button>
           )}
-        </p>
-      </div>
+
+          <button
+            data-tooltip-id={"confirm"}
+            data-tooltip-content={
+              Boolean(isSigned)
+                ? "Input is already signed"
+                : `Sign with ${formatAddress(utxo?.wallet || "")} wallet`
+            }
+            data-tooltip-place="bottom"
+            className={`hover:opacity-100 ${
+              Boolean(isSigned) ? "" : "opacity-30"
+            }`}
+            onClick={onSignClick}
+            disabled={Boolean(isSigned) || loading.signIsLoading}
+          >
+            {!loading.signIsLoading ? (
+              Boolean(isSigned) ? (
+                "Signed ✅"
+              ) : (
+                "Sign ✍️"
+              )
+            ) : (
+              <div className="loader" />
+            )}
+          </button>
+        </div>
+      ) : null}
 
       {rune && (
         <>
@@ -371,12 +417,12 @@ export const CardOption = ({
           <div className="w-32 h-12 text-center text-white text-xl font-medium pointer-events-none">
             {formatNumber(utxo?.value, 0, 0, false, false)} sats
           </div>
-          <div className="pointer-events-none">
+          <div className="opacity-50 text-[12px]">
             ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
           </div>
         </>
       )}
-      {ordinal && (
+      {ordinal && !rune && (
         <>
           <OrdinalRendering
             utxo={utxo}
@@ -385,6 +431,15 @@ export const CardOption = ({
           {!Boolean(isBrc20) && (
             <span className="text-[10px]">{ordinal.contentType}</span>
           )}
+
+          <div className="flex flex-col justify-center items-center mb-[24px]">
+            <span className="text-[16px] text-bold">
+              {formatNumber(utxo.value)} sats
+            </span>
+            <div className="opacity-50 text-[12px]">
+              ${formatNumber((utxo?.value / 100000000) * btcUsdPrice)}
+            </div>
+          </div>
         </>
       )}
 
@@ -399,16 +454,43 @@ export const CardOption = ({
               : ""
           }
           data-tooltip-place="top"
-          disabled={isDisabled}
+          disabled={isDisabled || Boolean(hasSomeSigned)}
           onClick={() => onClick?.(utxo)}
           className={`${
-            isDisabled ? "opacity-50" : ""
-          } text-bold absolute bottom-4 text-[16px] rounded px-8 py-1 from-[#ffa750] to-[#e8c03f] bg-gradient-to-r hover:from-[#ffa750] hover:to-[#e8c03f] text-white`}
+            isDisabled || Boolean(hasSomeSigned) ? "opacity-0" : ""
+          }  font-bold  absolute bottom-4 text-[16px] rounded px-8 py-1 from-[${colorType}] to-[${secondaryColorType}] bg-gradient-to-r text-white  hover:scale-105`}
+          style={{
+            background: `linear-gradient(45deg, ${colorType} 0%, ${colorType} 50%, ${secondaryColorType} 95%, ${secondaryColorType} 115%)`,
+          }}
         >
           SELECT
         </button>
       )}
 
+      <div
+        className={`absolute   left-3 top-2 z-[1] ${
+          isFavorite ? "opacity-90" : "opacity-20"
+        } ${
+          !isSelected && isInputFullDeckOpen
+            ? "w-[180px] h-[250px]"
+            : "w-[30px] h-[30px]"
+        }`}
+        onClick={() =>
+          !isSelected && isInputFullDeckOpen
+            ? onFavorite(utxo, !isFavorite)
+            : null
+        }
+      >
+        ⭐️
+      </div>
+
+      {hasSatributes ? (
+        <div className="absolute bottom-2 left-4">
+          <p className="text-[12px] opacity-50">
+            {satributesAmount} satributes
+          </p>
+        </div>
+      ) : null}
       <div
         className="absolute inset-0 rounded-xl z-[-1]"
         style={{
@@ -438,6 +520,7 @@ export const CardOutput = ({
 }) => {
   const btcUsdPrice = useRecoilValue(btcPriceAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
+  const psbtSigned = useRecoilValue(psbtSignedAtom)
 
   const [addressInputFocused, setAddressInputFocused] = useState(false)
   const onInputFocus = () => {
@@ -455,22 +538,63 @@ export const CardOutput = ({
   }
 
   const rune = butterfly.outputs[index]?.rune
+  const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
+  const ordinals = useRecoilValue(ordinalsAtom)
+  const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
 
-  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC
+  const ordinal = butterfly.inputs.find((input) =>
+    allOrdinals?.find(
+      (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+    )
+  )
 
-  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC
+  const ordinalFound = allOrdinals?.find(
+    (o) => ordinal?.txid === o.utxo.txid && ordinal?.vout === o.utxo.vout
+  )
+
+  const isInscription = butterfly.outputs[index]?.type === "inscription"
+
+  const contentType = rune
+    ? CARD_TYPES.RUNES
+    : isBrc20
+    ? "BRC-20"
+    : isInscription && ordinalFound?.contentType
+    ? ordinalFound.contentType
+    : CARD_TYPES.BTC
+
+  const colorType = rune
+    ? CARD_TYPES_COLOR.RUNES
+    : isInscription
+    ? isBrc20
+      ? CARD_TYPES_COLOR.BRC20
+      : CARD_TYPES_COLOR.INSCRIPTIONS
+    : CARD_TYPES_COLOR.BTC
 
   const secondaryColorType = rune
     ? CARD_TYPES_COLOR_SECONDARY.RUNES
+    : isInscription
+    ? isBrc20
+      ? CARD_TYPES_COLOR_SECONDARY.BRC20
+      : CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
     : CARD_TYPES_COLOR_SECONDARY.BTC
 
   const type = butterfly.outputs[index]?.type
+
+  const hasSomeSigned = Boolean(
+    psbtSigned.inputsSigned.find((i) =>
+      butterfly.inputs.find(
+        (input) => input.txid === i.txid && input.vout === i.vout
+      )
+    )
+  )
+
+  const isOrdinalsInscription = butterfly.outputs[index]?.type === "inscription"
 
   if (butterfly.outputs[index]?.type === "OP RETURN" && rune) {
     return (
       <div className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
         <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
-          <Category color={CARD_TYPES_COLOR.BTC} type={"OP R"} />
+          <Category color={CARD_TYPES_COLOR.OP_RETURN} type={"OP R"} />
         </div>
 
         <div
@@ -478,7 +602,7 @@ export const CardOutput = ({
           style={{
             margin: "-3px", // Adjust to match the border thickness
             padding: "4px", // Adjust to match the border thickness
-            background: `linear-gradient(180deg, ${CARD_TYPES_COLOR.BTC} 0%, ${CARD_TYPES_COLOR.BTC} 50%, ${CARD_TYPES_COLOR_SECONDARY.BTC} 95%, ${CARD_TYPES_COLOR_SECONDARY.BTC} 115%)`,
+            background: `linear-gradient(180deg, ${CARD_TYPES_COLOR.OP_RETURN} 0%, ${CARD_TYPES_COLOR.OP_RETURN} 50%, ${CARD_TYPES_COLOR_SECONDARY.OP_RETURN} 95%, ${CARD_TYPES_COLOR_SECONDARY.OP_RETURN} 115%)`,
             borderRadius: "inherit", // Ensure the radius matches the card's radius
           }}
         >
@@ -615,7 +739,7 @@ export const CardOutput = ({
   }
 
   return (
-    <div className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
+    <div className="relative max-w-52 min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
       <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
         <Category color={colorType} type={contentType} />
       </div>
@@ -637,6 +761,7 @@ export const CardOutput = ({
           )}
 
           <input
+            disabled={hasSomeSigned}
             id="address"
             placeholder="Address"
             value={butterfly.outputs[index]?.address}
@@ -655,17 +780,22 @@ export const CardOutput = ({
           />
         </div>
 
-        <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
-          CLONE 📋
-        </button>
-        <button
-          className=" opacity-30 hover:opacity-100"
-          onClick={() => {
-            onRemove?.(index)
-          }}
-        >
-          REMOVE 🗑️
-        </button>
+        {!hasSomeSigned && !isOrdinalsInscription && (
+          <button className=" opacity-30 hover:opacity-100" onClick={onClone}>
+            CLONE 📋
+          </button>
+        )}
+
+        {!hasSomeSigned && !isOrdinalsInscription && (
+          <button
+            className=" opacity-30 hover:opacity-100"
+            onClick={() => {
+              onRemove?.(index)
+            }}
+          >
+            REMOVE 🗑️
+          </button>
+        )}
       </div>
       {rune && (
         <>
@@ -684,7 +814,7 @@ export const CardOutput = ({
           </div>
         </>
       )}
-      {!rune && (
+      {!rune && !isInscription && (
         <>
           <Image
             className="w-14 h-14 pointer-events-none"
@@ -697,8 +827,22 @@ export const CardOutput = ({
           Bitcoin
         </>
       )}
+
+      {ordinalFound && ordinal && isInscription && (
+        <>
+          <OrdinalRendering
+            utxo={ordinal}
+            setIsBrc20={(string: string) => setIsBrc20(string)}
+          />
+          {!Boolean(isBrc20) && (
+            <span className="text-[10px]">{ordinalFound.contentType}</span>
+          )}
+        </>
+      )}
+
       <div className="text-center text-white font-medium whitespace-nowrap flex flex-col justify-center items-center ">
         <input
+          disabled={hasSomeSigned}
           type="number"
           value={
             rune
@@ -722,7 +866,7 @@ export const CardOutput = ({
         <div className="mt-[-12px] text-[12px]">{rune?.symbol || "sats"} </div>
       </div>
       {Boolean(butterfly.outputs[index].value) && !rune && (
-        <div className="opacity-80 text-12">
+        <div className="opacity-50 text-[12px]">
           $
           {formatNumber(
             ((butterfly.outputs[index].value || 1) / 100000000) * btcUsdPrice,
@@ -900,32 +1044,61 @@ export const CardOutputMobile = ({
 export const CardOutputOption = ({
   action,
 }: {
-  action: RunesUtxo | undefined | null
+  action: RunesUtxo | undefined | null | OrdinalData
 }) => {
   const { accounts } = useAccounts()
-  const account = accounts?.[0]
+  const account = accounts?.length > 1 ? accounts[1] : accounts[0]
 
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
-  const setConfig = useSetRecoilState(configAtom)
+  const setConfig = useSetRecoilState(configsAtom)
 
   const runeIndex = runes?.findIndex((r) =>
     butterfly.inputs.find((i) =>
       r.utxos.find((u) => u.location === `${i.txid}:${i.vout}`)
     )
   )
+  const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
+
+  const ordinals = useRecoilValue(ordinalsAtom)
+  // const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
+
+  // const ordinal = butterfly.inputs.find((input) =>
+  //   allOrdinals?.find(
+  //     (o) => o.utxo.txid === input.txid && o.utxo.vout === input.vout
+  //   )
+  // )
+
+  // const ordinalFound = allOrdinals?.find(
+  //   (o) => ordinal?.txid === o.utxo.txid && ordinal?.vout === o.utxo.vout
+  // )
+  const isOrdinal = (action as any)?.contentType
+
+  const ordinalFound = isOrdinal ? (action as OrdinalData) : undefined
 
   const rune = action ? runes?.[runeIndex!] : null
 
-  const contentType = rune ? CARD_TYPES.RUNES : CARD_TYPES.BTC
+  const contentType = isBrc20
+    ? "BRC-20"
+    : rune
+    ? CARD_TYPES.RUNES
+    : ordinalFound?.contentType || CARD_TYPES.BTC
 
-  const colorType = rune ? CARD_TYPES_COLOR.RUNES : CARD_TYPES_COLOR.BTC
+  const colorType =
+    rune && !ordinalFound
+      ? CARD_TYPES_COLOR.RUNES
+      : ordinalFound
+      ? CARD_TYPES_COLOR.INSCRIPTIONS
+      : CARD_TYPES_COLOR.BTC
 
-  const secondaryColorType = rune
-    ? CARD_TYPES_COLOR_SECONDARY.RUNES
-    : CARD_TYPES_COLOR_SECONDARY.BTC
+  const secondaryColorType =
+    rune && !ordinalFound
+      ? CARD_TYPES_COLOR_SECONDARY.RUNES
+      : ordinalFound
+      ? CARD_TYPES_COLOR_SECONDARY.INSCRIPTIONS
+      : CARD_TYPES_COLOR_SECONDARY.BTC
 
-  const configs = useRecoilValue(configAtom)
+  const configs = useRecoilValue(configsAtom)
 
   const onSelectOutput = () => {
     setButterfly((prev) => {
@@ -952,9 +1125,23 @@ export const CardOutputOption = ({
         0
       )
 
+      const walletForOutput =
+        account || butterfly.inputs.find((i) => i.wallet)?.wallet || ""
+
+      if (ordinalFound) {
+        outputs.push({
+          address: walletForOutput,
+          value: 546,
+          type: "inscription",
+          inscription: ordinalFound,
+          vout: outputs.length + 1,
+        })
+        return { ...prev, outputs }
+      }
+
       if (rune && action) {
         outputs.push({
-          address: account,
+          address: walletForOutput,
           value: 546,
           type: "runes",
           rune: rune,
@@ -972,7 +1159,7 @@ export const CardOutputOption = ({
                 configs.feeCost
               : 1,
           vout: prev.outputs.length,
-          address: account,
+          address: walletForOutput,
         })
       }
 
@@ -1007,7 +1194,7 @@ export const CardOutputOption = ({
           </div>
         </>
       )}
-      {!rune && (
+      {!rune && !ordinalFound && (
         <>
           <Image
             className="w-14 h-14 pointer-events-none"
@@ -1018,6 +1205,18 @@ export const CardOutputOption = ({
             loading="lazy"
           />
           Bitcoin
+        </>
+      )}
+
+      {ordinalFound && (
+        <>
+          <OrdinalRendering
+            utxo={ordinalFound.utxo as any}
+            setIsBrc20={(string: string) => setIsBrc20(string)}
+          />
+          {!Boolean(isBrc20) && (
+            <span className="text-[10px]">{ordinalFound.contentType}</span>
+          )}
         </>
       )}
 

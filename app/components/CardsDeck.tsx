@@ -8,7 +8,7 @@ import { CardOption } from "@/app/components/Card"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configAtom } from "@/app/recoil/confgsAtom"
+import { configsAtom } from "@/app/recoil/confgsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { Tooltip } from "react-tooltip"
@@ -20,7 +20,7 @@ export const UtxoDeck = () => {
 }
 
 export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
-  const [configs, setConfigs] = useRecoilState(configAtom)
+  const [configs, setConfigs] = useRecoilState(configsAtom)
   const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const runes = useRecoilValue(runesAtom)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -82,9 +82,14 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
       let outputsUpdated = [...butterfly.outputs]
 
       const indexUtxoToUpdateSats = butterfly.outputs.findIndex(
-        (o) => o.type !== "OP RETURN" && o.type !== "runes"
+        (o) =>
+          o.type !== "OP RETURN" &&
+          o.type !== "runes" &&
+          o.type !== "inscription" &&
+          !o.inscription
       )
 
+      console.log("✌️indexUtxoToUpdateSats --->", indexUtxoToUpdateSats)
       if (indexUtxoToUpdateSats !== -1) {
         const value =
           outputsUpdated[indexUtxoToUpdateSats]?.value +
@@ -133,6 +138,9 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
 
   const ordinals = useRecoilValue(ordinalsAtom)
 
+  // Flatten the inscriptions from all Ordinals
+  const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
+
   return (
     <>
       <Portfolio onClick={onClick} />
@@ -176,8 +184,9 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
                     )
                   : undefined
 
+                // Find the ordinal in the flattened inscriptions
                 const ordinal = !utxoFound
-                  ? ordinals?.inscription.find(
+                  ? allInscriptions.find(
                       (i) =>
                         i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
                     )
