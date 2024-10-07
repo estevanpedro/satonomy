@@ -1,6 +1,7 @@
 import { RunesUtxo, RuneTransaction } from "@/app/recoil/runesAtom"
 import { MempoolUTXO } from "@/app/recoil/utxoAtom"
-import { networks, Psbt, Transaction } from "bitcoinjs-lib"
+import { initEccLib, networks, Psbt, Transaction } from "bitcoinjs-lib"
+import * as ecc from "@bitcoinerlab/secp256k1"
 
 const mempoolURL = "https://mempool.space/api"
 const unisatURL = "https://open-api.unisat.io/v1/indexer/address"
@@ -80,11 +81,18 @@ export const utxoServices = {
         network: networks.bitcoin,
       })
 
-      const tx = userPSBT.extractTransaction()
+      let tx = undefined
+      try {
+        tx = userPSBT.extractTransaction()
+      } catch (_) {
+        initEccLib(ecc)
+        userPSBT.finalizeAllInputs()
+        tx = userPSBT.extractTransaction()
+      }
+
       const txHex = tx.toHex()
       const btcTx = Transaction.fromHex(txHex)
       const btcTxHex = btcTx.toHex()
-      // return btcTxHex
 
       const res = await fetch(`${mempoolURL}/tx`, {
         method: "POST",

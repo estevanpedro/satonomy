@@ -86,6 +86,7 @@ export const useSignPsbt = () => {
       } catch (e) {
         console.error(e)
       }
+      return
     }
 
     const psbtHexSigned = await provider.signPsbt(psbtHex)
