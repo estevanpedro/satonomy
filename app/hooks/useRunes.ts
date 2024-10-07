@@ -9,8 +9,8 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 export const useRunes = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [runesStates, setRuneStates] = useRecoilState(runesAtom)
-  const walletConfigs = useRecoilValue(walletConfigsAtom)
   const butterfly = useRecoilValue(butterflyAtom)
+  const walletConfigs = useRecoilValue(walletConfigsAtom)
   const { accounts } = useAccounts()
   const wallets = [...walletConfigs.wallets, ...accounts]
 
@@ -88,6 +88,4 @@ export const useRunes = () => {
       fetchedWalletsRef.current.clear() // Reset fetched wallets
     }
   }, [wallets, setRuneStates, hasRunesSelected])
-
-  return { isLoading, runeStates: useRecoilValue(runesAtom) }
 }

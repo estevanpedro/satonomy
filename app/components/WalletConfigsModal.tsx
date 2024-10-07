@@ -49,6 +49,7 @@ const WalletInput = ({
       data-tooltip-place={"right"}
     >
       <input
+        type="text"
         placeholder="Enter wallet address"
         className={`w-full py-2 border rounded px-2 placeholder-zinc-600 ${
           hasError ? "border-red-500" : ""
@@ -122,6 +123,7 @@ export const WalletConfigsModal = () => {
     else if (configs.proMode && accountsIncluded.length === 0) {
       setWalletConfigs((prev) => {
         const newWallets = Array.from(new Set([...prev.wallets, ...accounts]))
+        console.log("✌️newWallets --->", newWallets)
         if (newWallets.length !== prev.wallets.length) {
           return {
             ...prev,

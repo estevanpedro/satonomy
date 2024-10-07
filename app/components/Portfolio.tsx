@@ -186,7 +186,7 @@ export const Portfolio = ({
           utxosFiltered!.map((utxo, index) => {
             return (
               <div
-                key={`${utxo.txid}:${utxo.vout}`}
+                key={`${utxo.txid}:${utxo.vout}-${index}`}
                 className="w-full max-w-[200px] mt-2"
               >
                 <CardOption onClick={onClick} utxo={utxo} />

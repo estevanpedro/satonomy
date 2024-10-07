@@ -166,8 +166,26 @@ export const CardOption = ({
 
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
-  const ordUtxoAsset = ord?.json?.inscriptions.find(
-    (o) => o?.id?.replace("i0", "") === utxo?.txid
+  const ordInscriptionsData = ord?.flatMap((o) => o.json.inscriptions) || []
+  // console.log("✌️ordInscriptionsData --->", ordInscriptionsData)
+  // console.log("✌️utxo --->", utxo)
+
+  //only works if its ordinals:
+  const ordInscriptionsFound = ordInscriptionsData?.find(
+    (i) =>
+      i.id.split("i")[0] === utxo.txid &&
+      Number(i.id.split("i")[1]) === utxo.vout
+  )
+
+  const ordinalUtxoFound = allInscriptions?.find(
+    (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
+  )?.utxo
+
+  // console.log("✌️ordinalUtxoFound --->", ordinalUtxoFound)
+  const satributesFound = ordInscriptionsData?.find((satributes) =>
+    ordinalUtxoFound?.inscriptions
+      .map((inscription) => inscription.inscriptionId)
+      .includes(satributes.id)
   )
 
   const rune = runesStates?.find((rune) =>
@@ -183,8 +201,6 @@ export const CardOption = ({
         (i) => i.utxo.txid === utxo.txid && i.utxo.vout === utxo.vout
       )
     : undefined
-
-  const hasSatributes = Boolean(ordUtxoAsset?.satributes?.length)
 
   const runeSelected = runesStates?.find((rune) =>
     inputs.find((i) =>
@@ -234,9 +250,11 @@ export const CardOption = ({
     runeSelected?.runeid !== rune?.runeid && rune && runeSelected?.runeid
   )
 
-  // const inscriptionSelected = ordinals?.find(
-
-  // )
+  const satributesAmount =
+    ordInscriptionsFound?.satributes.length ||
+    satributesFound?.satributes?.length
+  const hasSatributes = Boolean(satributesAmount)
+  console.log("✌️hasSatributes --->", hasSatributes)
 
   const isDisabled =
     inputs?.includes(utxo) ||
@@ -347,14 +365,6 @@ export const CardOption = ({
           </button>
         </div>
       ) : null}
-
-      <div className="absolute top-1 left-2 text-[8px] capitalize">
-        <p>
-          {ordUtxoAsset?.satributes.map((t, i) =>
-            i + 1 >= ordUtxoAsset?.satributes.length ? `${t}` : `${t}, `
-          )}
-        </p>
-      </div>
 
       {rune && (
         <>
@@ -474,6 +484,14 @@ export const CardOption = ({
       >
         ⭐️
       </div>
+
+      {hasSatributes ? (
+        <div className="absolute bottom-2 left-4">
+          <p className="text-[12px] opacity-50">
+            {satributesAmount} satributes
+          </p>
+        </div>
+      ) : null}
       <div
         className="absolute inset-0 rounded-xl z-[-1]"
         style={{

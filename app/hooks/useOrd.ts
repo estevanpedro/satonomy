@@ -1,3 +1,4 @@
+// DEPRECATED
 import { InscriptionData, ordAtom } from "@/app/recoil/ordAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { useAccounts } from "@particle-network/btc-connectkit"
