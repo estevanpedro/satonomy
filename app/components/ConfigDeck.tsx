@@ -219,11 +219,11 @@ export const ConfigDeck = () => {
   )
 
   const allTxIsSigned =
-    butterfly.inputs.find((i) => i.wallet === account && i.wallet) &&
+    butterfly.inputs.find((i) => i.wallet && accounts.includes(i.wallet)) &&
     inputsSigned.length === butterfly.inputs.length
 
   const userCanSign = butterfly.inputs.find(
-    (i) => i.wallet === account && i.wallet
+    (i) => i.wallet && accounts.includes(i.wallet)
   )
 
   const onBroadcast = async () => {

@@ -170,6 +170,7 @@ export const JsonContent: React.FC<TextContentProps> = ({
   setIsBrc20,
 }) => {
   const [text, setText] = useState<string>("")
+  const [hasError, setHasError] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchText = async () => {
@@ -197,11 +198,13 @@ export const JsonContent: React.FC<TextContentProps> = ({
         }
       } catch (error) {
         console.error("Error fetching text content:", error)
+        setHasError(true)
       }
     }
-
-    fetchText()
-  }, [url, setIsBrc20])
+    if (!hasError) {
+      fetchText()
+    }
+  }, [url, setIsBrc20, hasError])
 
   const isBrc20 = text.includes("brc-20")
   return (
