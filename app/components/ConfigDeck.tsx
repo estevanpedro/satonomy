@@ -117,9 +117,9 @@ export const ConfigDeck = () => {
       if (result?.psbtHex) {
         const psbtHexSigned = await provider.signPsbt(result.psbtHex)
 
-        const shouldNotBroadcast =
-          butterfly.inputs.filter((i) => accounts.find((a) => a !== i?.wallet))
-            .length > 0
+        // const shouldNotBroadcast =
+        //   butterfly.inputs.filter((i) => accounts.find((a) => a !== i?.wallet))
+        //     .length > 0
 
         const inputsSigned = butterfly.inputs.filter(
           (i) => i.wallet === account
@@ -132,28 +132,28 @@ export const ConfigDeck = () => {
           })
         }
 
-        if (shouldNotBroadcast) {
-          return
-        }
+        // if (shouldNotBroadcast) {
+        //   return
+        // }
 
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        if (txidRes) {
-          track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-        } else {
-          track("error-psbt-sign", { wallet: account })
-        }
+        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        // if (txidRes) {
+        //   track("psbt-sign", { wallet: account }, { flags: ["confirm"] })
+        //   setConfigs((prev) => ({
+        //     ...prev,
+        //     txid: txidRes,
+        //     isOpenModalTxId: true,
+        //     isConfirmedModalTxId: true,
+        //   }))
+        //   setConfigs((prev) => ({
+        //     ...prev,
+        //     txid: txidRes,
+        //     isOpenModalTxId: true,
+        //     isConfirmedModalTxId: true,
+        //   }))
+        // } else {
+        //   track("error-psbt-sign", { wallet: account })
+        // }
       }
     } catch (error) {
       console.log(error)

@@ -84,6 +84,7 @@ export const utxoServices = {
       const txHex = tx.toHex()
       const btcTx = Transaction.fromHex(txHex)
       const btcTxHex = btcTx.toHex()
+      // return btcTxHex
 
       const res = await fetch(`${mempoolURL}/tx`, {
         method: "POST",

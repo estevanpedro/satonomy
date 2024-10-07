@@ -342,18 +342,18 @@ export const Bowtie = () => {
           inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
         })
 
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        if (txidRes) {
-          track("psbt-sign", { wallet: account })
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-        } else {
-          track("error-psbt-sign", { wallet: account })
-        }
+        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        // if (txidRes) {
+        //   track("psbt-sign", { wallet: account })
+        //   setConfigs((prev) => ({
+        //     ...prev,
+        //     txid: txidRes,
+        //     isOpenModalTxId: true,
+        //     isConfirmedModalTxId: true,
+        //   }))
+        // } else {
+        //   track("error-psbt-sign", { wallet: account })
+        // }
 
         return
       }
@@ -368,19 +368,31 @@ export const Bowtie = () => {
         track("psbt-created", { wallet: account })
 
         const psbtHexSigned = await provider.signPsbt(result.psbtHex)
+        console.log("✌️psbtHexSigned --->", psbtHexSigned)
 
-        const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
-        if (txidRes) {
-          track("psbt-sign", { wallet: account })
-          setConfigs((prev) => ({
-            ...prev,
-            txid: txidRes,
-            isOpenModalTxId: true,
-            isConfirmedModalTxId: true,
-          }))
-        } else {
-          track("error-psbt-sign", { wallet: account })
+        const inputsSigned = butterfly.inputs.filter(
+          (i) => i.wallet === account
+        )
+
+        if (psbtHexSigned) {
+          setPsbtSigned({
+            psbtHexSigned,
+            inputsSigned: [...psbtSigned.inputsSigned, ...inputsSigned],
+          })
         }
+
+        // const txidRes = await psbtService.broadcastUserPSBT(psbtHexSigned)
+        // if (txidRes) {
+        //   track("psbt-sign", { wallet: account })
+        //   setConfigs((prev) => ({
+        //     ...prev,
+        //     txid: txidRes,
+        //     isOpenModalTxId: true,
+        //     isConfirmedModalTxId: true,
+        //   }))
+        // } else {
+        //   track("error-psbt-sign", { wallet: account })
+        // }
       }
     } catch (error) {
       console.log(error)
