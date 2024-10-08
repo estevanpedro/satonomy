@@ -447,6 +447,31 @@ export const ConfigDeck = () => {
         </div>
       )}
 
+      {!isConfirmDisabled &&
+        Boolean(configs.feeCost) &&
+        !configs.isInputFullDeckOpen &&
+        !configs.isOutputDeckOpen &&
+        !configs.isInputDeckOpen && (
+          <div
+            onClick={copyToClipboard}
+            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Share
+            </div>
+            <div className="flex justify-center items-center">
+              Copy{" "}
+              <Image
+                src="/share.png"
+                alt="Copy"
+                width={16}
+                height={16}
+                className="ml-2"
+              />
+            </div>
+          </div>
+        )}
+
       {Boolean(configs.feeCost) && (
         <>
           <Tooltip
@@ -464,7 +489,7 @@ export const ConfigDeck = () => {
               className={`max-w-[170px] min-w-[170px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center ${
                 isConfirmDisabled
                   ? "opacity-50 cursor-not-allowed"
-                  : "opacity-100 cursor-pointer"
+                  : "opacity-100 cursor-pointer bg-gradient-to-b from-green-700 to-green-600 border-green-600"
               }`}
             >
               <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
@@ -498,8 +523,8 @@ export const ConfigDeck = () => {
               }
               data-tooltip-place="top"
               onClick={!psbtSigned.txid ? onBroadcast : () => {}}
-              className={`transition-transform duration-300 relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 ${
-                psbtSigned.txid ? "opacity-50" : ""
+              className={`bg-gradient-to-b from-green-700 to-green-600 border-green-600 transition-transform duration-300 relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-green-300 ${
+                psbtSigned.txid ? "opacity-50 border-zinc-600 " : ""
               }`}
             >
               <div className="text-[12px] flex items-center justify-center opacity-50">
@@ -536,31 +561,6 @@ export const ConfigDeck = () => {
               </div>
             </div>
           )}
-
-          {!isConfirmDisabled &&
-            Boolean(configs.feeCost) &&
-            !configs.isInputFullDeckOpen &&
-            !configs.isOutputDeckOpen &&
-            !configs.isInputDeckOpen && (
-              <div
-                onClick={copyToClipboard}
-                className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
-              >
-                <div className="text-[12px] flex items-center justify-center opacity-50">
-                  Share
-                </div>
-                <div className="flex justify-center items-center">
-                  Copy{" "}
-                  <Image
-                    src="/share.png"
-                    alt="Copy"
-                    width={16}
-                    height={16}
-                    className="ml-2"
-                  />
-                </div>
-              </div>
-            )}
         </>
       )}
     </div>

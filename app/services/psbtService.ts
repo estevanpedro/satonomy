@@ -100,26 +100,16 @@ export const psbtService = {
         continue
       }
 
-      const isP2SH_P2WPKH_Output = utxo.address.startsWith("3")
-      console.log("✌️isP2SH_P2WPKH_Output --->", isP2SH_P2WPKH_Output)
+      const isP2SH_P2WPKH_Output = utxo?.address?.startsWith("3")
 
       if (isP2SH_P2WPKH_Output) {
-        // const p2wpkh = payments.p2wpkh({
-        //   address: utxo.address,
-        //   network: networks.bitcoin,
-        // })
-        // const p2sh = payments.p2sh({
-        //   redeem: p2wpkh,
-        //   network: networks.bitcoin,
-        // })
-
         const { output } = payments.p2sh({
           address: utxo.address,
           network: networks.bitcoin,
         })
 
         psbt.addOutput({
-          script: output!, // Script for the P2SH-P2WPKH output
+          script: output!,
           value: utxo.value,
         })
       } else {
