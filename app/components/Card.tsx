@@ -763,7 +763,7 @@ export const CardOutput = ({
           <input
             disabled={hasSomeSigned}
             id="address"
-            placeholder="Address"
+            placeholder="Type an address"
             value={butterfly.outputs[index]?.address}
             onChange={(e) => {
               setButterfly((prev) => {
@@ -774,7 +774,7 @@ export const CardOutput = ({
             }}
             onFocus={() => setAddressInputFocused(true)}
             onBlur={() => setAddressInputFocused(false)}
-            className={`my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280]  border-transparent focus:border-2 rounded-[4px] outline-none focus:bg-gradient-to-b focus:from-[#29292950] focus:to-[#292929] focus:px-2 ${
+            className={`hover:border-2 hover:border-[#82828280] hover:px-2 hover:min-w-[550px] my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280]  border-transparent focus:border-2 rounded-[4px] outline-none bg-gradient-to-b from-[#29292950] to-[#292929] focus:px-2 ${
               addressInputFocused ? "flex" : "hidden"
             }`}
           />
