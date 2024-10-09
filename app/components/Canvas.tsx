@@ -73,21 +73,6 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
     setOffset({ x: 0, y: 0 })
   }
 
-  const resetButterfly = () => {
-    setButterfly({ inputs: [], outputs: [] })
-    setConfigs((prev) => ({
-      ...prev,
-      isInputDeckOpen: false,
-      isOutputDeckOpen: false,
-      feeCost: 0,
-    }))
-    setPsbtSigned({ inputsSigned: [], psbtHexSigned: "" })
-    // remove params from url
-    window.history.replaceState({}, "", "/")
-
-    track("resetButterfly", {}, { flags: ["resetButterfly"] })
-  }
-
   return (
     <div
       ref={canvasRef}
@@ -106,7 +91,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       className="hidden sm:block scrollbar"
     >
       <div
-        className="flex  justify-center"
+        className="flex  justify-center z-0"
         style={{
           transform: proMode
             ? `translate(${offset.x}px, ${offset.y}px) scale(${scale})`
@@ -120,11 +105,11 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <div
-        className={`fixed  left-4 gap-4 hidden sm:flex ${
+        className={`fixed  left-4 gap-4 hidden sm:flex z-1 ${
           isInputFullDeckOpen ? "top-[82px]" : "bottom-0"
         }`}
       >
-        {!isInputFullDeckOpen && (
+        {/* {!isInputFullDeckOpen && (
           <div
             onClick={() => {
               setConfigs((prev) => ({
@@ -168,12 +153,12 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               )}{" "}
             </div>
           </div>
-        )}
+        )} */}
 
         {proMode && !isInputFullDeckOpen && (
           <button
             onClick={resetCanvas}
-            className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+            className={`z-10 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
               Position
@@ -192,7 +177,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
             </div>
           </button>
         )}
-        {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
+        {/* {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
           !isInputFullDeckOpen && (
             <button
               onClick={resetButterfly}
@@ -212,7 +197,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
                 />
               </div>
             </button>
-          )}
+          )} */}
       </div>
     </div>
   )

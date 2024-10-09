@@ -10,8 +10,10 @@ import { useRecoilState, useRecoilValue } from "recoil"
 
 export const Portfolio = ({
   onClick,
+  cardsDeckRef,
 }: {
   onClick: (utxo: MempoolUTXO) => void
+  cardsDeckRef: React.RefObject<HTMLDivElement>
 }) => {
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configsAtom)
@@ -94,6 +96,7 @@ export const Portfolio = ({
 
   return (
     <div
+      ref={cardsDeckRef}
       className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex-col border-zinc-700 px-4 bg-zinc-800 rounded-t-lg  transition-transform duration-300 ${
         configs.isInputFullDeckOpen
           ? " translate-y-0 flex"
@@ -183,7 +186,7 @@ export const Portfolio = ({
       <div className="w-full flex border-b-[1px] border-b-zinc-900 mt-4 " />
       <div className=" pb-32 grid gap-4 justify-items-center overflow-y-scroll relative border-t-[1px] border-t-zinc-600 pt-4 pl-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 pr-4">
         {configs.isInputFullDeckOpen &&
-          utxosFiltered!.map((utxo, index) => {
+          utxosFiltered?.map((utxo, index) => {
             return (
               <div
                 key={`${utxo.txid}:${utxo.vout}-${index}`}

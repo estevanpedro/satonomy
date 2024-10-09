@@ -8,12 +8,12 @@ import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { Tooltip } from "react-tooltip"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 export const NavBar = () => {
   const recommendedFees = useRecoilValue(recommendedFeesAtom)
   const [clicked, setClicked] = useState(0)
-  const setConfig = useSetRecoilState(configsAtom)
+  const [configs, setConfig] = useRecoilState(configsAtom)
   const hourFee = recommendedFees?.halfHourFee
 
   const onGasClick = () => {
@@ -55,19 +55,6 @@ export const NavBar = () => {
         </div>
 
         <div className="flex  items-center justify-center gap-4">
-          <div
-            onClick={onRefreshClick}
-            data-tooltip-id={"feerate"}
-            data-tooltip-content={
-              "Refresh the app, delete local data, clean history and disconnect wallets."
-            }
-            data-tooltip-place="bottom"
-            // href={`${window.location.origin}`}
-            className="cursor-pointer border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
-          >
-            <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
-          </div>
-
           {Boolean(hourFee) && (
             <div
               className="text-[12px] opacity-50 flex gap-2 mr-4"
@@ -80,7 +67,7 @@ export const NavBar = () => {
                 className="max-w-[260px] bg-gray-600"
                 style={{ backgroundColor: "#292929", color: "white" }}
               />
-              {hourFee} <span className="hidden sm:flex">sats/vb</span>
+              {hourFee}
               <div className="w-[16px]" onClick={onGasClick}>
                 <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
                   <path
@@ -95,6 +82,52 @@ export const NavBar = () => {
               </div>
             </div>
           )}
+
+          <div
+            onClick={onRefreshClick}
+            data-tooltip-id={"feerate"}
+            data-tooltip-content={
+              "Refresh the app, delete local data, clean history and disconnect wallets."
+            }
+            data-tooltip-place="bottom"
+            // href={`${window.location.origin}`}
+            className="cursor-pointer border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
+          >
+            <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
+          </div>
+          <div
+            onClick={() => {
+              setConfig((old) => ({
+                ...old,
+                isInputDeckOpen: false,
+                isOutputDeckOpen: false,
+                isInputFullDeckOpen: false,
+                proMode: !old.proMode,
+              }))
+
+              localStorage.setItem(
+                "configs",
+                JSON.stringify({ proMode: !configs.proMode })
+              )
+            }}
+            data-tooltip-id={"feerate"}
+            data-tooltip-content="Use advanced features, drag and drop, multiples wallets and more."
+            data-tooltip-place="bottom"
+            className={`cursor-pointer border-[1px] border-zinc-600 rounded py-1 px-4 hover:scale-105 transition-all duration-300 flex ${
+              configs.proMode
+                ? "border-zinc-100 opacity-100 text-white "
+                : "opacity-50 "
+            }`}
+          >
+            Pro
+            <Image
+              src="/full-screen.png"
+              width={14}
+              height={14}
+              alt="Directions"
+              className="w-[14px] h-[14px] mt-[3px] ml-[6px]"
+            />
+          </div>
 
           <Optimizations />
 

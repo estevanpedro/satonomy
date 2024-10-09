@@ -141,11 +141,53 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   // Flatten the inscriptions from all Ordinals
   const allInscriptions = ordinals?.flatMap((o) => o.inscription) || []
 
+  const cardsDeckRef = useRef<HTMLDivElement>(null)
+  const cardsDeckRef2 = useRef<HTMLDivElement>(null)
+
+  // if cliecked outside the deck, close the deck, all components inside of the deck can be clicked
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      const cleanElement = document?.getElementById("clean")
+      const eventTargetIsInsideClean = cleanElement?.contains(event.target)
+      if (eventTargetIsInsideClean) return
+
+      if (
+        !configs.isInputFullDeckOpen &&
+        cardsDeckRef.current &&
+        !cardsDeckRef.current.contains(event.target)
+      ) {
+        setConfigs((prev) => ({
+          ...prev,
+          isInputDeckOpen: false,
+        }))
+      }
+
+      if (
+        configs.isInputFullDeckOpen &&
+        cardsDeckRef2.current &&
+        !cardsDeckRef2.current.contains(event.target)
+      ) {
+        setConfigs((prev) => ({
+          ...prev,
+          isInputFullDeckOpen: false,
+        }))
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [configs, setConfigs])
+
   return (
     <>
-      <Portfolio onClick={onClick} />
+      <Portfolio onClick={onClick} cardsDeckRef={cardsDeckRef2} />
 
       <div
+        ref={cardsDeckRef}
         className={`fixed bottom-4 w-[100vw] ${
           !configs.isInputDeckOpen ? "hidden" : "flex"
         }`}

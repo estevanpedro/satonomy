@@ -24,7 +24,7 @@ export const ConfigDeck = () => {
   const runes = useRecoilValue(runesAtom)
   const [utxos, setUtxos] = useRecoilState(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configsAtom)
-  const butterfly = useRecoilValue(butterflyAtom)
+  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
   const { accounts } = useAccounts()
   const account = accounts[0]
   const ordinals = useRecoilValue(ordinalsAtom)
@@ -315,32 +315,25 @@ export const ConfigDeck = () => {
 
   const hasWalletLoading = loading?.walletLoadingList?.length > 0
 
-  return (
-    <div className={`fixed flex gap-2 ${position} `}>
-      {/* <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="w-full flex flex-col h-full sm:w-[370px]">
-          <h2 className="text-[20px] font-bold mb-2">✅ Success</h2>
-          <p className="mt-4">Transaction has been broadcasted successfully</p>
+  const resetButterfly = () => {
+    setButterfly({ inputs: [], outputs: [] })
+    setConfigs((prev) => ({
+      ...prev,
+      isInputDeckOpen: false,
+      isOutputDeckOpen: false,
+      feeCost: 0,
+    }))
+    setPsbtSigned({ inputsSigned: [], psbtHexSigned: "" })
+    // remove params from url
+    window.history.replaceState({}, "", "/")
 
-          <div className="mt-4 flex  w-full overflow-hidden gap-2">
-            <Link
-              href={`https://mempool.space/tx/${txid}`}
-              className="] font-normal text-[#6839B6] hover:text-[#3478F7] flex  text-start"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {formatAddress(txid)}
-              <Image
-                src="/external-link-2.png"
-                alt="External Link"
-                width={14}
-                height={14}
-                className="ml-2 w-[14px] h-[14px] mt-[4px]"
-              />
-            </Link>
-          </div>
-        </div>
-      </Modal> */}
+    track("resetButterfly", {}, { flags: ["resetButterfly"] })
+  }
+
+  return (
+    <div
+      className={`z-0 fixed flex gap-2 ${position} w-full items-center justify-center`}
+    >
       {Boolean(utxos?.length) &&
         (isDeckOpen || configs.isInputFullDeckOpen) && (
           <div
@@ -352,7 +345,7 @@ export const ConfigDeck = () => {
                 isInputFullDeckOpen: false,
               }))
             }
-            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
+            className="absolute left-0 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
               Action
@@ -361,9 +354,59 @@ export const ConfigDeck = () => {
           </div>
         )}
 
+      {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) && (
+        <button
+          id="clean"
+          onClick={resetButterfly}
+          className="justify-center items-center w-[120px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 hidden sm:flex flex-col hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
+        >
+          <div
+            id="clean"
+            className="text-[12px] flex items-center justify-center opacity-50"
+          >
+            Action
+          </div>
+          <div className="flex gap-2 items-center justify-center">
+            Clean{" "}
+            <Image
+              src="/trash.png"
+              width={16}
+              height={16}
+              alt="Directions"
+              className="w-[16px] h-[16px] "
+            />
+          </div>
+        </button>
+      )}
+
+      {!isConfirmDisabled &&
+        Boolean(configs.feeCost) &&
+        !configs.isInputFullDeckOpen &&
+        !configs.isOutputDeckOpen &&
+        !configs.isInputDeckOpen && (
+          <div
+            onClick={copyToClipboard}
+            className="w-[120px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
+          >
+            <div className="text-[12px] flex items-center justify-center opacity-50">
+              Share
+            </div>
+            <div className="flex justify-center items-center">
+              Copy{" "}
+              <Image
+                src="/share.png"
+                alt="Copy"
+                width={16}
+                height={16}
+                className="ml-2"
+              />
+            </div>
+          </div>
+        )}
+
       {Boolean(utxos?.length) && (
         <div
-          className={`transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
+          className={`transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide w-[300px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
           onClick={() => {
             track("portfolio", {}, { flags: ["portfolio"] })
             setConfigs((prev) => ({
@@ -426,7 +469,7 @@ export const ConfigDeck = () => {
       )} */}
 
       {Boolean(configs.feeCost) && isConfirmDisabled && (
-        <div className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 hidden sm:flex flex-col">
+        <div className="w-[160px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 hidden sm:flex flex-col opacity-50">
           <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
             Psbt Balance
           </div>
@@ -448,31 +491,6 @@ export const ConfigDeck = () => {
           )}
         </div>
       )}
-
-      {!isConfirmDisabled &&
-        Boolean(configs.feeCost) &&
-        !configs.isInputFullDeckOpen &&
-        !configs.isOutputDeckOpen &&
-        !configs.isInputDeckOpen && (
-          <div
-            onClick={copyToClipboard}
-            className="w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Share
-            </div>
-            <div className="flex justify-center items-center">
-              Copy{" "}
-              <Image
-                src="/share.png"
-                alt="Copy"
-                width={16}
-                height={16}
-                className="ml-2"
-              />
-            </div>
-          </div>
-        )}
 
       {Boolean(configs.feeCost) && (
         <>
