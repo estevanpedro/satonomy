@@ -47,9 +47,9 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       }}
       connectors={[
         new XverseConnector(),
-        new MeConnector(),
         new UnisatConnector(),
         new OKXConnector(),
+        new MeConnector(),
         new BybitConnector(),
         new WizzConnector(),
         new BitgetConnector(),
