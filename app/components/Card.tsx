@@ -338,8 +338,13 @@ export const CardOption = ({
             </button>
           )}
 
+          <Tooltip
+            id={`inputs`}
+            className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
+            style={{ backgroundColor: "#292929", color: "white" }}
+          />
           <button
-            data-tooltip-id={"confirm"}
+            data-tooltip-id={"inputs"}
             data-tooltip-content={
               Boolean(isSigned)
                 ? "Input is already signed"
@@ -641,12 +646,17 @@ export const CardOutput = ({
     return (
       <div
         className="relative min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center opacity-60"
-        data-tooltip-id={"confirm"}
+        data-tooltip-id={"platformFee"}
         data-tooltip-content={
           type === "platformFee" ? "Satonomy fee" : "Referrer fee"
         }
         data-tooltip-place="right"
       >
+        <Tooltip
+          id={"platformFee"}
+          className="max-w-[250px] bg-gray-600"
+          style={{ backgroundColor: "#292929", color: "white" }}
+        />
         <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
           <Category color={colorType} type={contentType} />
         </div>

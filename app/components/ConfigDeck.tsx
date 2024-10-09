@@ -3,7 +3,7 @@ import Image from "next/image"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { Tooltip } from "react-tooltip"
 import { formatNumber } from "@/app/utils/format"
-import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
+import { useAccounts } from "@particle-network/btc-connectkit"
 import { track } from "@vercel/analytics"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 import { configsAtom } from "@/app/recoil/confgsAtom"
@@ -495,13 +495,20 @@ export const ConfigDeck = () => {
       {Boolean(configs.feeCost) && (
         <>
           <Tooltip
+            defaultIsOpen
             id={"confirm"}
+            className="max-w-[250px] bg-gray-600"
+            style={{ backgroundColor: "#292929", color: "white" }}
+          />
+          <Tooltip
+            defaultIsOpen
+            id={"confirm-2"}
             className="max-w-[250px] bg-gray-600"
             style={{ backgroundColor: "#292929", color: "white" }}
           />
           {!allTxIsSigned && userCanSign && (
             <button
-              data-tooltip-id={"confirm"}
+              data-tooltip-id={"confirm-2"}
               data-tooltip-content={confirmTooltip}
               data-tooltip-place="top"
               onClick={onConfirm}
@@ -558,7 +565,7 @@ export const ConfigDeck = () => {
                         ?.focus()
                     }
               }
-              className={`bg-gradient-to-b ${
+              className={`max-w-[300px] bg-gradient-to-b ${
                 txIdHasError
                   ? ""
                   : "from-green-700 to-green-600 border-green-600"
@@ -580,7 +587,7 @@ export const ConfigDeck = () => {
                 </div>
               )}
 
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center ">
                 {!psbtSigned.txid ? (
                   <>
                     Broadcast
