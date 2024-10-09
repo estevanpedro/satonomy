@@ -15,6 +15,14 @@ import {
 
 import { Merlin, BEVM, MAPProtocol } from "@particle-network/chains"
 
+class MeConnector extends XverseConnector {
+  readonly metadata = {
+    id: "me",
+    name: "Magic Eden Wallet",
+    icon: "https://lh3.googleusercontent.com/Ss6jqLgXFSBpfGU2SIT_wtGlw94TgmQHncG6HBhTHx51_6QD4S_1PWW8zM--iOZ67YkwCcChNimGrFM0tK3dpiqrhw=s60",
+    downloadUrl: "https://wallet.magiceden.io/download",
+  }
+}
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ConnectProvider
@@ -38,13 +46,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         },
       }}
       connectors={[
+        new XverseConnector(),
+        new MeConnector(),
         new UnisatConnector(),
         new OKXConnector(),
-        new BitgetConnector(),
-        new TokenPocketConnector(),
         new BybitConnector(),
         new WizzConnector(),
-        new XverseConnector(),
+        new BitgetConnector(),
+        new TokenPocketConnector(),
       ]}
     >
       {children}
