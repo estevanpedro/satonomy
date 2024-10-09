@@ -306,3 +306,116 @@ body {
 .animate-ping-3 {
   animation: ping 5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* Add this CSS for animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+.svg-transition path {
+  transition: stroke-width 0.3s ease, stroke 0.3s ease;
+}
+
+.image-transition {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Add this CSS for right-to-left "opening" animation */
+@keyframes growIn {
+  0% {
+    stroke-dasharray: 0, 100%;
+    stroke-dashoffset: 100%;
+  }
+  100% {
+    stroke-dasharray: 100%, 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes growOut {
+  0% {
+    stroke-dasharray: 100%, 0;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 0, 100%;
+    stroke-dashoffset: 100%;
+  }
+}
+
+.grow-in {
+  animation: growIn 1s ease forwards;
+}
+
+.grow-out {
+  animation: growOut 1s ease forwards;
+}
+
+.svg-transition path {
+  transition: stroke-width 0.3s ease, stroke 0.3s ease;
+  stroke-dasharray: 100%, 0;
+  stroke-dashoffset: 100%;
+}
+
+/* Add this CSS for left-to-right "opening" animation */
+@keyframes growInLeftToRight {
+  0% {
+    stroke-dasharray: 0, 100%;
+    stroke-dashoffset: -100%;
+  }
+  100% {
+    stroke-dasharray: 100%, 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes growOutLeftToRight {
+  0% {
+    stroke-dasharray: 100%, 0;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 0, 100%;
+    stroke-dashoffset: -100%;
+  }
+}
+
+.grow-in-left-to-right {
+  animation: growInLeftToRight 0.2s ease forwards;
+}
+
+.grow-out-left-to-right {
+  animation: growOutLeftToRight 1s ease forwards;
+}
+
+.svg-transition-left-to-right path {
+  transition: stroke-width 0.3s ease, stroke 0.3s ease;
+  stroke-dasharray: 100%, 0;
+  stroke-dashoffset: -100%;
+}

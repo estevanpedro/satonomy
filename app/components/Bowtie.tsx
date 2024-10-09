@@ -414,23 +414,7 @@ export const Bowtie = () => {
       document.body.removeChild(textArea)
     }
 
-    toast(
-      <div>
-        Txid copied to clipboard.{" "}
-        <div className="flex gap-1">
-          Check
-          <Link
-            href={`https://mempool.space/tx/${psbtSigned.txid}`}
-            className="] font-normal text-[#6839B6] hover:text-[#3478F7] flex  text-start"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            mempool.space
-          </Link>
-        </div>
-      </div>,
-      toastOptions
-    )
+    toast(<div>Txid copied to clipboard. </div>, toastOptions)
   }
   const loading = useRecoilValue(loadingAtom)
 
@@ -623,6 +607,28 @@ export const Bowtie = () => {
                   />
                 </div>
               )}
+
+              {psbtSigned.txid && (
+                <div className="flex gap-1">
+                  Check
+                  <Link
+                    href={`https://mempool.space/tx/${psbtSigned.txid}`}
+                    className="] font-normal text-[#6839B6] hover:text-[#3478F7] flex  text-start gap-1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    mempool.space
+                    <Image
+                      src="/link-purple.png"
+                      width={12}
+                      height={12}
+                      alt="Copy"
+                      className="w-[10px] h-[10px] mt-[3.5px]"
+                    />
+                  </Link>
+                </div>
+              )}
+
               {psbtSigned.psbtHexSigned && (
                 <div className="flex gap-1 mt-1">
                   Psbt Hex:

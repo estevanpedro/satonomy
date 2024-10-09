@@ -184,7 +184,10 @@ export const NetworkFee = () => {
     )
   )
   const feeRateLessThan2 =
-    Boolean(configs.feeRateEstimated < 2) && configs.feeCost
+    Boolean(configs.feeRateEstimated < 2) &&
+    configs.feeCost &&
+    butterfly.outputs.length > 0 &&
+    butterfly.inputs.length > 0
 
   return (
     <div
@@ -193,7 +196,7 @@ export const NetworkFee = () => {
         feeRateLessThan2 ? "Fee must be higher than 2 sats/vb 🚨" : ""
       }
       data-tooltip-place="left"
-      className={`pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ${
+      className={`transition-all duration-1000  pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ${
         feeRateLessThan2 ? "border-red-500 " : ""
       }`}
     >

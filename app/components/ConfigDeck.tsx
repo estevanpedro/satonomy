@@ -33,6 +33,8 @@ export const ConfigDeck = () => {
   const { signPsbt } = useSignPsbt()
   let position = isDeckOpen && utxos?.length ? "bottom-[356px]" : "bottom-[0px]"
 
+  const txIdHasError = psbtSigned.txid?.includes("error")
+
   if (configs.isInputFullDeckOpen) {
     position = "top-[82px]"
   }
@@ -486,7 +488,7 @@ export const ConfigDeck = () => {
               data-tooltip-place="top"
               onClick={onConfirm}
               disabled={isConfirmDisabled || confirmed}
-              className={`max-w-[170px] min-w-[170px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center ${
+              className={`max-w-[170px] min-w-[170px] rounded-tl-[20px] rounded-tr-[20px] bg-green-900 py-2 px-4 border-2 border-green-600 flex flex-col hover:bg-green-600 hover:border-green-400 justify-center items-center ${
                 isConfirmDisabled
                   ? "opacity-50 cursor-not-allowed"
                   : "opacity-100 cursor-pointer bg-gradient-to-b from-green-700 to-green-600 border-green-600"
@@ -519,13 +521,30 @@ export const ConfigDeck = () => {
               data-tooltip-content={
                 !psbtSigned.txid
                   ? "Click to broadcast. Transaction is signed, but was not sent to the network yet."
-                  : "Transaction broadcasted"
+                  : `${
+                      txIdHasError
+                        ? `${psbtSigned.txid}`
+                        : "Transaction broadcasted successfully"
+                    }`
               }
               data-tooltip-place="top"
-              onClick={!psbtSigned.txid ? onBroadcast : () => {}}
-              className={`bg-gradient-to-b from-green-700 to-green-600 border-green-600 transition-transform duration-300 relative w-full rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-green-300 ${
-                psbtSigned.txid ? "opacity-50 border-zinc-600 " : ""
-              }`}
+              onClick={
+                !psbtSigned.txid
+                  ? onBroadcast
+                  : () => {
+                      window
+                        ?.open(
+                          `https://mempool.space/tx/${psbtSigned.txid}`,
+                          "_blank"
+                        )
+                        ?.focus()
+                    }
+              }
+              className={`bg-gradient-to-b ${
+                txIdHasError
+                  ? ""
+                  : "from-green-700 to-green-600 border-green-600"
+              } transition-transform duration-300 relative w-full rounded-tl-[20px] rounded-tr-[20px] py-2 px-4 border-2 flex flex-col cursor-pointer hover:bg-green-800 hover:border-green-300`}
             >
               <div className="text-[12px] flex items-center justify-center opacity-50">
                 Action
@@ -556,7 +575,10 @@ export const ConfigDeck = () => {
                     />
                   </>
                 ) : (
-                  <div className="flex text-nowrap">Broadcasted ✅</div>
+                  <div className="flex text-nowrap">
+                    {txIdHasError ? "Not" : ""} Broadcasted{" "}
+                    {txIdHasError ? "❎" : "✅"}
+                  </div>
                 )}
               </div>
             </div>

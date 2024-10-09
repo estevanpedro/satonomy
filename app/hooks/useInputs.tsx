@@ -113,12 +113,19 @@ export const useInputs = ({
           strokeWidth={strangenessAdjusted + 4}
           fill="none"
         />
+        <path
+          d={pathData}
+          stroke={stroke}
+          strokeWidth={strangenessAdjusted + 8}
+          fill="none"
+          opacity={0.4}
+        />
       </svg>
     )
     paths.push(
       <svg
         key={i}
-        className="absolute top-0 left-0 w-full h-full z-[-1]"
+        className="absolute top-0 left-0 w-full h-full z-[-1] grow-in svg-transition"
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`0 0 200 ${totalHeight}`}
         overflow={"visible"}
@@ -146,6 +153,7 @@ export const useInputs = ({
           stroke={stroke}
           strokeWidth={strangenessAdjusted}
           fill="none"
+          className="grow-in svg-transition"
         />
       </svg>
     )
@@ -154,6 +162,22 @@ export const useInputs = ({
         className="absolute right-[-12px] transform translate-y-[-50%] pointer-events-none"
         style={{ top: "calc(50% + 40px)" }}
       >
+        {(!isNotReady && isConfirmDisabled && !butterflyIsOk) ||
+          (((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
+            (!feeRateOk && Boolean(butterfly.outputs.length))) && (
+            <div
+              className="mb-[90px]  rounded-full overflow-hidden pointer-events-none bg-black"
+              style={{ width: "36px", height: "36px" }}
+            >
+              <Image
+                src="/satonomy-logo.png"
+                alt="Satonomy"
+                width={36}
+                height={36}
+                className="object-cover pointer-events-none" // Slightly scale the image up
+              />
+            </div>
+          ))}
         {butterflyIsOk && !isConfirmDisabled && feeRateOk && (
           <div
             className="mb-[80px]  rounded-full overflow-hidden pointer-events-none"
@@ -168,7 +192,7 @@ export const useInputs = ({
             />
           </div>
         )}
-        {((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
+        {/* {((isConfirmDisabled && !butterflyIsOk && isNotReady) ||
           (!feeRateOk && Boolean(butterfly.outputs.length))) && (
           <div
             className="mb-[80px] rounded-full overflow-hidden pointer-events-none"
@@ -182,7 +206,7 @@ export const useInputs = ({
               className="object-cover pointer-events-none" // Slightly scale the image up
             />
           </div>
-        )}
+        )} */}
       </div>
     )
 
