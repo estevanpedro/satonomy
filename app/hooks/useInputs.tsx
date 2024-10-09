@@ -184,7 +184,7 @@ export const useInputs = ({
             style={{ width: "36px", height: "36px" }}
           >
             <Image
-              src="/satonomy-green-2.png"
+              src="/satonomy-green-3.png"
               alt="Satonomy"
               width={36}
               height={36}
