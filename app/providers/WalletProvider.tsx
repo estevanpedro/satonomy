@@ -19,7 +19,7 @@ class MeConnector extends XverseConnector {
   readonly metadata = {
     id: "me",
     name: "Magic Eden Wallet",
-    icon: "https://lh3.googleusercontent.com/Ss6jqLgXFSBpfGU2SIT_wtGlw94TgmQHncG6HBhTHx51_6QD4S_1PWW8zM--iOZ67YkwCcChNimGrFM0tK3dpiqrhw=s60",
+    icon: "https://play-lh.googleusercontent.com/F1JXB_LatQEoGQ5wvba5ab1IEdEChxlU5jl-5_eW4aiLZ-2cNYP1kvNsscWyGPxT8g",
     downloadUrl: "https://wallet.magiceden.io/download",
   }
 }
