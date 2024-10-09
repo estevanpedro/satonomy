@@ -155,7 +155,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
           </div>
         )} */}
 
-        {proMode && !isInputFullDeckOpen && (
+        {/* {proMode && !isInputFullDeckOpen && (
           <button
             onClick={resetCanvas}
             className={`z-10 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
@@ -176,7 +176,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
           </button>
-        )}
+        )} */}
         {/* {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
           !isInputFullDeckOpen && (
             <button
