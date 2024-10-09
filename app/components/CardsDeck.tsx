@@ -147,7 +147,7 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
   // if cliecked outside the deck, close the deck, all components inside of the deck can be clicked
 
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
+    const handleClickOutsideDeck = (event: any) => {
       const cleanElement = document?.getElementById("clean")
       const eventTargetIsInsideClean = cleanElement?.contains(event.target)
       if (eventTargetIsInsideClean) return
@@ -175,12 +175,14 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside)
+    if (configs.isInputFullDeckOpen || configs.isInputDeckOpen) {
+      document.addEventListener("mousedown", handleClickOutsideDeck)
+    }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("mousedown", handleClickOutsideDeck)
     }
-  }, [configs, setConfigs])
+  }, [configs.isInputFullDeckOpen, configs.isInputDeckOpen, setConfigs])
 
   return (
     <>
