@@ -748,6 +748,9 @@ export const CardOutput = ({
       </div>
     )
   }
+  const invalidAddress = invalidOutputs.find((o) =>
+    o.type === "runes" ? o.vout - 1 === index : o.vout === index
+  )
 
   return (
     <div className="relative max-w-52 min-w-52 bg-transparent rounded-xl  flex flex-col gap-3 items-center justify-center">
@@ -761,18 +764,14 @@ export const CardOutput = ({
 
         <div
           className={` hover:opacity-100 relative ${
-            invalidOutputs.find((o) => o.vout === index)
-              ? "opacity-100 "
-              : "opacity-30"
+            invalidAddress ? "opacity-100 " : "opacity-30"
           }`}
         >
           {!addressInputFocused && (
             <div
               onMouseEnter={onInputFocus}
               className={`my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280] border-transparent focus:border-2 rounded-[4px] outline-none focus:bg-gradient-to-b focus:from-[#29292950] focus:to-[#292929] focus:px-2 ${
-                invalidOutputs.find((o) => o.vout === index)
-                  ? "opacity-100 text-red-400"
-                  : ""
+                invalidAddress ? "opacity-100 text-red-400" : ""
               }`}
             >
               {butterfly.outputs?.[index]?.address
@@ -802,11 +801,7 @@ export const CardOutput = ({
             onBlur={() => setAddressInputFocused(false)}
             className={`hover:border-2 hover:border-[#82828280] hover:px-2 hover:min-w-[550px] my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280]  border-transparent focus:border-2 rounded-[4px] outline-none bg-gradient-to-b from-[#29292950] to-[#292929] focus:px-2 ${
               addressInputFocused ? "flex" : "hidden"
-            } ${
-              invalidOutputs.find((o) => o.vout === index)
-                ? "border-red-500 text-red-400"
-                : ""
-            }`}
+            } ${invalidAddress ? "border-red-500 text-red-400" : ""}`}
           />
         </div>
 
