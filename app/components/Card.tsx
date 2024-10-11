@@ -764,14 +764,18 @@ export const CardOutput = ({
 
         <div
           className={` hover:opacity-100 relative ${
-            invalidAddress ? "opacity-100 " : "opacity-30"
+            invalidAddress && Boolean(butterfly.inputs.length)
+              ? "opacity-100 "
+              : "opacity-30"
           }`}
         >
           {!addressInputFocused && (
             <div
               onMouseEnter={onInputFocus}
               className={`my-[-4px] py-1 bg-transparent max-w-[110px] text-[14px] text-end p-0 focus:max-w-[550px] focus:min-w-[550px]  transition-all duration-300 focus:ring-0 focus:border-[#82828280] border-transparent focus:border-2 rounded-[4px] outline-none focus:bg-gradient-to-b focus:from-[#29292950] focus:to-[#292929] focus:px-2 ${
-                invalidAddress ? "opacity-100 text-red-400" : ""
+                invalidAddress && Boolean(butterfly.inputs.length)
+                  ? "opacity-100 text-red-400"
+                  : ""
               }`}
             >
               {butterfly.outputs?.[index]?.address
