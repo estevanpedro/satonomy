@@ -250,7 +250,9 @@ export const NetworkFee = () => {
 
       <div className="flex flex-col gap-3 absolute top-0 -right-[84px]">
         <div
-          className={`hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
+          className={`${
+            hasSomeSigned ? "cursor-not-allowed" : "cursor-pointer"
+          } hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
             configs.feeType === "slow" ? "border-zinc-400" : "border-zinc-800"
           }`}
           onClick={() => {
@@ -270,7 +272,7 @@ export const NetworkFee = () => {
           />
           <label
             htmlFor="slow"
-            className={hasSomeSigned ? `` : "cursor-pointer"}
+            className={hasSomeSigned ? `cursor-not-allowed` : "cursor-pointer"}
           >
             Slow
           </label>
@@ -296,7 +298,7 @@ export const NetworkFee = () => {
           />
           <label
             htmlFor="mid"
-            className={hasSomeSigned ? `` : "cursor-pointer"}
+            className={hasSomeSigned ? `cursor-not-allowed` : "cursor-pointer"}
           >
             Mid
           </label>
@@ -323,7 +325,7 @@ export const NetworkFee = () => {
           />
           <label
             htmlFor="fast"
-            className={hasSomeSigned ? `` : "cursor-pointer"}
+            className={hasSomeSigned ? `cursor-not-allowed` : "cursor-pointer"}
           >
             Fast
           </label>

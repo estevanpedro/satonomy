@@ -450,12 +450,12 @@ export const ConfigDeck = () => {
             )}
             {!hasWalletLoading && (
               <Image
-                src="/arrow.png"
+                src="/wallet.png"
                 alt="Arrow"
                 width={16}
                 height={16}
                 style={{
-                  transform: configs.isInputFullDeckOpen
+                  transform: !configs.isInputFullDeckOpen
                     ? ""
                     : "rotate(180deg)",
                 }}
@@ -479,7 +479,7 @@ export const ConfigDeck = () => {
       {Boolean(configs.feeCost) && isConfirmDisabled && (
         <div className="w-[160px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 hidden sm:flex flex-col opacity-50">
           <div className="text-[12px] flex items-center justify-center opacity-50 whitespace-nowrap">
-            Psbt Balance
+            Balance
           </div>
           {!isConfirmDisabled && (
             <div className="flex gap-2 justify-center items-center">
@@ -488,13 +488,16 @@ export const ConfigDeck = () => {
           )}
           {isConfirmDisabled && (
             <div className="flex gap-2 justify-center items-center">
-              <span className="whitespace-nowrap">{`${formatNumber(
-                inputValues - outputValues,
-                0,
-                0,
-                false,
-                false
-              )}`}</span>
+              <span className="whitespace-nowrap">
+                {`${formatNumber(
+                  inputValues - outputValues,
+                  0,
+                  0,
+                  false,
+                  false
+                )}`}{" "}
+                sats
+              </span>
             </div>
           )}
         </div>

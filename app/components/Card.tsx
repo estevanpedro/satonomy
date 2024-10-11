@@ -470,7 +470,7 @@ export const CardOption = ({
       )}
 
       <div
-        className={`absolute   left-3 top-2 z-[1] ${
+        className={`absolute  cursor-pointer left-3 top-2 z-[1] ${
           isFavorite ? "opacity-90" : "opacity-20"
         } ${
           !isSelected && isInputFullDeckOpen

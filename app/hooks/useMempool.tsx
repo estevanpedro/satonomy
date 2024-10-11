@@ -96,6 +96,11 @@ export const useMempool = () => {
 
       if (allUtxos.length) {
         setUtxo(allUtxos as [])
+        setErrors((prev) => ({
+          walletErrorList: [
+            ...prev.walletErrorList.filter((w) => !wallets.includes(w)),
+          ],
+        }))
       } else {
         // setUtxo(null)
         setLoading((prev) => ({
