@@ -22,6 +22,12 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "www.okx.com",
+        port: "",
+        pathname: "/cdn/assets/imgs/226/EB771F0EE8994DD5.png",
+      },
+      {
+        protocol: "https",
         hostname: "ordin.s3.amazonaws.com",
         port: "",
         pathname: "/inscriptions/**",

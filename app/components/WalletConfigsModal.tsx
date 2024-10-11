@@ -1,11 +1,12 @@
 import { Modal } from "@/app/components/Modal"
+import { WalletImage } from "@/app/components/WalletImage"
 import { WalletUtxoType } from "@/app/components/WalletUtxoType"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { errorsAtom } from "@/app/recoil/errors"
 import { loadingAtom } from "@/app/recoil/loading"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
-import { useAccounts } from "@particle-network/btc-connectkit"
+import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
@@ -71,7 +72,9 @@ const WalletInput = ({
         disabled={isConnected}
       />
       {isConnected ? (
-        <div>✅</div>
+        <div className="absolute right-2">
+          <WalletImage wallet={wallet} />
+        </div>
       ) : (
         <>
           {loading.walletLoadingList?.includes(wallet) && (
@@ -88,12 +91,18 @@ const WalletInput = ({
             </div>
           )}
           {!loading.walletLoadingList?.includes(wallet) && (
-            <button
-              className="absolute right-4 top-[10px]"
-              onClick={() => onRemove?.(wallet)}
-            >
-              🗑️
-            </button>
+            <>
+              <button
+                className="absolute right-4 top-[10px]"
+                onClick={() => onRemove?.(wallet)}
+              >
+                🗑️
+              </button>
+
+              <div className="absolute right-10">
+                <WalletImage wallet={wallet} />
+              </div>
+            </>
           )}
         </>
       )}
@@ -107,6 +116,24 @@ export const WalletConfigsModal = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [configs, setConfigs] = useRecoilState(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode
+  const { provider } = useBTCProvider()
+
+  const isMagicEden = Boolean(provider?.isMagicEden)
+
+  const isXVerse =
+    Boolean(provider?.signMultipleTransactions) &&
+    !Boolean(provider?.isMagicEden)
+
+  const isUnisat = Boolean(provider?.isAtomicalsEnabled)
+  const isOkxWallet =
+    Boolean(provider?.isOkxWallet) || Boolean(provider?.isOKExWallet)
+
+  const connections = {
+    isMagicEden,
+    isXVerse,
+    isUnisat,
+    isOkxWallet,
+  }
 
   useEffect(() => {
     const accountsIncluded = walletConfigs.wallets.filter((w) =>
@@ -118,6 +145,7 @@ export const WalletConfigsModal = () => {
     if (previousProModeRef.current && !configs.proMode) {
       setWalletConfigs((prev) => {
         return {
+          images: prev.images, // Keep images as is
           prevWallets: prev.wallets, // Save previous wallets to prevWallets
           wallets: accounts, // In simple mode, only use current accounts
         }
@@ -144,6 +172,14 @@ export const WalletConfigsModal = () => {
           return {
             ...prev,
             wallets: newWallets,
+            images: [
+              ...(prev?.images || []),
+              ...accounts.map((account) => {
+                return {
+                  [account]: connections,
+                }
+              }),
+            ],
           }
         }
         return prev // No change, prevent unnecessary update
@@ -178,21 +214,21 @@ export const WalletConfigsModal = () => {
     }))
 
     // Get existing wallets from localStorage
-    const localWalletConfigs = localStorage?.getItem("localWalletConfigs")
-    let localWallets: string[] = localWalletConfigs
-      ? JSON.parse(localWalletConfigs).wallets || []
-      : []
+    // const localWalletConfigs = localStorage?.getItem("localWalletConfigs")
+    // let localWallets: string[] = localWalletConfigs
+    //   ? JSON.parse(localWalletConfigs).wallets || []
+    //   : []
 
-    // Add new wallet if it doesn't already exist
-    if (!localWallets.includes(wallet)) {
-      localWallets = [...localWallets, wallet]
-    }
+    // // Add new wallet if it doesn't already exist
+    // if (!localWallets.includes(wallet)) {
+    //   localWallets = [...localWallets, wallet]
+    // }
 
-    // Update localStorage
-    localStorage.setItem(
-      "localWalletConfigs",
-      JSON.stringify({ wallets: localWallets })
-    )
+    // // Update localStorage
+    // localStorage.setItem(
+    //   "localWalletConfigs",
+    //   JSON.stringify({ wallets: localWallets })
+    // )
   }
 
   const onAddMoreWallet = () => {
@@ -261,7 +297,7 @@ export const WalletConfigsModal = () => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <div
-          className="w-full h-full flex flex-col max-w-[580px]"
+          className="w-full h-full flex flex-col max-w-[600px]"
           onMouseLeave={(e) => setIsVisibleDetailsList([])}
         >
           <Tooltip

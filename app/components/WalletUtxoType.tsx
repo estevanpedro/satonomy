@@ -131,6 +131,7 @@ export const WalletUtxoType = ({
   // const btcLength = btcUtxos?.length || 0
 
   const total = runesLength + inscriptionsLength + btcLength
+  if (total === 0) return null
 
   const runesPercentage = total ? (runesLength / total) * 100 : 0
   const inscriptionsPercentage = total ? (inscriptionsLength / total) * 100 : 0
