@@ -243,8 +243,6 @@ export const Bowtie = () => {
     const isInscription =
       butterfly.outputs[butterfly.outputs.length - 1]?.inscription
 
-    console.log("✌️isInscription --->", isInscription)
-    console.log("✌️isRune --->", isRune)
     if (inputSum - outputSum > 0 && !isInscription && !isRune) {
       let outputsUpdated = [...butterfly.outputs]
 

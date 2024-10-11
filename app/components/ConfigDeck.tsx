@@ -17,6 +17,7 @@ import { loadingAtom } from "@/app/recoil/loading"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { historyAtom } from "@/app/recoil/history"
 import { useSignPsbt } from "@/app/hooks/useSignPsbt"
+import { isValidWallet } from "@/app/components/WalletConfigsModal"
 
 export const ConfigDeck = () => {
   const loading = useRecoilValue(loadingAtom)
@@ -68,11 +69,16 @@ export const ConfigDeck = () => {
 
   const runesButterflyBalance = runesInputSum - runesOutputSum
 
+  const hasInvalidInputsOrOutputs = butterfly.outputs.some(
+    (o) => (!o.address || !isValidWallet(o.address)) && o.type !== "OP RETURN"
+  )
+
   const isConfirmDisabled =
     difference !== 0 ||
     outputValues - configs.feeCost < 0 ||
     runesButterflyBalance !== 0 ||
-    configs.feeRateEstimated < 2
+    configs.feeRateEstimated < 2 ||
+    hasInvalidInputsOrOutputs
 
   const confirmed = configs.isConfirmedModalTxId
 
@@ -322,6 +328,8 @@ export const ConfigDeck = () => {
       isInputDeckOpen: false,
       isOutputDeckOpen: false,
       feeCost: 0,
+      fullDeckSearchType: "all",
+      fullDeckSearchWallet: "",
     }))
     setPsbtSigned({ inputsSigned: [], psbtHexSigned: "" })
     // remove params from url

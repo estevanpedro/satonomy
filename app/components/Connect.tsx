@@ -1,40 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { formatAddress } from "@/app/utils/format";
-import { useAccounts, useConnectModal } from "@particle-network/btc-connectkit";
-import { useSetRecoilState } from "recoil";
-import { utxoAtom } from "@/app/recoil/utxoAtom";
-import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom";
-import { runesAtom } from "@/app/recoil/runesAtom";
-import { ordinalsAtom } from "@/app/recoil/ordinalsAtom";
+import React, { useState, useEffect } from "react"
+import { formatAddress } from "@/app/utils/format"
+import { useAccounts, useConnectModal } from "@particle-network/btc-connectkit"
+import { useSetRecoilState } from "recoil"
+import { utxoAtom } from "@/app/recoil/utxoAtom"
+import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
+import { runesAtom } from "@/app/recoil/runesAtom"
+import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 
 export const ConnectButton = ({
   mobileVisible,
 }: {
-  mobileVisible?: boolean;
+  mobileVisible?: boolean
 }) => {
-  const { openConnectModal, disconnect } = useConnectModal();
-  const { accounts } = useAccounts();
+  const { openConnectModal, disconnect } = useConnectModal()
+  const { accounts } = useAccounts()
 
-  const account = accounts[0];
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const setUtxo = useSetRecoilState(utxoAtom);
-  const setOrdByWallet = useSetRecoilState(ordByWalletAtom);
-  const setRunesUtxos = useSetRecoilState(runesAtom);
-  const setOrdinals = useSetRecoilState(ordinalsAtom);
+  const account = accounts[0]
+  const [dropdownVisible, setDropdownVisible] = useState(false)
+  const setUtxo = useSetRecoilState(utxoAtom)
+  const setOrdByWallet = useSetRecoilState(ordByWalletAtom)
+  const setRunesUtxos = useSetRecoilState(runesAtom)
+  const setOrdinals = useSetRecoilState(ordinalsAtom)
 
   const handleMouseEnter = () => {
-    setDropdownVisible(true);
-  };
+    setDropdownVisible(true)
+  }
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const y = e.clientY;
-    const x = e.clientX;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const y = e.clientY
+    const x = e.clientX
 
     if (y < rect.top || y > rect.bottom || x < rect.left || x > rect.right) {
-      setDropdownVisible(false);
+      setDropdownVisible(false)
     }
-  };
+  }
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -44,25 +44,25 @@ export const ConnectButton = ({
           .querySelector(".dropdown-container")
           ?.contains(e.target as Node)
       ) {
-        setDropdownVisible(false);
+        setDropdownVisible(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownVisible]);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownVisible])
 
   const onDisconnect = () => {
     // sleep 1s
     setTimeout(() => {
-      setUtxo(null);
-      setOrdByWallet(undefined);
-      setRunesUtxos(null);
-      setOrdinals(null);
-    }, 500);
-  };
+      setUtxo(null)
+      setOrdByWallet(undefined)
+      setRunesUtxos(null)
+      setOrdinals(null)
+    }, 500)
+  }
 
   return (
     <div
@@ -76,7 +76,7 @@ export const ConnectButton = ({
         className="text-white bg-zinc-900 px-4 py-2 rounded-md"
         onClick={() => {
           if (!account) {
-            openConnectModal?.();
+            openConnectModal?.()
           }
         }}
       >
@@ -90,12 +90,12 @@ export const ConnectButton = ({
           onMouseLeave={handleMouseLeave}
         >
           <button
-            className="w-[148px] text-white bg-zinc-600 px-4 py-2 rounded-md"
+            className=" text-white bg-zinc-600 px-6 py-2 rounded-md"
             onClick={() => {
-              disconnect?.();
-              setDropdownVisible(false);
+              disconnect?.()
+              setDropdownVisible(false)
 
-              onDisconnect();
+              onDisconnect()
             }}
           >
             Disconnect
@@ -103,5 +103,5 @@ export const ConnectButton = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

@@ -64,6 +64,17 @@ export const useMempool = () => {
                   }
                 : prev
             )
+          } else {
+            setLoading((prev) =>
+              prev.walletLoadingList
+                ? {
+                    ...prev,
+                    walletLoadingList: [
+                      ...prev.walletLoadingList.filter((w) => w !== wallet),
+                    ],
+                  }
+                : prev
+            )
           }
         } catch (error) {
           console.error("Error fetching utxos", error)

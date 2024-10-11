@@ -103,6 +103,8 @@ export const NavBar = () => {
                 isOutputDeckOpen: false,
                 isInputFullDeckOpen: false,
                 proMode: !old.proMode,
+                fullDeckSearchType: "all",
+                fullDeckSearchWallet: "",
               }))
 
               localStorage.setItem(

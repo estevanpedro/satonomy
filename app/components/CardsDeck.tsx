@@ -89,7 +89,6 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
           !o.inscription
       )
 
-      console.log("✌️indexUtxoToUpdateSats --->", indexUtxoToUpdateSats)
       if (indexUtxoToUpdateSats !== -1) {
         const value =
           outputsUpdated[indexUtxoToUpdateSats]?.value +

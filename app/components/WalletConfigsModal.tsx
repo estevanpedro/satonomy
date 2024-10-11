@@ -1,4 +1,5 @@
 import { Modal } from "@/app/components/Modal"
+import { WalletUtxoType } from "@/app/components/WalletUtxoType"
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { errorsAtom } from "@/app/recoil/errors"
 import { loadingAtom } from "@/app/recoil/loading"
@@ -10,6 +11,10 @@ import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { Tooltip } from "react-tooltip"
 import { useRecoilState, useRecoilValue } from "recoil"
+
+export const isValidWallet = (wallet: string) => {
+  return wallet.length === 34 || wallet.length === 62 || wallet.length === 42
+}
 
 const WalletInput = ({
   wallet,
@@ -44,9 +49,13 @@ const WalletInput = ({
     } UTXOs loaded`
   }
 
+  const onInputChange = (e: any) => {
+    onChange?.(e)
+  }
+
   return (
     <div
-      className="flex gap-2 items-center justify-center"
+      className="flex gap-2 items-center justify-center relative"
       data-tooltip-id={`tooltip-wallets`}
       data-tooltip-content={content()}
       data-tooltip-place={"right"}
@@ -54,11 +63,11 @@ const WalletInput = ({
       <input
         type="text"
         placeholder="Enter wallet address"
-        className={`w-full py-2 border rounded px-2 placeholder-zinc-600 ${
+        className={`w-full py-2 border  rounded-t-md px-2 placeholder-zinc-600 ${
           hasError ? "border-red-500" : ""
-        } outline-none`}
+        } outline-none ${!isValidWallet(wallet) ? "rounded-b-md" : ""}`}
         value={wallet}
-        onChange={onChange}
+        onChange={(e) => onInputChange(e)}
         disabled={isConnected}
       />
       {isConnected ? (
@@ -66,7 +75,7 @@ const WalletInput = ({
       ) : (
         <>
           {loading.walletLoadingList?.includes(wallet) && (
-            <div>
+            <div className="absolute right-4 top-[10px]">
               {" "}
               <div
                 className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#6839B6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
@@ -78,8 +87,14 @@ const WalletInput = ({
               </div>
             </div>
           )}
-
-          <button onClick={() => onRemove?.(wallet)}>🗑️</button>
+          {!loading.walletLoadingList?.includes(wallet) && (
+            <button
+              className="absolute right-4 top-[10px]"
+              onClick={() => onRemove?.(wallet)}
+            >
+              🗑️
+            </button>
+          )}
         </>
       )}
     </div>
@@ -89,7 +104,6 @@ const WalletInput = ({
 export const WalletConfigsModal = () => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
-
   const [isOpen, setIsOpen] = useState(false)
   const [configs, setConfigs] = useRecoilState(configsAtom)
   const previousProModeRef = useRef(configs.proMode) // To store the previous mode
@@ -210,6 +224,30 @@ export const WalletConfigsModal = () => {
     )
   }
 
+  const [isVisibleDetailsList, setIsVisibleDetailsList] = useState<
+    number[] | undefined
+  >()
+
+  const onMouseEnter = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    index: number
+  ) => {
+    setIsVisibleDetailsList((prev) => {
+      // if (prev?.includes(index)) {
+      //   return prev?.filter((i) => i !== index)
+      // }
+      return [...(prev || []), index]
+    })
+  }
+  const onMouseLeave = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    index: number
+  ) => {
+    setIsVisibleDetailsList((prev) => {
+      return prev?.filter((i) => i !== index)
+    })
+  }
+
   return (
     <>
       {configs.proMode && (
@@ -222,7 +260,10 @@ export const WalletConfigsModal = () => {
       )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="w-full h-full flex flex-col max-w-[580px]">
+        <div
+          className="w-full h-full flex flex-col max-w-[580px]"
+          onMouseLeave={(e) => setIsVisibleDetailsList([])}
+        >
           <Tooltip
             id={`tooltip-wallets`}
             className="max-w-[210px] bg-gray-600 text-[12px] pr-0 z-91"
@@ -235,21 +276,33 @@ export const WalletConfigsModal = () => {
             all UTXOs from your addresses. Create a PSBT and share it with
             multiple signers.
           </div>
-          <div className="flex flex-col gap-2">
-            {/* {accounts.map((account, index) => (
-              <div key={index}>
-                <WalletInput wallet={account}  />
-              </div>
-            ))} */}
+          <div className="flex flex-col gap-2  overflow-y-scroll max-h-[60vh] no-scrollbar">
+            {walletConfigs.wallets.map((wallet, index) => (
+              <></>
+            ))}
 
             {walletConfigs.wallets.map((wallet, index) => (
-              <div key={index}>
+              <div
+                key={index}
+                onMouseEnter={(e) => onMouseEnter(e, index)}
+                className="transition-all duration-1000 delay-75 move-in"
+              >
                 <WalletInput
                   wallet={wallet}
                   onChange={(e) => onChange(e, index)}
                   onRemove={onRemove}
                   isConnected={accounts.includes(wallet)}
                 />
+                <div
+                  className={` transition-all duration-500 delay-200 transform ${
+                    isVisibleDetailsList?.includes(index)
+                      ? "max-h-[500px] opacity-100 translate-y-0"
+                      : "max-h-0 opacity-0 translate-y-[-20px] pointer-events-none"
+                  }`}
+                  style={{ overflow: "hidden" }} // Hide content during collapse
+                >
+                  <WalletUtxoType wallet={wallet} onClose={onClose} />
+                </div>
               </div>
             ))}
 

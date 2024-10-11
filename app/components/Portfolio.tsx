@@ -5,6 +5,9 @@ import { favoritesAtom } from "@/app/recoil/favoritesAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
+import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
+import { formatAddress } from "@/app/utils/format"
+import { useAccounts } from "@particle-network/btc-connectkit"
 import { use, useEffect, useState } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 
@@ -23,6 +26,13 @@ export const Portfolio = ({
   const [favorites, setFavorites] = useRecoilState(favoritesAtom)
   const butterfly = useRecoilValue(butterflyAtom)
 
+  const { accounts } = useAccounts()
+  const walletConfigs = useRecoilValue(walletConfigsAtom)
+  const allWallets = [
+    ...(!walletConfigs.wallets ? accounts : []),
+    ...walletConfigs.wallets,
+  ]
+
   const onExpand = () => {
     setConfigs((configs) => ({
       ...configs,
@@ -33,7 +43,16 @@ export const Portfolio = ({
     MempoolUTXO[] | undefined
   >()
 
-  const [filterSelected, setFilterSelected] = useState("all")
+  // const [filterSelected, setFilterSelected] = useState("all")
+
+  const setFilterSelected = (filter: string) => {
+    setConfigs((configs) => ({
+      ...configs,
+      fullDeckSearchType: filter,
+    }))
+  }
+
+  const filterSelected = configs.fullDeckSearchType
 
   useEffect(() => {
     const normalUtxosFiltered = utxos?.filter((utxo) => {
@@ -87,13 +106,38 @@ export const Portfolio = ({
       }
     })
 
-    const newUtxosFiltered = normalUtxosFiltered?.filter((_, index) => {
-      return index < configs.fullDeckPage * 40
-    })
+    const newUtxosFiltered = normalUtxosFiltered
+      ?.filter((_, index) => {
+        return index < configs.fullDeckPage * 40
+      })
+      ?.filter(
+        (m) =>
+          m.wallet === configs.fullDeckSearchWallet ||
+          !configs.fullDeckSearchWallet
+      )
 
     setUtxosFiltered(newUtxosFiltered)
-  }, [filterSelected, configs.fullDeckPage, utxos])
+  }, [
+    filterSelected,
+    configs.fullDeckPage,
+    utxos,
+    configs.fullDeckSearchWallet,
+  ])
 
+  const onChangeWalletFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value === "all") {
+      setConfigs((configs) => ({
+        ...configs,
+        fullDeckSearchWallet: "",
+      }))
+      return
+    }
+
+    setConfigs((configs) => ({
+      ...configs,
+      fullDeckSearchWallet: e.target.value,
+    }))
+  }
   return (
     <div
       ref={cardsDeckRef}
@@ -174,6 +218,30 @@ export const Portfolio = ({
             }}
           >
             ⭐️ Favorites
+          </div>
+          <div className="h-[22px] w-[1px] bg-black"></div>
+          <div className="h-[22px] w-[1px] bg-zinc-600 ml-[-16px]"></div>
+          <div
+            className={`border-2 px-2 rounded text-zinc-200 cursor-pointer  hover:text-zinc-50  hover:scale-105 ${
+              configs.fullDeckSearchWallet &&
+              configs.fullDeckSearchWallet !== "all"
+                ? "border-b-2 border-b-zinc-400 "
+                : ""
+            }`}
+          >
+            <select
+              className="px-2 py-1 mt-[-4px] rounded bg-transparent"
+              onChange={onChangeWalletFilter}
+              defaultValue={configs.fullDeckSearchWallet || "all"}
+              value={configs.fullDeckSearchWallet || "all"}
+            >
+              <option value="all">All wallets</option>
+              {allWallets?.map((wallet) => (
+                <option key={wallet} value={wallet}>
+                  {formatAddress(wallet)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

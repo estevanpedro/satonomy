@@ -14,6 +14,8 @@ export const DEFAULT_CONFIGS = {
   proMode: false,
   notConfirmed: false,
   feeType: "custom",
+  fullDeckSearchWallet: "",
+  fullDeckSearchType: "all",
 }
 
 export const configsAtom = atom({
