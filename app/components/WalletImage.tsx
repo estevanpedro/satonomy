@@ -56,5 +56,5 @@ export const WalletImage = ({ wallet }: { wallet: string }) => {
     )
   }
 
-  return <div>✅</div>
+  return null
 }
