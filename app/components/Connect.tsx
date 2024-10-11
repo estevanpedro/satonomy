@@ -55,12 +55,11 @@ export const ConnectButton = ({
   }, [dropdownVisible])
 
   const onDisconnect = () => {
-    // sleep 1s
     setTimeout(() => {
-      setUtxo(null)
-      setOrdByWallet(undefined)
-      setRunesUtxos(null)
-      setOrdinals(null)
+      // setUtxo(null)
+      // setOrdByWallet(undefined)
+      // setRunesUtxos(null)
+      // setOrdinals(null)
     }, 500)
   }
 

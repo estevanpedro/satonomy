@@ -57,8 +57,6 @@ export const WalletUtxoType = ({
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
-  const allOrdinals = ordinals?.flatMap((o) => o.inscription) || []
-
   // const utxo = utxos?.find((u) => u.wallet === wallet)
   const runesStates = useRecoilValue(runesAtom)
 
@@ -252,7 +250,9 @@ export const WalletUtxoType = ({
                       inscriptionsLength
                     )}
                   </span>
-                  {inscriptionsPercentage > 25 && "Inscriptions"}
+                  <span className="text-[12px]">
+                    {inscriptionsPercentage > 25 && "Inscriptions"}
+                  </span>
                 </div>
               </div>
             )}
@@ -288,7 +288,9 @@ export const WalletUtxoType = ({
                   ) : (
                     runesLength
                   )}
-                  {runesPercentage > 15 && <div>Runes</div>}
+                  <span className="text-[12px]">
+                    {runesPercentage > 15 && <div>Runes</div>}
+                  </span>
                 </span>
               </p>
             </div>
@@ -324,7 +326,9 @@ export const WalletUtxoType = ({
                   ) : (
                     btcLength
                   )}
-                  {btcLength >= 10 && <div>Bitcoin</div>}
+                  <span className="text-[12px]">
+                    {btcLength >= 10 && <div>Bitcoin</div>}
+                  </span>
                 </span>
               </p>
             </div>

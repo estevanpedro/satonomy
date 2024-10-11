@@ -71,7 +71,7 @@ const WalletInput = ({
         disabled={isConnected}
       />
       {isConnected ? (
-        <div>🌏</div>
+        <div>✅</div>
       ) : (
         <>
           {loading.walletLoadingList?.includes(wallet) && (
@@ -270,7 +270,12 @@ export const WalletConfigsModal = () => {
             style={{ backgroundColor: "#292929", color: "white" }}
           />
 
-          <h2 className="mb-2 text-2xl">Manage Multiple Wallets</h2>
+          <div className="w-full flex justify-between">
+            <h2 className="mb-2 text-2xl">Manage Multiple Wallets</h2>
+            <div className="cursor-pointer font-bold" onClick={onClose}>
+              X
+            </div>
+          </div>
           <div className="mb-6 text-zinc-500">
             Connect your wallets or add them manually to easily track and manage
             all UTXOs from your addresses. Create a PSBT and share it with
