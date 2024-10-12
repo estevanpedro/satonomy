@@ -37,7 +37,7 @@ export const ConfigDeck = () => {
   const txIdHasError = psbtSigned.txid?.includes("error")
 
   if (configs.isInputFullDeckOpen) {
-    position = "top-[82px]"
+    position = "top-[19px]"
   }
 
   const inputValues = butterfly.inputs.reduce((acc, cur) => acc + cur.value, 0)
@@ -340,7 +340,7 @@ export const ConfigDeck = () => {
 
   return (
     <div
-      className={`z-0 fixed flex gap-2 ${position} w-full items-center justify-center`}
+      className={`z-10 fixed flex gap-2 ${position} w-full items-center justify-center`}
     >
       {Boolean(utxos?.length) &&
         (isDeckOpen || configs.isInputFullDeckOpen) && (
@@ -353,10 +353,10 @@ export const ConfigDeck = () => {
                 isInputFullDeckOpen: false,
               }))
             }
-            className="absolute left-0 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
+            className="absolute left-2 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-b-0 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
-              Action
+              esc
             </div>
             <div className="flex justify-center items-center">Close</div>
           </div>
@@ -397,7 +397,7 @@ export const ConfigDeck = () => {
             className="w-[120px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
-              Share
+              control + c
             </div>
             <div className="flex justify-center items-center">
               Copy{" "}
@@ -455,7 +455,7 @@ export const ConfigDeck = () => {
                 width={16}
                 height={16}
                 style={{
-                  transform: !configs.isInputFullDeckOpen
+                  transform: configs.isInputFullDeckOpen
                     ? ""
                     : "rotate(180deg)",
                 }}

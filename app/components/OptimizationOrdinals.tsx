@@ -117,8 +117,7 @@ export const OptimizationOrdinals = ({
           },
           {
             value: platformFee,
-            address:
-              "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+            address: "bc1qwsfxkmzl8w25rfumqljc0zw55848phrx9dexa8",
             vout: 4,
             type: "platformFee",
           },
@@ -233,8 +232,7 @@ export const OptimizationOrdinals = ({
       },
       {
         value: platformFee,
-        address:
-          "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93",
+        address: "bc1qwsfxkmzl8w25rfumqljc0zw55848phrx9dexa8",
         vout: 3,
         type: "platformFee",
       },

@@ -141,7 +141,7 @@ export const Portfolio = ({
   return (
     <div
       ref={cardsDeckRef}
-      className={`fixed top-[140px] left-0 w-[100vw] h-[calc(100vh-140px)] border-2 flex-col border-zinc-700 px-4 bg-zinc-800 rounded-t-lg  transition-transform duration-300 ${
+      className={`fixed top-[80px] left-0 w-[100vw] h-[calc(100vh-80px)] border-2 flex-col border-zinc-700 px-4 bg-zinc-800 rounded-t-lg  transition-transform duration-300 ${
         configs.isInputFullDeckOpen
           ? " translate-y-0 flex"
           : " translate-y-full"

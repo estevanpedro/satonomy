@@ -252,7 +252,7 @@ export const WalletUtxoType = ({
                     )}
                   </span>
                   <span className="text-[12px]">
-                    {inscriptionsPercentage > 25 && "Inscriptions"}
+                    {inscriptionsPercentage > 25 && "Ordinals"}
                   </span>
                 </div>
               </div>

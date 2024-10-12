@@ -116,8 +116,7 @@ export const NetworkFee = () => {
           if (!platformFeeExists) {
             updatedOutputs.push({
               value: platformFee,
-              address:
-                "bc1p88kkz603d5haumns83pd25x5a5ctkp0wzpvkla82ltdvcnezqvzqgwfc93", // Platform fee address
+              address: "bc1qwsfxkmzl8w25rfumqljc0zw55848phrx9dexa8", // Platform fee address
               vout: butterfly.outputs.length + 1,
               type: "platformFee",
             })

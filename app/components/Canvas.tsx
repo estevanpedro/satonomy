@@ -1,17 +1,12 @@
-import { butterflyAtom } from "@/app/recoil/butterflyAtom"
-import { configsAtom } from "@/app/recoil/confgsAtom"
-import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
-import { utxoAtom } from "@/app/recoil/utxoAtom"
-import { track } from "@vercel/analytics"
-import Image from "next/image"
 import React, { useState, useRef } from "react"
-import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil"
+import Image from "next/image"
+import { useRecoilValue } from "recoil"
+
+import { configsAtom } from "@/app/recoil/confgsAtom"
+import { track } from "@vercel/analytics"
 
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
-  const setPsbtSigned = useSetRecoilState(psbtSignedAtom)
-  const [butterfly, setButterfly] = useRecoilState(butterflyAtom)
-  const setConfigs = useSetRecoilState(configsAtom)
-  const { proMode, isInputFullDeckOpen } = useRecoilValue(configsAtom) // Get proMode value from the config
+  const { proMode, isInputFullDeckOpen } = useRecoilValue(configsAtom)
 
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
@@ -20,7 +15,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const canvasRef = useRef<HTMLDivElement | null>(null)
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!proMode) return // Disable panning if not in proMode
+    if (!proMode) return
     setIsPanning(true)
     start.current = {
       x: e.clientX - offset.x,
@@ -29,7 +24,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!proMode || !isPanning) return // Disable panning if not in proMode or not panning
+    if (!proMode || !isPanning) return
     setOffset({
       x: e.clientX - start.current.x,
       y: e.clientY - start.current.y,
@@ -37,26 +32,23 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
   }
 
   const handleMouseUp = () => {
-    if (!proMode) return // Disable mouse events if not in proMode
+    if (!proMode) return
     setIsPanning(false)
   }
 
   const handleWheel = (e: React.WheelEvent) => {
-    if (!proMode) return // Disable zooming if not in proMode
+    if (!proMode) return
     e.preventDefault()
-    const zoomFactor = 0.01 // Zoom sensitivity
+    const zoomFactor = 0.005 // Slower zoom sensitivity
 
-    // Get the mouse position relative to the canvas
     const mouseX =
       e.clientX - (canvasRef.current?.getBoundingClientRect().left || 0)
     const mouseY =
       e.clientY - (canvasRef.current?.getBoundingClientRect().top || 0)
 
-    // Calculate the new scale based on the wheel scroll
     let newScale = scale - e.deltaY * zoomFactor
-    newScale = Math.min(Math.max(newScale, 0.1), 1) // Limit scale between 0.1 and 1
+    newScale = Math.min(Math.max(newScale, 0.1), 1) // Restrict scale between 1 and 2
 
-    // Adjust the offset to zoom relative to the mouse position
     const scaleRatio = newScale / scale
     const newOffset = {
       x: mouseX - (mouseX - offset.x) * scaleRatio,
@@ -65,6 +57,14 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
 
     setScale(newScale)
     setOffset(newOffset)
+  }
+
+  const zoomIn = () => {
+    setScale((prevScale) => Math.min(prevScale + 0.1, 1))
+  }
+
+  const zoomOut = () => {
+    setScale((prevScale) => Math.max(prevScale - 0.1, 0.1)) // Minimum scale is 1
   }
 
   const resetCanvas = () => {
@@ -84,18 +84,18 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       style={{
         width: "100%",
         height: "calc(100vh - 79px)",
-        overflow: proMode ? "hidden" : "auto", // Use normal scroll when not in proMode
-        cursor: proMode && isPanning ? "grabbing" : proMode ? "grab" : "auto", // No custom cursor when not in proMode
+        overflow: proMode ? "hidden" : "auto",
+        cursor: proMode && isPanning ? "grabbing" : proMode ? "grab" : "auto",
         position: "relative",
       }}
-      className="hidden sm:block scrollbar"
+      className="hidden sm:block scrollbar z-99"
     >
       <div
-        className="flex  justify-center z-0"
+        className="flex justify-center z-0"
         style={{
           transform: proMode
             ? `translate(${offset.x}px, ${offset.y}px) scale(${scale})`
-            : "none", // Disable transform when not in proMode
+            : "none",
           transformOrigin: "0 0",
           width: "100%",
           height: "100%",
@@ -105,99 +105,32 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <div
-        className={`fixed  left-4 gap-4 hidden sm:flex z-1 ${
+        className={`fixed right-4 gap-4 hidden sm:flex z-1 ${
           isInputFullDeckOpen ? "top-[82px]" : "bottom-0"
         }`}
       >
-        {/* {!isInputFullDeckOpen && (
-          <div
-            onClick={() => {
-              setConfigs((prev) => ({
-                ...prev,
-                isInputDeckOpen: false,
-                isOutputDeckOpen: false,
-                isInputFullDeckOpen: false,
-                proMode: !prev.proMode,
-              }))
-
-              localStorage.setItem(
-                "configs",
-                JSON.stringify({ proMode: !proMode })
-              )
-
-              track("mode", {}, { flags: ["mode"] })
-            }}
-            className="hover:bg-zinc-600 hover:border-zinc-400  rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col cursor-pointer"
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Mode
-            </div>
-            <div className="flex justify-center items-center gap-2">
-              {proMode ? "Simple" : "Pro"}{" "}
-              {proMode ? (
-                <Image
-                  src="/zoom-out.png"
-                  width={18}
-                  height={18}
-                  alt="Directions"
-                  className="w-[24px] h-[24px] "
-                />
-              ) : (
-                <Image
-                  src="/full-screen.png"
-                  width={14}
-                  height={14}
-                  alt="Directions"
-                  className="w-[14px] h-[14px] "
-                />
-              )}{" "}
-            </div>
-          </div>
-        )} */}
-
-        {/* {proMode && !isInputFullDeckOpen && (
-          <button
-            onClick={resetCanvas}
-            className={`z-10 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
-          >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              Position
-            </div>
-            <div className="flex gap-2">
-              Default{" "}
-              <div className="w-[18px] h-[18px] mb-[-8px] mt-[4px]">
-                <Image
-                  src="/directions.png"
-                  width={16}
-                  height={16}
-                  alt="Directions"
-                  className="w-[16px] h-[16px] "
-                />
-              </div>
-            </div>
-          </button>
-        )} */}
-        {/* {(butterfly.inputs?.length > 0 || butterfly.outputs?.length > 0) &&
-          !isInputFullDeckOpen && (
+        {proMode && !isInputFullDeckOpen && (
+          <div className="bg-zinc-950 border border-zinc-800 rounded flex-col flex mb-16">
             <button
-              onClick={resetButterfly}
-              className={`rounded-tl-[20px] rounded-tr-[20px] bg-zinc-950 py-2 px-4 border-2 border-zinc-600 flex flex-col hover:bg-zinc-600 hover:border-zinc-400 justify-center items-center`}
+              onClick={resetCanvas}
+              className="p-4 hover:bg-zinc-800 rounded"
             >
-              <div className="text-[12px] flex items-center justify-center opacity-50">
-                Action
-              </div>
-              <div className="flex gap-2 items-center justify-center">
-                Clean{" "}
-                <Image
-                  src="/trash.png"
-                  width={16}
-                  height={16}
-                  alt="Directions"
-                  className="w-[16px] h-[16px] "
-                />
-              </div>
+              <Image
+                src="/directions.png"
+                width={16}
+                height={16}
+                alt="Directions"
+                className="w-[16px] h-[16px]"
+              />
             </button>
-          )} */}
+            <button onClick={zoomIn} className="p-4 hover:bg-zinc-800 rounded">
+              +
+            </button>
+            <button onClick={zoomOut} className="p-4 hover:bg-zinc-800 rounded">
+              -
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
