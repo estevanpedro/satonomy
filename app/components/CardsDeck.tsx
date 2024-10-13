@@ -174,14 +174,23 @@ export const CardCarousel = ({ utxos }: { utxos: MempoolUTXO[] }) => {
       }
     }
 
-    if (configs.isInputFullDeckOpen || configs.isInputDeckOpen) {
+    if (
+      configs.isInputFullDeckOpen ||
+      configs.isInputDeckOpen ||
+      configs.isOutputDeckOpen
+    ) {
       document.addEventListener("mousedown", handleClickOutsideDeck)
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutsideDeck)
     }
-  }, [configs.isInputFullDeckOpen, configs.isInputDeckOpen, setConfigs])
+  }, [
+    configs.isInputFullDeckOpen,
+    configs.isInputDeckOpen,
+    configs.isOutputDeckOpen,
+    setConfigs,
+  ])
 
   return (
     <>

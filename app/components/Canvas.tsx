@@ -110,7 +110,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
         }`}
       >
         {proMode && !isInputFullDeckOpen && (
-          <div className="bg-zinc-950 border border-zinc-800 rounded flex-col flex mb-16">
+          <div className="bg-zinc-950 border border-zinc-800 rounded flex-col flex mb-16 text-[24px]">
             <button
               onClick={resetCanvas}
               className="p-4 hover:bg-zinc-800 rounded"

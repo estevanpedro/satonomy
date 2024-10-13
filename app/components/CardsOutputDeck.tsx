@@ -98,8 +98,42 @@ export const CardOutputCarousel = () => {
   ]
   const outputOptions = [...options, null]
 
+  const cardsDeckRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutsideDeck = (event: any) => {
+      const cleanElement = document?.getElementById("clean")
+      const eventTargetIsInsideClean = cleanElement?.contains(event.target)
+      if (eventTargetIsInsideClean) return
+
+      if (
+        cardsDeckRef.current &&
+        !cardsDeckRef.current.contains(event.target)
+      ) {
+        setConfigs((prev) => ({
+          ...prev,
+          isOutputDeckOpen: false,
+        }))
+      }
+    }
+
+    if (configs.isOutputDeckOpen) {
+      document.addEventListener("mousedown", handleClickOutsideDeck)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideDeck)
+    }
+  }, [
+    configs.isInputFullDeckOpen,
+    configs.isInputDeckOpen,
+    configs.isOutputDeckOpen,
+    setConfigs,
+  ])
+
   return (
     <div
+      ref={cardsDeckRef}
       className={`fixed bgshadow bottom-0 w-[100vw] ${
         !configs.isOutputDeckOpen ? "hidden" : "flex"
       }`}

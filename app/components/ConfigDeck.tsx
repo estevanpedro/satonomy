@@ -372,7 +372,7 @@ export const ConfigDeck = () => {
             id="clean"
             className="text-[12px] flex items-center justify-center opacity-50"
           >
-            Action
+            Board
           </div>
           <div className="flex gap-2 items-center justify-center">
             Clean{" "}
@@ -397,7 +397,7 @@ export const ConfigDeck = () => {
             className="w-[120px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-2 border-2 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500"
           >
             <div className="text-[12px] flex items-center justify-center opacity-50">
-              control + c
+              Link
             </div>
             <div className="flex justify-center items-center">
               Copy{" "}
@@ -455,7 +455,7 @@ export const ConfigDeck = () => {
                 width={16}
                 height={16}
                 style={{
-                  transform: configs.isInputFullDeckOpen
+                  transform: !configs.isInputFullDeckOpen
                     ? ""
                     : "rotate(180deg)",
                 }}

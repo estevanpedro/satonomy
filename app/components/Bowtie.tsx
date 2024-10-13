@@ -36,6 +36,7 @@ import { useLocalSettings } from "@/app/hooks/useLocalSettings"
 import { useMempool } from "@/app/hooks/useMempool"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { useSignPsbt } from "@/app/hooks/useSignPsbt"
+import { useKeyboards } from "@/app/hooks/useKeyboards"
 
 export const Bowtie = () => {
   useMempool()
@@ -48,6 +49,7 @@ export const Bowtie = () => {
   useFeeRate()
   useUrlButterfly()
   useLocalSettings()
+  useKeyboards()
 
   const utxos = useRecoilValue(utxoAtom)
   const [configs, setConfigs] = useRecoilState(configsAtom)

@@ -306,8 +306,15 @@ export const CardOption = ({
         touchAction: "auto",
         position: "relative",
         zIndex: 1,
+        filter: isSelected
+          ? ""
+          : isSelected === undefined && !inputs.includes(utxo)
+          ? isDisabled
+            ? "grayscale(100%)"
+            : ""
+          : "",
       }}
-      className={`select-none	 min-h-[320px] relative w-52 min-w-52 rounded-xl bg-zinc-900 flex flex-col gap-3 items-center justify-center`}
+      className={` select-none	 min-h-[320px] relative w-52 min-w-52 rounded-xl bg-zinc-900 flex flex-col gap-3 items-center justify-center`}
     >
       <div className="absolute top-[-3px] right-[-3px] pointer-events-none">
         <Category color={colorType} type={contentType} />
