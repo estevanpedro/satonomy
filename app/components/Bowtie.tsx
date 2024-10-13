@@ -72,7 +72,7 @@ export const Bowtie = () => {
   const onAddInput = () => {
     const isConnected = Boolean(account)
 
-    if (!isConnected && !configs.proMode) {
+    if ((!isConnected && !configs.proMode) || !utxos?.length) {
       return
     }
 
