@@ -129,6 +129,9 @@ export const ConnectButton = ({
           <div className="flex flex-col w-full gap-3 pt-4 bg-black border-l-[1px] border-r-[1px] border-b-[1px] px-3 pb-3">
             {configs.proMode && (
               <WalletConfigsModal
+                onClick={() => {
+                  setDropdownVisible(false)
+                }}
                 triggerComponent={
                   <button
                     id="wallets"
@@ -191,8 +194,10 @@ export const ConnectButton = ({
 
       <div
         className={`flex gap-1 items-center  px-1 py-1 rounded z-1 ${
-          isClean ? "px-0 py-0" : "border"
-        }`}
+          isClean ? "px-0 py-0" : " border border-zinc-800"
+        }
+        
+        `}
       >
         <div
           onClick={() => (wallet ? copyWallet(wallet) : null)}
@@ -200,7 +205,9 @@ export const ConnectButton = ({
         >
           {!accounts.length && (
             <button
-              className="text-white bg-zinc-900 px-4 h-[32px] rounded-md "
+              className={`text-white bg-zinc-900 px-4 h-[32px] rounded-md hover:scale-[102%] transition-all duration-300 ${
+                !account && "font-bold"
+              }`}
               onClick={() => {
                 if (!wallet) {
                   openConnectModal?.()

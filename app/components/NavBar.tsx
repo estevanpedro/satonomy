@@ -92,10 +92,10 @@ export const NavBar = () => {
             data-tooltip-id={"pro"}
             data-tooltip-content="Use advanced features, drag and drop, multiples wallets and more."
             data-tooltip-place="bottom"
-            className={`z-2  cursor-pointer border-[1px] border-zinc-600 rounded py-1 px-4 hover:scale-105 transition-all duration-300 flex ${
+            className={`z-2  text-white cursor-pointer rounded py-2 px-4 hover:scale-105 transition-all duration-300 flex ${
               configs.proMode
-                ? "border-zinc-100 opacity-100  bg-white text-zinc-900"
-                : "opacity-50 text-white"
+                ? "opacity-100  gradient-border "
+                : "opacity-50 border-[1px] border-zinc-600 "
             }`}
           >
             <Tooltip

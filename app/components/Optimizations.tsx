@@ -134,7 +134,7 @@ export const Optimizations = () => {
             className="flex gap-2 cursor-pointer -mt-4"
             onClick={() => setIsOpen(true)}
           >
-            <span className="text-[#52525B] hover:text-white border px-3 py-1 -mr-3  rounded hover:border-white">
+            <span className="opacity-50 border-[1px] border-zinc-600 hover:text-white  px-3 py-2 -mr-3  rounded hover:border-white hover:opacity-100 hover:scale-105 font-bold transition-all duration-300">
               Optimize
             </span>{" "}
             <span className="relative flex h-3 w-3">

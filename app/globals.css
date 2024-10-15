@@ -419,3 +419,39 @@ body {
   stroke-dasharray: 100%, 0;
   stroke-dashoffset: -100%;
 }
+
+.gradient-border {
+  position: relative;
+  background-color: transparent;
+  z-index: 1;
+}
+.gradient-border-1 {
+  position: relative;
+  background-color: transparent;
+  z-index: 1;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px; /* Border thickness */
+  background: linear-gradient(45deg, #6839b6, #3478f7);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  z-index: -1;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #6839b6, #3478f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}

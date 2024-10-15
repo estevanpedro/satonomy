@@ -289,10 +289,12 @@ export const NetworkFee = () => {
           </div>
         )}
         <div
-          className={`${
+          className={`text-center justify-center transition-all duration-300  hover:scale-110 hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100  ${
             hasSomeSigned ? "cursor-not-allowed" : "cursor-pointer"
-          } hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
-            configs.feeType === "slow" ? "border-zinc-400" : "border-zinc-800"
+          } hover:border-zinc-400 hover:bg-zinc-800  hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
+            configs.feeType === "slow"
+              ? "gradient-border text-white"
+              : "border-zinc-800 text-zinc-500"
           }`}
           onClick={() => {
             if (!hasSomeSigned) {
@@ -317,8 +319,10 @@ export const NetworkFee = () => {
           </label>
         </div>
         <div
-          className={`hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
-            configs.feeType === "mid" ? "border-zinc-400" : "border-zinc-800"
+          className={`text-center justify-center transition-all duration-300  hover:scale-110 hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100  hover:border-zinc-400 hover:bg-zinc-800  hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
+            configs.feeType === "mid"
+              ? "gradient-border text-white"
+              : "border-zinc-800 text-zinc-500"
           }`}
           onClick={() => {
             if (!hasSomeSigned) {
@@ -337,14 +341,18 @@ export const NetworkFee = () => {
           />
           <label
             htmlFor="mid"
-            className={hasSomeSigned ? `cursor-not-allowed` : "cursor-pointer"}
+            className={`text-center items-center justify-center flex ${
+              hasSomeSigned ? `cursor-not-allowed` : "cursor-pointer"
+            }`}
           >
             Mid
           </label>
         </div>
         <div
-          className={`hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
-            configs.feeType === "fast" ? "border-zinc-400" : "border-zinc-800"
+          className={`text-center justify-center transition-all duration-300  hover:scale-110 hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
+            configs.feeType === "fast"
+              ? "gradient-border text-white"
+              : "border-zinc-800 text-zinc-500"
           }`}
           onClick={() => {
             if (!hasSomeSigned) {

@@ -198,7 +198,10 @@ export const WalletConfigsModal = ({
     previousProModeRef.current = configs.proMode
   }, [configs.proMode, accounts, setWalletConfigs])
 
-  const onClose = () => setIsOpen(false)
+  const onClose = () => {
+    setIsOpen(false)
+    onClick?.()
+  }
 
   const onChange = (e: any, index: number) => {
     const wallet = e.target.value
@@ -298,7 +301,6 @@ export const WalletConfigsModal = ({
         <div
           onClick={() => {
             setIsOpen(true)
-            onClick?.()
           }}
           className=""
         >
@@ -308,8 +310,14 @@ export const WalletConfigsModal = ({
         <div
           onClick={() => setIsOpen(true)}
           className={`${
-            configs.proMode ? "border bg-zinc-900" : "bg-transparent"
-          } h-[32px] w-[32px] rounded  border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px] hover:scale-105 transition-all duration-300 hover:opacity-80`}
+            configs.proMode
+              ? ` bg-zinc-900 ${
+                  walletConfigs.wallets.length
+                    ? "gradient-border "
+                    : "border border-zinc-600"
+                }`
+              : "bg-transparent"
+          } h-[32px] w-[32px] rounded   flex text-center items-center justify-center cursor-pointer text-[24px] hover:scale-105 transition-all duration-300 hover:opacity-80`}
         >
           <Image src="/wallet.png" width={20} height={20} alt="Wallets" />
         </div>
