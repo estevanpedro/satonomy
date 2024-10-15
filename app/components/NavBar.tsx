@@ -70,6 +70,8 @@ export const NavBar = () => {
           >
             <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
           </div> */}
+
+          <Optimizations />
           <div
             onClick={() => {
               setConfig((old) => ({
@@ -103,8 +105,6 @@ export const NavBar = () => {
             />
             <span className="font-bold">Pro</span>
           </div>
-
-          <Optimizations />
 
           <ConnectButton />
 

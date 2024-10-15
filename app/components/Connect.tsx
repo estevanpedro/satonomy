@@ -125,7 +125,7 @@ export const ConnectButton = ({
       onMouseLeave={handleMouseLeave}
     >
       {dropdownVisible && (configs?.proMode || account) && (
-        <div className="absolute left-0 mt-[84px] w-full h-full">
+        <div className="absolute left-0 mt-[80px] w-full h-full">
           <div className="flex flex-col w-full gap-3 pt-4 bg-black border-l-[1px] border-r-[1px] border-b-[1px] px-3 pb-3">
             {configs.proMode && (
               <WalletConfigsModal
@@ -140,7 +140,7 @@ export const ConnectButton = ({
                       height={15}
                       alt="Wallets"
                     />
-                    Multiple Wallets
+                    Wallets
                   </button>
                 }
               />
@@ -190,7 +190,7 @@ export const ConnectButton = ({
       )}
 
       <div
-        className={`flex gap-1 items-center  px-4 py-2 rounded z-1 ${
+        className={`flex gap-1 items-center  px-1 py-1 rounded z-1 ${
           isClean ? "px-0 py-0" : "border"
         }`}
       >
@@ -212,22 +212,24 @@ export const ConnectButton = ({
               {account ? formatAddress(account) : "Connect Wallet"}
             </button>
           )}
-          {Boolean(wallet) && formatAddress(wallet)}{" "}
-          {Boolean(wallet) && (
-            <Image
-              src="/copy.png"
-              width={12}
-              height={12}
-              alt="Wallets"
-              className="w-3 h-3 cursor-pointer"
-            />
+          {wallet && (
+            <span className="flex gap-1 px-2 justify-center items-center">
+              {Boolean(wallet) && formatAddress(wallet)}{" "}
+              {Boolean(wallet) && (
+                <Image
+                  src="/copy.png"
+                  width={12}
+                  height={12}
+                  alt="Wallets"
+                  className="w-3 h-3 cursor-pointer"
+                />
+              )}
+            </span>
           )}
         </div>
 
         {!isClean && (
-          <div
-            className={`ml-2  ${configs.proMode ? "" : "pointer-events-none"}`}
-          >
+          <div className={`  ${configs.proMode ? "" : "pointer-events-none"}`}>
             <WalletConfigsModal isClean={isClean} />
           </div>
         )}
