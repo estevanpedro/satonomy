@@ -10,6 +10,7 @@ import { utxoAtom } from "@/app/recoil/utxoAtom"
 import { useParams } from "next/navigation"
 import { formatNumber } from "@/app/utils/format"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
+import { btcPriceAtom } from "@/app/recoil/btcPriceAtom"
 
 export const NetworkFee = () => {
   const [configs, setConfigs] = useRecoilState(configsAtom)
@@ -19,7 +20,9 @@ export const NetworkFee = () => {
     if (!recommendedFees) return 0
     switch (feeType) {
       case "slow":
-        return recommendedFees.minimumFee + 0.25
+        return recommendedFees.minimumFee + 0.25 > 2.7
+          ? recommendedFees.minimumFee + 0.25
+          : 2.7
       case "mid":
         return (
           (recommendedFees.minimumFee + 0.25 + recommendedFees.fastestFee) / 2
@@ -188,6 +191,9 @@ export const NetworkFee = () => {
     butterfly.outputs.length > 0 &&
     butterfly.inputs.length > 0
 
+  const hourFee = recommendedFees?.halfHourFee
+  const btcUsdPrice = useRecoilValue(btcPriceAtom)
+
   return (
     <div
       data-tooltip-id={"fee-tool"}
@@ -195,7 +201,7 @@ export const NetworkFee = () => {
         feeRateLessThan2 ? "Fee must be higher than 2 sats/vb 🚨" : ""
       }
       data-tooltip-place="left"
-      className={`transition-all duration-1000  pb-6 min-w-52  rounded-xl flex flex-col gap-3 items-center justify-center border bg-zinc-950 ${
+      className={`transition-all duration-1000  pb-6 pt-6 min-w-52  rounded-xl flex flex-col gap-1 items-center justify-start border bg-zinc-950 ${
         feeRateLessThan2 ? "border-red-500 " : ""
       }`}
     >
@@ -209,7 +215,7 @@ export const NetworkFee = () => {
       <div>Network Fee</div>
 
       <div
-        className={`text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center`}
+        className={`text-center  font-medium whitespace-nowrap flex flex-col justify-center items-center p-1`}
         data-tooltip-id={"fee-tool"}
         data-tooltip-content={"Type the total fee cost in sats"}
         data-tooltip-place="left"
@@ -232,22 +238,56 @@ export const NetworkFee = () => {
       {Boolean(configs.feeRateEstimated || configs.feeRate) &&
         Boolean(typeof configs.feeRateEstimated === "number") && (
           <div
-            className={`mt-2 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]  ${
+            className={`flex flex-col items-center justify-center mt-4 mb-[-4px] text-[14px] text-zinc-400 absolute bottom-[28px]  ${
               feeRateLessThan2 ? "text-red-500 " : ""
             }`}
           >
-            {formatNumber(
-              configs.feeRateEstimated || configs.feeRate,
-              0,
-              1,
-              false,
-              false
-            )}{" "}
-            sats/vb
+            <span>
+              {formatNumber(
+                configs.feeRateEstimated || configs.feeRate,
+                0,
+                1,
+                false,
+                false
+              )}{" "}
+              sats/vb
+            </span>
+            {Boolean(configs.feeCost) && Boolean(btcUsdPrice) && (
+              <span className="text-[12px] opacity-50">
+                ${formatNumber((configs.feeCost * btcUsdPrice) / 100000000)}{" "}
+              </span>
+            )}
           </div>
         )}
 
       <div className="flex flex-col gap-3 absolute top-0 -right-[84px]">
+        {Boolean(hourFee) && (
+          <div
+            className="text-[12px]  flex gap-2 mr-4 justify-center"
+            data-tooltip-id={"feerate"}
+            data-tooltip-content={"Mempool average half hour fee rate"}
+            data-tooltip-place="top"
+          >
+            <Tooltip
+              id={"feerate"}
+              className="max-w-[260px] bg-gray-600"
+              style={{ backgroundColor: "#292929", color: "white" }}
+            />
+            <span className="opacity-50">{hourFee}</span>
+            <div className="w-[16px] opacity-50">
+              <svg viewBox="0 0 512 512" focusable="false" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M304 96c0-9-7-16-16-16H128c-9 0-16 7-16 16v128c0 9 7 16 16 16h160c9 0 16-7 16-16V96zm-32 112H144v-96h128v96z"
+                ></path>
+                <path
+                  fill="currentColor"
+                  d="m488 113-64-32c-8-4-18 0-22 8s0 17 8 21l24 12-2 6c0 21 16 38 32 45v195a16 16 0 0 1-32 0V240c0-39-32-71-64-79V64c0-36-28-64-63-64H113C77 0 48 28 48 64v358l-23 11c-6 3-9 9-9 15v48c0 9 8 16 17 16h352c9 0 15-7 15-16v-48c0-6-3-12-9-15l-23-11V195c16 6 32 24 32 45v128a48 48 0 0 0 96 0V128c0-6-3-12-8-15zM368 480H48v-22l23-12c6-3 9-8 9-14V64c0-18 15-32 33-32h192c17 0 31 14 31 32v368c0 6 3 11 9 14l23 12v22z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        )}
         <div
           className={`${
             hasSomeSigned ? "cursor-not-allowed" : "cursor-pointer"
@@ -302,7 +342,6 @@ export const NetworkFee = () => {
             Mid
           </label>
         </div>
-
         <div
           className={`hover:border-zinc-400 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-400 font-bold flex items-center px-4 py-2 cursor-pointer border rounded-md ${
             configs.feeType === "fast" ? "border-zinc-400" : "border-zinc-800"

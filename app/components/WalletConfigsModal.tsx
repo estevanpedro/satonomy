@@ -9,7 +9,7 @@ import { walletConfigsAtom } from "@/app/recoil/walletConfigsAtom"
 import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
 
 import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { Tooltip } from "react-tooltip"
 import { useRecoilState, useRecoilValue } from "recoil"
 
@@ -110,7 +110,15 @@ const WalletInput = ({
   )
 }
 
-export const WalletConfigsModal = () => {
+export const WalletConfigsModal = ({
+  triggerComponent,
+  onClick,
+  isClean,
+}: {
+  triggerComponent?: React.ReactElement
+  onClick?: () => void
+  isClean?: boolean
+}) => {
   const { accounts } = useAccounts()
   const [walletConfigs, setWalletConfigs] = useRecoilState(walletConfigsAtom)
   const [isOpen, setIsOpen] = useState(false)
@@ -286,10 +294,22 @@ export const WalletConfigsModal = () => {
 
   return (
     <>
-      {configs.proMode && (
+      {triggerComponent ? (
+        <div
+          onClick={() => {
+            setIsOpen(true)
+            onClick?.()
+          }}
+          className=""
+        >
+          {triggerComponent}
+        </div>
+      ) : (
         <div
           onClick={() => setIsOpen(true)}
-          className="h-[32px] w-[32px] rounded border border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px] hover:scale-105 transition-all duration-300"
+          className={`${
+            configs.proMode ? "border" : ""
+          } h-[32px] w-[32px] rounded  border-zinc-600 flex text-center items-center justify-center cursor-pointer text-[24px] hover:scale-105 transition-all duration-300 hover:opacity-80`}
         >
           <Image src="/wallet.png" width={20} height={20} alt="Wallets" />
         </div>
@@ -349,10 +369,10 @@ export const WalletConfigsModal = () => {
 
             <div className="mt-2">
               <button
-                className="text-zinc-400 hover:text-zinc-200 border py-2 px-4 rounded"
+                className="flex justify-center items-center text-zinc-400 hover:text-zinc-200 border py-2 px-4 rounded"
                 onClick={onAddMoreWallet}
               >
-                Add wallet
+                <span className="text-[24px] pr-2 mb-1">+</span>Add wallet
               </button>
             </div>
 

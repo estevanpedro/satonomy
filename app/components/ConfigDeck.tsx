@@ -338,6 +338,30 @@ export const ConfigDeck = () => {
     track("resetButterfly", {}, { flags: ["resetButterfly"] })
   }
 
+  const onPortfolioClick = () => {
+    if (configs.isInputDeckOpen || configs.isOutputDeckOpen) {
+      setConfigs((prev) => ({
+        ...prev,
+        isInputDeckOpen: false,
+        isOutputDeckOpen: false,
+        isInputFullDeckOpen: true,
+      }))
+
+      return
+    }
+
+    track("portfolio", {}, { flags: ["portfolio"] })
+    setConfigs((prev) => ({
+      ...prev,
+      isInputFullDeckOpen:
+        (utxos?.length || 0) >= 20 || prev.isInputDeckOpen
+          ? !prev.isInputFullDeckOpen
+          : false,
+      isInputDeckOpen:
+        (utxos?.length || 0) < 20 ? !prev.isInputDeckOpen : false,
+    }))
+  }
+
   return (
     <div
       className={`z-10 fixed flex gap-2 ${position} w-full items-center justify-center`}
@@ -415,16 +439,7 @@ export const ConfigDeck = () => {
       {Boolean(utxos?.length) && (
         <div
           className={`transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide w-[300px] rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 hover:bg-zinc-800 py-2 px-6 border-2 border-zinc-600 hover:border-zinc-500 cursor-pointer`}
-          onClick={() => {
-            track("portfolio", {}, { flags: ["portfolio"] })
-            setConfigs((prev) => ({
-              ...prev,
-              isInputFullDeckOpen:
-                (utxos?.length || 0) >= 20 ? !prev.isInputFullDeckOpen : false,
-              isInputDeckOpen:
-                (utxos?.length || 0) < 20 ? !prev.isInputDeckOpen : false,
-            }))
-          }}
+          onClick={onPortfolioClick}
         >
           <div className="text-[12px] flex items-center justify-center opacity-50">
             {utxos?.length} UTXOs

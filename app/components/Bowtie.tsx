@@ -76,6 +76,16 @@ export const Bowtie = () => {
       return
     }
 
+    if (utxos?.length && utxos?.length < 20) {
+      setConfigs((prev: any) => ({
+        ...prev,
+        isInputDeckOpen: true,
+        isOutputDeckOpen: false,
+        isInputFullDeckOpen: false,
+      }))
+      return
+    }
+
     setConfigs((prev: any) => ({
       ...prev,
       isInputDeckOpen: isConnected ? !prev.isInputDeckOpen : false,

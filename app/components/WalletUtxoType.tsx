@@ -57,7 +57,6 @@ export const WalletUtxoType = ({
 
   const [isBrc20, setIsBrc20] = useState<undefined | string>(undefined)
 
-  // const utxo = utxos?.find((u) => u.wallet === wallet)
   const runesStates = useRecoilValue(runesAtom)
 
   const colorType = CARD_TYPES_COLOR.INSCRIPTIONS

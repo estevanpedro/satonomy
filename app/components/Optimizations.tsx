@@ -234,7 +234,7 @@ export const Optimizations = () => {
 
             {!Boolean(account) && (
               <p className="mt-4 opacity-50 text-[12px]">
-                <ConnectButton mobileVisible={true} />
+                <ConnectButton mobileVisible={true} isClean={true} />
               </p>
             )}
             {Boolean(account) && (

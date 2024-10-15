@@ -110,10 +110,10 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
         }`}
       >
         {proMode && !isInputFullDeckOpen && (
-          <div className="bg-zinc-950 border border-zinc-800 rounded flex-col flex mb-16 text-[24px]">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-sm flex-col flex mb-16 text-[24px]">
             <button
               onClick={resetCanvas}
-              className="p-4 hover:bg-zinc-800 rounded"
+              className="bg-zinc-900 p-4 hover:bg-zinc-800 rounded-t-sm py-[24px]"
             >
               <Image
                 src="/directions.png"
@@ -123,10 +123,16 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
                 className="w-[16px] h-[16px]"
               />
             </button>
-            <button onClick={zoomIn} className="p-4 hover:bg-zinc-800 rounded">
+            <button
+              onClick={zoomIn}
+              className="bg-zinc-900 p-4 hover:bg-zinc-800 "
+            >
               +
             </button>
-            <button onClick={zoomOut} className="p-4 hover:bg-zinc-800 rounded">
+            <button
+              onClick={zoomOut}
+              className="bg-zinc-900 p-4 hover:bg-zinc-800 rounded-b-sm"
+            >
               -
             </button>
           </div>
