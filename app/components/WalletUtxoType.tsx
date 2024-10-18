@@ -10,7 +10,7 @@ import { ordByWalletAtom } from "@/app/recoil/ordByWalletAtom"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { runesAtom } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
-import { formatAddress } from "@/app/utils/format"
+import { formatAddress, formatNumber } from "@/app/utils/format"
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
@@ -185,15 +185,17 @@ export const WalletUtxoType = ({
             className="mb-2 flex gap-1 items-center hover:opacity-80 cursor-pointer "
             onClick={() => copyWallet(wallet)}
           >
-            <Image src="/wallet.png" width={12} height={12} alt="Wallets" />{" "}
-            {formatAddress(wallet)}{" "}
-            <Image
-              src="/copy.png"
-              width={12}
-              height={12}
-              alt="Wallets"
-              className="w-3 h-3"
-            />
+            <Image src="/bitcoin.png" alt="Bitcoin" width={24} height={24} />
+            {utxos &&
+              !isLoadingWallets &&
+              formatNumber(
+                utxos
+                  ?.filter((u) => u.wallet === wallet)
+                  .reduce((acc, curr) => acc + Number(curr.value), 0) /
+                  100000000,
+                8,
+                8
+              )}
           </div>
 
           <div className="flex gap-1">

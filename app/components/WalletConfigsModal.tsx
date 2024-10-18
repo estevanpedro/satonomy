@@ -347,10 +347,6 @@ export const WalletConfigsModal = ({
           </div>
           <div className="flex flex-col gap-2  overflow-y-scroll max-h-[60vh] no-scrollbar">
             {walletConfigs.wallets.map((wallet, index) => (
-              <></>
-            ))}
-
-            {walletConfigs.wallets.map((wallet, index) => (
               <div
                 key={index}
                 onMouseEnter={(e) => onMouseEnter(e, index)}
@@ -363,11 +359,7 @@ export const WalletConfigsModal = ({
                   isConnected={accounts.includes(wallet)}
                 />
                 <div
-                  className={` transition-all duration-500 delay-200 transform ${
-                    isVisibleDetailsList?.includes(index)
-                      ? "max-h-[500px] opacity-100 translate-y-0"
-                      : "max-h-0 opacity-0 translate-y-[-20px] pointer-events-none"
-                  }`}
+                  className={` transition-all duration-500 delay-200 transform max-h-[500px] opacity-100 translate-y-0`}
                   style={{ overflow: "hidden" }} // Hide content during collapse
                 >
                   <WalletUtxoType wallet={wallet} onClose={onClose} />

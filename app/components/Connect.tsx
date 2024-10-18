@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { formatAddress } from "@/app/utils/format"
+import { formatAddress, formatNumber } from "@/app/utils/format"
 import { useAccounts, useConnectModal } from "@particle-network/btc-connectkit"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { utxoAtom } from "@/app/recoil/utxoAtom"
@@ -116,6 +116,11 @@ export const ConnectButton = ({
           walletConfigs.wallets.includes(u.wallet))
     ).length
 
+  const totalBalance = utxos?.reduce(
+    (acc, curr) => acc + (curr.wallet === wallet ? curr.value : 0),
+    0
+  )
+
   return (
     <div
       className={`relative dropdown-container gap-3 justify-center items-center ${
@@ -220,18 +225,20 @@ export const ConnectButton = ({
             </button>
           )}
           {wallet && (
-            <span className="flex gap-1 px-2 justify-center items-center">
-              {Boolean(wallet) && formatAddress(wallet)}{" "}
-              {Boolean(wallet) && (
-                <Image
-                  src="/copy.png"
-                  width={12}
-                  height={12}
-                  alt="Wallets"
-                  className="w-3 h-3 cursor-pointer"
-                />
-              )}
-            </span>
+            <div className="flex justify-start items-start flex-col font-[12px]">
+              <div className="flex gap-1 px-2 justify-center items-center">
+                {Boolean(wallet) && formatAddress(wallet)}{" "}
+                {Boolean(wallet) && (
+                  <Image
+                    src="/copy.png"
+                    width={12}
+                    height={12}
+                    alt="Wallets"
+                    className="w-3 h-3 cursor-pointer"
+                  />
+                )}
+              </div>
+            </div>
           )}
         </div>
 

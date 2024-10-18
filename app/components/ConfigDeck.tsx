@@ -308,8 +308,6 @@ export const ConfigDeck = () => {
           )
         }
 
-        // update utxos used
-
         toast.success("Broadcast Successfully", toastOptions)
       } else {
         track("error-broadcast", { wallet: account })
@@ -332,7 +330,6 @@ export const ConfigDeck = () => {
       fullDeckSearchWallet: "",
     }))
     setPsbtSigned({ inputsSigned: [], psbtHexSigned: "" })
-    // remove params from url
     window.history.replaceState({}, "", "/")
 
     track("resetButterfly", {}, { flags: ["resetButterfly"] })
@@ -377,12 +374,9 @@ export const ConfigDeck = () => {
                 isInputFullDeckOpen: false,
               }))
             }
-            className="absolute left-2 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-b-0 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
+            className="mb-[-14px] absolute left-2 rounded-tl-[20px] rounded-tr-[20px] bg-zinc-900 py-2 px-4 border-2 border-b-0 border-zinc-600 flex flex-col cursor-pointer hover:bg-zinc-800 hover:border-zinc-500 transition-all duration-200 transform opacity-0 translate-y-4 animate-fade-slide"
           >
-            <div className="text-[12px] flex items-center justify-center opacity-50">
-              esc
-            </div>
-            <div className="flex justify-center items-center">Close</div>
+            ↓
           </div>
         )}
 
@@ -446,36 +440,39 @@ export const ConfigDeck = () => {
             {utxos?.length} UTXOs
           </div>
           <div className="flex gap-2 justify-center items-center px-2">
-            <Image src="/bitcoin.png" alt="Bitcoin" width={24} height={24} />
-            <span className="whitespace-nowrap">
-              {utxos?.length
-                ? utxos.reduce((acc, utxo) => acc + utxo.value, 0) / 100000000
-                : `0.000000000`}{" "}
-              BTC
-            </span>
-
-            {hasWalletLoading && (
-              <div
-                className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#6839B6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-                role="status"
-              >
-                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                  Loading...
+            {configs.isInputFullDeckOpen ? (
+              <>
+                <Image
+                  src="/bitcoin.png"
+                  alt="Bitcoin"
+                  width={24}
+                  height={24}
+                />
+                <span className="whitespace-nowrap">
+                  {utxos?.length
+                    ? utxos.reduce((acc, utxo) => acc + utxo.value, 0) /
+                      100000000
+                    : `0.000000000`}{" "}
+                  BTC
                 </span>
-              </div>
+
+                {hasWalletLoading && (
+                  <div
+                    className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#6839B6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                    role="status"
+                  >
+                    <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                      Loading...
+                    </span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <span className="whitespace-nowrap">Open Portfolio</span>
             )}
+
             {!hasWalletLoading && (
-              <Image
-                src="/wallet.png"
-                alt="Arrow"
-                width={16}
-                height={16}
-                style={{
-                  transform: !configs.isInputFullDeckOpen
-                    ? ""
-                    : "rotate(180deg)",
-                }}
-              />
+              <Image src="/wallet.png" alt="Arrow" width={16} height={16} />
             )}
           </div>
         </div>

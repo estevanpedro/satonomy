@@ -46,7 +46,7 @@ export const NavBar = () => {
         </div>
 
         <div className="flex  items-center justify-center gap-4">
-          <div
+          {/* <div
             onClick={onRefreshClick}
             data-tooltip-id={"feerate"}
             data-tooltip-content={
@@ -56,7 +56,7 @@ export const NavBar = () => {
             className="cursor-pointer border-[1px] border-zinc-600 rounded p-1 hover:scale-105 transition-all duration-300 opacity-50"
           >
             <Image src="/refresh.png" width={16} height={16} alt="Refresh" />
-          </div>
+          </div> */}
 
           <AirdropRunes />
           <Optimizations />

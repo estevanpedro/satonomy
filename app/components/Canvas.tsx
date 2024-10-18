@@ -46,7 +46,7 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
 
   const handleWheel = (e: React.WheelEvent) => {
     if (!proMode) return
-    e.preventDefault()
+    // e.preventDefault()
     const zoomFactor = 0.005 // Slower zoom sensitivity
 
     const mouseX =
@@ -81,16 +81,6 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
     setOffset({ x: 0, y: 0 })
   }
   const onBottomClick = () => {
-    // window.scrollTo({
-    //   top: document.body.scrollHeight,
-    //   behavior: "smooth",
-    // })
-    // canvas focus in the bottom of the offset
-    console.log(Math.max(outputsCount, inputsCount))
-    console.log(
-      "✌️Math.max(outputsCount, inputsCount) * 2 --->",
-      Math.max(outputsCount, inputsCount) * 50
-    )
     setScale(1)
     setOffset({
       x: 0,
