@@ -4,16 +4,24 @@ import { useRecoilValue } from "recoil"
 
 import { configsAtom } from "@/app/recoil/confgsAtom"
 import { track } from "@vercel/analytics"
+import { butterflyAtom } from "@/app/recoil/butterflyAtom"
 
 export const Canvas = ({ children }: { children: React.ReactNode }) => {
   const { proMode, isInputFullDeckOpen } = useRecoilValue(configsAtom)
+  const butterfly = useRecoilValue(butterflyAtom)
+  const inputsCount = butterfly.inputs.length
+  const outputsCount = butterfly.outputs.length
+
+  const height = 320
+  const inputHeight = height * inputsCount
+  const outputHeight = height * outputsCount
+  const totalHeight = Math.max(inputHeight, outputHeight)
 
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
   const [scale, setScale] = useState(1)
   const start = useRef({ x: 0, y: 0 })
   const canvasRef = useRef<HTMLDivElement | null>(null)
-
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!proMode) return
     setIsPanning(true)
@@ -71,6 +79,23 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
     track("resetCanvas", {}, { flags: ["resetCanvas"] })
     setScale(1)
     setOffset({ x: 0, y: 0 })
+  }
+  const onBottomClick = () => {
+    // window.scrollTo({
+    //   top: document.body.scrollHeight,
+    //   behavior: "smooth",
+    // })
+    // canvas focus in the bottom of the offset
+    console.log(Math.max(outputsCount, inputsCount))
+    console.log(
+      "✌️Math.max(outputsCount, inputsCount) * 2 --->",
+      Math.max(outputsCount, inputsCount) * 50
+    )
+    setScale(1)
+    setOffset({
+      x: 0,
+      y: -totalHeight - (Math.max(outputsCount, inputsCount) / 10) * 320,
+    })
   }
 
   return (
@@ -134,6 +159,12 @@ export const Canvas = ({ children }: { children: React.ReactNode }) => {
               className="bg-zinc-900 p-4 hover:bg-zinc-800 rounded-b-sm"
             >
               -
+            </button>
+            <button
+              onClick={onBottomClick}
+              className="bg-zinc-900 p-4 hover:bg-zinc-800 rounded-b-sm text-[14px]"
+            >
+              ↓
             </button>
           </div>
         )}

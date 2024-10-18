@@ -1,14 +1,16 @@
 import React from "react"
+import Image from "next/image"
+import Link from "next/link"
+
 import { useRecoilState, useRecoilValue } from "recoil"
-import { useAccounts, useBTCProvider } from "@particle-network/btc-connectkit"
+import { useAccounts } from "@particle-network/btc-connectkit"
 
 import { useRunes } from "@/app/hooks/useRunes"
 import { useInputs } from "@/app/hooks/useInputs"
 
 import { formatAddress, formatNumber } from "@/app/utils/format"
-import { useOutputs } from "@/app/hooks/useOutputs"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
-import { CardOption, CardOutput, EmptyCard } from "@/app/components/Card"
+import { CardOption, EmptyCard } from "@/app/components/Card"
 
 import { useOrdinals } from "@/app/hooks/useOrdinals"
 import { butterflyAtom } from "@/app/recoil/butterflyAtom"
@@ -20,23 +22,22 @@ import { runesAtom } from "@/app/recoil/runesAtom"
 import { Tutorial } from "@/app/components/Tutorial"
 import { useRecommendedFees } from "@/app/hooks/useRecommendedFees"
 import { usePlatformFee } from "@/app/hooks/usePlatformFee"
-import { psbtService } from "@/app/services/psbtService"
 import { track } from "@vercel/analytics"
 import { NetworkFee } from "@/app/components/NetworkFee"
 import { useFeeRate } from "@/app/hooks/useFeeRate"
 import { recommendedFeesAtom } from "@/app/recoil/recommendedFeesAtom"
 import { useUrlButterfly } from "@/app/hooks/useUrlButterfly"
 import { psbtSignedAtom } from "@/app/recoil/psbtAtom"
-import Image from "next/image"
+
 import { toastOptions } from "@/app/components/Toast"
 import { toast } from "react-toastify"
-import Link from "next/link"
 import { loadingAtom } from "@/app/recoil/loading"
 import { useLocalSettings } from "@/app/hooks/useLocalSettings"
 import { useMempool } from "@/app/hooks/useMempool"
 import { ordinalsAtom } from "@/app/recoil/ordinalsAtom"
 import { useSignPsbt } from "@/app/hooks/useSignPsbt"
 import { useKeyboards } from "@/app/hooks/useKeyboards"
+import { ButterflyOutputs } from "@/app/components/Outputs"
 
 export const Bowtie = () => {
   useMempool()
@@ -315,7 +316,7 @@ export const Bowtie = () => {
     inputsCount !== 0 &&
     isConfirmDisabled &&
     outputsCount !== 0 &&
-    inputValues - outputValues !== 0
+    difference !== 0
 
   const inputPaths = useInputs({
     butterfly,
@@ -324,15 +325,6 @@ export const Bowtie = () => {
     height,
     isConfirmDisabled,
     isNotReady,
-  })
-
-  const outputPaths = useOutputs({
-    butterfly,
-    totalHeight: outputHeight,
-    outputsCount,
-    height,
-    inputHeight,
-    inputsCount,
   })
 
   const { signPsbt } = useSignPsbt()
@@ -524,19 +516,10 @@ export const Bowtie = () => {
                         Adjust the fee or outputs. UTXO balance is{" "}
                         <span
                           className={`${
-                            inputValues - outputValues > 0
-                              ? "text-green-600"
-                              : "text-red-600"
+                            difference > 0 ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {formatNumber(
-                            inputValues - outputValues,
-                            0,
-                            0,
-                            false,
-                            false
-                          )}{" "}
-                          sats
+                          {formatNumber(difference, 0, 0, false, false)} sats
                         </span>
                         ; it should be 0.
                       </p>
@@ -547,19 +530,10 @@ export const Bowtie = () => {
                         balance is{" "}
                         <span
                           className={`${
-                            inputValues - outputValues > 0
-                              ? "text-green-600"
-                              : "text-red-600"
+                            difference > 0 ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {formatNumber(
-                            inputValues - outputValues,
-                            0,
-                            0,
-                            false,
-                            false
-                          )}{" "}
-                          sats
+                          {formatNumber(difference, 0, 0, false, false)} sats
                         </span>
                         ; it should be 0.
                       </p>
@@ -696,22 +670,7 @@ export const Bowtie = () => {
         </div>
 
         <div className={`w-full flex flex-col`}>
-          <div
-            className={`relative ${
-              totalHeight ? `h-[${totalHeight + 1}px]` : ""
-            } flex flex-col w-full`}
-          >
-            {outputPaths}
-
-            {butterfly.outputs.map((_, i) => (
-              <div
-                key={`output-${i}`}
-                className="mb-8 h-80 flex w-full relative z-2 justify-end"
-              >
-                <CardOutput index={i} onRemove={onRemoveOutput} />
-              </div>
-            ))}
-          </div>
+          <ButterflyOutputs />
           {!hasSomeSigned && (
             <EmptyCard onClick={onAddOutput} className="self-end" />
           )}

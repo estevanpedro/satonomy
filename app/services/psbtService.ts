@@ -34,13 +34,8 @@ export const psbtService = {
       const isP2SH_P2WPKH = utxo?.wallet?.startsWith("3")
 
       if (isP2SH_P2WPKH) {
-        const p2wpkh = payments.p2wpkh({
-          address: utxo.wallet,
-          network: networks.bitcoin,
-        })
-
         const p2sh = payments.p2sh({
-          redeem: p2wpkh,
+          address: utxo.wallet,
           network: networks.bitcoin,
         })
 
@@ -49,12 +44,10 @@ export const psbtService = {
           index: utxo.vout,
           witnessUtxo: {
             value: utxo.value,
-            script: p2wpkh.output!, // The P2WPKH output script
+            script: p2sh.output!,
           },
-          redeemScript: p2sh.redeem!.output, // Include the redeem script for P2SH-P2WPKH
         })
       } else {
-        // Default to adding as a native SegWit input (Bech32)
         psbt.addInput({
           hash: utxo.txid,
           index: utxo.vout,
@@ -124,58 +117,64 @@ export const psbtService = {
     return psbt.toHex()
   },
   createPsbtFull: async (butterfly: Butterfly, address: string) => {
-    initEccLib(ecc)
+    try {
+      initEccLib(ecc)
 
-    const psbt = new Psbt({ network: networks.bitcoin })
+      const psbt = new Psbt({ network: networks.bitcoin })
 
-    for (const utxo of butterfly.inputs) {
-      psbt.addInput({
-        hash: utxo.txid,
-        index: utxo.vout,
-        witnessUtxo: {
-          value: utxo.value,
-          script: toOutputScript(address, networks.bitcoin),
-        },
-      })
-    }
-
-    for (const utxo of butterfly.outputs) {
-      if (utxo.type === "OP RETURN") {
-        const runeFound = butterfly.outputs.find(
-          (o) => o.type === "runes" && o.rune?.runeid
-        )
-        const block = Number(runeFound?.rune?.runeid.split(":")[0])
-        const idx = Number(runeFound?.rune?.runeid.split(":")[1])
-
-        const runesOutputs = butterfly.outputs.filter((o) => o.type === "runes")
-
-        const edicts = runesOutputs.map((o) => {
-          return {
-            id: new RuneId(block, idx),
-            amount: BigInt(
-              (o.runesValue || 0) * 10 ** (utxo.rune?.divisibility || 0)
-            ),
-            output: o.vout - 1,
-          }
+      for (const utxo of butterfly.inputs) {
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          witnessUtxo: {
+            value: utxo.value,
+            script: toOutputScript(address, networks.bitcoin),
+          },
         })
-
-        const runestone = new Runestone(edicts, none(), none(), none())
-
-        psbt.addOutput({
-          script: runestone.encipher(),
-          value: 0,
-        })
-
-        continue
       }
 
-      psbt.addOutput({
-        address: utxo.address,
-        value: utxo.value,
-      })
-    }
+      for (const utxo of butterfly.outputs) {
+        if (utxo.type === "OP RETURN") {
+          const runeFound = butterfly.outputs.find(
+            (o) => o.type === "runes" && o.rune?.runeid
+          )
+          const block = Number(runeFound?.rune?.runeid.split(":")[0])
+          const idx = Number(runeFound?.rune?.runeid.split(":")[1])
 
-    return psbt
+          const runesOutputs = butterfly.outputs.filter(
+            (o) => o.type === "runes"
+          )
+
+          const edicts = runesOutputs.map((o) => {
+            return {
+              id: new RuneId(block, idx),
+              amount: BigInt(
+                (o.runesValue || 0) * 10 ** (utxo.rune?.divisibility || 0)
+              ),
+              output: o.vout - 1,
+            }
+          })
+
+          const runestone = new Runestone(edicts, none(), none(), none())
+
+          psbt.addOutput({
+            script: runestone.encipher(),
+            value: 0,
+          })
+
+          continue
+        }
+
+        psbt.addOutput({
+          address: utxo.address,
+          value: utxo.value,
+        })
+      }
+
+      return psbt
+    } catch (error) {
+      console.error(error)
+    }
   },
   extractKeyFromAddress: (
     address: string

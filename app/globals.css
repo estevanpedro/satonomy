@@ -455,3 +455,33 @@ body {
   background-clip: text;
   text-fill-color: transparent;
 }
+
+.gradient-button {
+  position: relative;
+  background-color: transparent;
+  z-index: 1;
+  margin: 4px;
+  border-radius: 4px;
+}
+.gradient-button:hover {
+  /* scale */
+  transform: scale(1.05);
+  color: #d1d1d1;
+}
+
+.gradient-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px; /* Border thickness */
+  background: linear-gradient(45deg, #6839b6, #3478f7);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  z-index: -1;
+}

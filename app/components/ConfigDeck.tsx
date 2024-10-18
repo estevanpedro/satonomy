@@ -411,7 +411,8 @@ export const ConfigDeck = () => {
         </button>
       )}
 
-      {!isConfirmDisabled &&
+      {configs.proMode &&
+        !isConfirmDisabled &&
         Boolean(configs.feeCost) &&
         !configs.isInputFullDeckOpen &&
         !configs.isOutputDeckOpen &&

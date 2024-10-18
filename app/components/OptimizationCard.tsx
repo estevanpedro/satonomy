@@ -8,7 +8,6 @@ import { RunesUtxo } from "@/app/recoil/runesAtom"
 import { MempoolUTXO, utxoAtom } from "@/app/recoil/utxoAtom"
 
 import { formatNumber } from "@/app/utils/format"
-import { useAccounts } from "@particle-network/btc-connectkit"
 import { track } from "@vercel/analytics"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -48,10 +47,6 @@ export const OptimizationCard = ({
 
   useEffect(() => {
     if (!rune) return
-
-    const utxosSorted = (
-      JSON.parse(JSON.stringify(utxos)) as MempoolUTXO[]
-    )?.sort((a, b) => a.value - b.value)
 
     let allBtcInputsValue = rune.utxos.reduce(
       (acc, curr) =>

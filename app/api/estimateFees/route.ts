@@ -27,14 +27,26 @@ export async function POST(request: NextRequest) {
     }
 
     const psbt = await psbtService.createPsbtFull(newButterfly, address)
-    const feeCost = psbtService.calculateTransactionFee(psbt, feeRate)
+    console.log("✌️psbt --->", psbt)
+    if (psbt) {
+      const feeCost = psbtService.calculateTransactionFee(psbt, feeRate)
+      return NextResponse.json(feeCost, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+    }
 
-    return NextResponse.json(feeCost, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    return NextResponse.json(
+      {},
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
   } catch (error) {
     console.error("Internal Server Error:", error)
     return NextResponse.json(
