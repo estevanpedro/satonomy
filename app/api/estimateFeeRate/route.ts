@@ -18,14 +18,26 @@ export async function POST(request: NextRequest) {
     }
 
     const psbt = await psbtService.createPsbtFull(butterfly, address)
-    const virtualSize = psbtService.estimateTxSize(psbt)
-    const feeRate = feeCost / virtualSize
-    return NextResponse.json(feeRate, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    if (psbt) {
+      const virtualSize = psbtService.estimateTxSize(psbt)
+      const feeRate = feeCost / virtualSize
+      return NextResponse.json(feeRate, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+    }
+
+    return NextResponse.json(
+      {},
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
   } catch (error) {
     console.error("Internal Server Error:", error)
     return NextResponse.json(
